@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="liquidacion_vacacion_v2" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="80458285-7a11-4536-854f-e29d47b8af78">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="IGM1_RH"/>
+	<parameter name="CODIGO2" class="java.lang.String"/>
+	<parameter name="FECHAINICIO2" class="java.lang.String"/>
+	<parameter name="FECHAFINAL2" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT     nvl(trunc(sum(PERMISOS.FPER_TIEMPO_EFECTIVO_PERMISOOK (A.F_INICO , A.F_FINALIZACION, D.NO_PERSONA ))/8),0) DIAS,
+                     nvl(trunc(((sum(PERMISOS.FPER_TIEMPO_EFECTIVO_PERMISOOK (A.F_INICO , A.F_FINALIZACION, D.NO_PERSONA ))/8)-trunc(sum(PERMISOS.FPER_TIEMPO_EFECTIVO_PERMISOOK (A.F_INICO , A.F_FINALIZACION, D.NO_PERSONA ))/8))*8),0) HORAS,
+NVL(sum(PERMISOS.FPER_TIEMPO_EFECTIVO_PERMISOOK (A.F_INICO , A.F_FINALIZACION, D.NO_PERSONA ))/8,0) TOTAL_REAL
+FROM     RH.T_ASISTENCIAS A, RH.T_DAT_EMPLEADO D, RH.T_RH_TIPO_ASISTENCIA T
+WHERE     A.NO_ASIST IN (3,14) AND 
+    ((A.NO_ASIST = T.NO_ASIST) AND 
+    (A.NO_PERSONA =D.NO_PERSONA)) AND 
+    TO_NUMBER(D.CODIGO) = TO_NUMBER($P{CODIGO2})  AND 
+    TRUNC(A.F_INICO) >= $P{FECHAINICIO2} AND 
+    TRUNC(A.F_FINALIZACION)<= $P{FECHAFINAL2}]]>
+	</queryString>
+	<field name="DIAS" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="DIAS"/>
+	</field>
+	<field name="HORAS" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="HORAS"/>
+	</field>
+	<field name="TOTAL_REAL" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="TOTAL_REAL"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="139" splitType="Stretch">
+			<textField>
+				<reportElement x="270" y="80" width="30" height="21" uuid="7ee98c7b-df9f-400e-8491-f2e5f658c476"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DIAS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="365" y="53" width="50" height="21" uuid="83cef174-8d8a-4634-90f7-fa057c03be10"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HORAS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="270" y="110" width="54" height="21" uuid="dd535814-6e8c-41fd-bc5e-54e80fb4844f"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL_REAL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="20" y="110" width="240" height="21" forecolor="#FF0033" uuid="8154b7da-afd3-4db1-b774-e3c2ed4bb254"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EN DIAS LABORABLES REALES COMPLETOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="80" width="240" height="21" forecolor="#FF0033" uuid="f1488335-b3ea-431b-9aa7-224e4b594b16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EN DIAS LABORABLES COMPLETOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="30" width="180" height="21" uuid="a42e7296-6938-4e5a-86f4-692507cb5eb1"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EN DIAS LABORALES COMPLETOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="325" y="30" width="131" height="21" uuid="87c6ad60-09b9-4c46-ba3e-cee363084663"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EN HORAS LAB. PEDIDAS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="189" y="53" width="50" height="21" uuid="3d7c2ebc-f3d6-4995-91d0-8b1c0a73c355"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DIAS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="341" y="80" width="30" height="21" uuid="3c77042f-1ce5-4e19-b6d0-02db31be0aa8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HORAS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="240" y="4" width="130" height="21" uuid="302ccf54-a33e-48be-94c3-b7e370d12775"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tiempo Utilizado]]></text>
+			</staticText>
+			<line>
+				<reportElement x="120" y="53" width="180" height="1" uuid="16689a0c-577d-4d9b-a416-a929f24dafa1"/>
+			</line>
+			<line>
+				<reportElement x="325" y="53" width="131" height="1" uuid="cb26078a-2948-4c78-b832-e4fa1dc5bd6c"/>
+			</line>
+			<staticText>
+				<reportElement x="301" y="80" width="40" height="21" forecolor="#FF0033" uuid="6d482393-9f16-43e3-a56d-aee65b74d794"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[con]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="371" y="80" width="60" height="21" forecolor="#FF0033" uuid="8660c5b6-4a61-417b-86fd-127537a0f597"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[horas]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+   <h:head>
+     
+        <link href="#{facesContext.externalContext.context.contextPath}/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/tableLayout.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/cssLayout.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/fonts.googleapis.com.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/ace.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/ace-rtl.min.css" rel="stylesheet" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+     
+    </h:head>
+<script type="text/javascript">
+    //<![CDATA[
+    function start() {
+        window['progress'] = setInterval(function() {
+    var pbClient = PF('pbClient'),
+    oldValue = pbClient.getValue(),
+    newValue = oldValue + 10;
+
+    pbClient.setValue(pbClient.getValue() + 10);
+
+    if(newValue === 100) {
+        clearInterval(window['progress']);
+    }
+        }, 1000);
+    }
+
+    function cancel() {
+        clearInterval(window['progress']);
+        PF('pbClient').setValue(0);
+        PF('startButton1').enable();
+    }
+    //]]>
+    </script>
+ 
+   <p:panel style="font-size: larger;font-weight: bold; color: #004085" class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        
+        <h:form id="frmAsistencia">
+            <p:growl id="msgs" showDetail="true"  />
+            
+            <div class="form-group col-md-12">
+                <p:outputLabel value="Código empleado: " class=" col-lg-1 col-md-1 control-label"/>    
+                <div class="col-md-6">
+                    <p:inputNumber id="valorcert" value="#{reporteAsistenciasControlador.codigo}" title="codigo" placeholder="Código Timbrado" inputStyle="width:20%" decimalPlaces="0" maxlength="5"  />
+                </div>
+            </div>
+            
+            <div class="form-group col-md-12">
+                <p:outputLabel value="Fecha Desde: " class=" col-lg-1 col-md-1 control-label"/>      
+                <div class="col-lg-3 col-md-3">
+                    <p:calendar id="cldFecha" value="#{reporteAsistenciasControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                </div>               
+                 
+            
+            
+                <p:outputLabel value="Fecha Hasta: " class=" col-lg-1 col-md-1 control-label"/>      
+                <div class="col-lg-3 col-md-3">
+                    <p:calendar id="cldFecha2" value="#{reporteAsistenciasControlador.fechaHasta}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                </div>               
+            </div>     
+
+            <p:commandButton value="Generar Reporte" class="btn-xs btn btn-info" 
+                             update="frmAsistencia" process="@all"
+                             actionListener="#{reporteAsistenciasControlador.generarReporteAsistencias()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1"  />
+
+            <br /><br />
+            <p:progressBar id="progressBarClient" widgetVar="pbClient" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
+            <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteAsistenciasControlador.media ne null}" width="1400" height="800" value="#{reporteAsistenciasControlador.media}" player="pdf"/>
+  
+        </h:form>
+      </p:panel>
+    
+</html>

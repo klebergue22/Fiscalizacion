@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_permisos" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="09b0713e-ddf6-49d1-b6a7-fd41b07f739a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="RH"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="753"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="235"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="ACCION" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT 	F.NOMBRE_C PERSONA_REEMPLAZA, 
+	A.NOMBRE_C,
+	A.NO_CEDULA CEDULA_POSESIONADO,
+	B.NO_CAUCION, 
+	B.FECHA_CAUCION, 
+	B.OBS_CAUCION, 
+	B.PUESTO_REEMPLAZA, 
+	B.OBS_REEMPLAZA, 
+	B.NO_ACCION_REEMPLAZA, 
+	B.FECHA_ACCION_REEMPLAZA, 
+	B.COLEGIO_PROFESIONALES, 
+	B.NO_AFILIACION_COLEGIO, 
+	B.FECHA_AFILIACION, 
+	B.LUGAR_POSESION, 
+	B.FECHA_POSESION,
+	C.PIE_FIRMA JEFE_PERSONAL
+FROM 	RH.T_ACCION_PERSONAL B, 
+	RH.T_DAT_EMPLEADO A, 
+	RH.T_DAT_EMPLEADO C, 
+	RH.T_DAT_EMPLEADO D, 
+	RH.T_DAT_EMPLEADO E, 
+	RH.T_DAT_EMPLEADO F
+WHERE 	A.NO_PERSONA (+) = B.NO_PERSONA AND
+	C.NO_PERSONA (+) = B.NO_JEFE_PERSONA AND
+	E.NO_PERSONA (+) = B.NO_DIRECTOR AND
+	D.NO_PERSONA (+) = B.NO_PERSONA_REGISTRO AND
+	F.NO_PERSONA (+) = B.NO_PERSONA_REEMPLAZA AND
+	B.NO_ACCION = $P{ACCION}
+
+]]>
+	</queryString>
+	<field name="PERSONA_REEMPLAZA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PERSONA_REEMPLAZA"/>
+	</field>
+	<field name="NOMBRE_C" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="NOMBRE_C"/>
+	</field>
+	<field name="CEDULA_POSESIONADO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="CEDULA_POSESIONADO"/>
+	</field>
+	<field name="NO_CAUCION" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="NO_CAUCION"/>
+	</field>
+	<field name="FECHA_CAUCION" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_CAUCION"/>
+	</field>
+	<field name="OBS_CAUCION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="OBS_CAUCION"/>
+	</field>
+	<field name="PUESTO_REEMPLAZA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PUESTO_REEMPLAZA"/>
+	</field>
+	<field name="OBS_REEMPLAZA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="OBS_REEMPLAZA"/>
+	</field>
+	<field name="NO_ACCION_REEMPLAZA" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="NO_ACCION_REEMPLAZA"/>
+	</field>
+	<field name="FECHA_ACCION_REEMPLAZA" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_ACCION_REEMPLAZA"/>
+	</field>
+	<field name="COLEGIO_PROFESIONALES" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="COLEGIO_PROFESIONALES"/>
+	</field>
+	<field name="NO_AFILIACION_COLEGIO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="NO_AFILIACION_COLEGIO"/>
+	</field>
+	<field name="FECHA_AFILIACION" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_AFILIACION"/>
+	</field>
+	<field name="LUGAR_POSESION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="LUGAR_POSESION"/>
+	</field>
+	<field name="FECHA_POSESION" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_POSESION"/>
+	</field>
+	<field name="JEFE_PERSONAL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="JEFE_PERSONAL"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="802" splitType="Stretch">
+			<textField>
+				<reportElement x="53" y="489" width="224" height="13" uuid="cbc334a4-86d5-4eb8-9fb4-bf9c76993ac5"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOMBRE_C}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="428" y="489" width="90" height="13" uuid="ad2be597-2663-40a3-bccf-effefef97829"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CEDULA_POSESIONADO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="79" y="542" width="100" height="13" uuid="f98eeb71-3945-4776-9ea7-128d8a4d45bb"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{LUGAR_POSESION} != null ? $F{LUGAR_POSESION} : "")
+]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="79" y="573" width="100" height="13" uuid="580c1ae4-2c36-4a26-ad0a-b2afe2db1beb"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{FECHA_POSESION} != null ? $F{FECHA_POSESION} : "")
+]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

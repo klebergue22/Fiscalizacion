@@ -1,0 +1,35 @@
+# Maven
+target/
+*.class
+
+# NetBeans
+nbproject/private/
+build/
+dist/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.bak
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# WildFly / deployments
+*.war
+*.ear
+*.jar
+*.deployed
+*.failed

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" class="full-height" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+<h:head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Home</title>
+
+    <!-- Font Awesome -->
+    <link href="css/font-awesome_1.css" rel="stylesheet" type="text/css"/>
+    <link href="css/compiled.css" rel="stylesheet" type="text/css"/>
+  
+   <style>
+        
+        .intro-2 {
+            background: url(imagenes/fondoactual.png) no-repeat center center;
+            background-size: cover;
+        }
+        .top-nav-collapse {
+            background-color: #3f51b5 !important; 
+        }
+        .navbar:not(.top-nav-collapse) {
+            background: transparent !important;
+        }
+        @media (max-width: 768px) {
+            .navbar:not(.top-nav-collapse) {
+                background: #3f51b5 !important;
+            } 
+        }
+        .hm-gradient .full-bg-img {
+            //background: -webkit-linear-gradient(45deg, rgba(83, 125, 210, 0.4), rgba(178, 30, 123, 0.4) 100%);
+            //background: -webkit-gradient(linear, 45deg, from(rgba(29, 236, 197, 0.4)), to(rgba(96, 0, 136, 0.4)));
+            //background: linear-gradient(to 45deg, rgba(29, 236, 197, 0.4), rgba(96, 0, 136, 0.4) 100%); 
+        }       
+        .card {
+            //background-color: rgba(229, 228, 255, 0.2);
+            //background-color: rgba(239, 248, 238, 0.7);
+            background-color: rgba(255,255,255,.9);
+        }
+        
+         .md-form .prefix {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+        }
+        .md-form label {
+            color: #ffffff;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        h6 {
+            line-height: 1.7;
+        }
+        @media (max-width: 740px) {
+            .full-height,
+            .full-height body,
+            .full-height header,
+            .full-height header .view {
+                height: 1040px; 
+            } 
+            
+        }
+                
+    </style>
+</h:head>
+    
+    
+
+<h:body>
+   
+    <!--Main Navigation-->
+   
+    <header>
+    
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top scrolling-navbar">
+            
+        </nav>
+
+        <!--Intro Section-->
+        <section class="view intro-2 hm-gradient">
+            <div class="full-bg-img">
+                <div class="container flex-center">
+                    <div class="d-flex align-items-center content-height">
+                        <div class="row flex-center pt-5 mt-3">
+                            <div class="col-md-6 text-center text-md-left mb-5">
+                                <div class="white-text">
+                                    <h1 class="h1-responsive font-bold wow fadeInLeft" data-wow-delay="0.3s" >Sistema Administrativo Financiero </h1>
+                                    <hr class="hr-light wow fadeInLeft" data-wow-delay="0.3s"/>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 col-xl-5 offset-xl-1">
+                                <!--Form-->
+                                <div class="card wow fadeInRight" data-wow-delay="0.3s">
+                                    <div class="card-body">
+                                        <!--Header-->
+                                        <div class="text-center">
+                                            <h3 class="white-text"><i class="fa fa-user white-text"></i> Login </h3>
+                                            <hr class="hr-light"/>
+                                        </div>
+                                       
+<h:form id="frmLogin">
+                                        <!--Body-->
+                                        <div class="md-form">
+                                            <i class="fa fa-user prefix white-text"></i>
+                                            <h:inputText id="form3" value="#{loginOP.aliasBase}" maxlength="30" class="form-control" autocomplete="off"/>
+                                            <label for="form3">Usuario</label>
+                                        </div>
+                                         
+                                        <div class="md-form">
+                                            <i class="fa fa-lock prefix white-text active"></i>
+                                            <h:inputSecret id="form4" value="#{loginOP.clave}" maxlength="50" class="form-control" autocomplete="off"/>
+                                            <label for="form4" class="active">Password</label>
+                                        </div>
+
+                                        <div class="text-center">
+                                         
+                                            <h:commandButton class="btn btn-primary" value="Iniciar" action="#{loginOP.ingresar}" />
+                                        </div>
+                                        <h:column rendered="#{loginOP.renderMensaje}">
+                                            <div class="fa fa-close fa-lg red-text text-darken-4" style="font-weight: bold" ><b></b> #{loginOP.mensaje}</div>
+                                       </h:column>
+                                        
+ </h:form>
+                                           
+                                    </div>
+                                </div>
+                                <!--/.Form-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+    </header>
+       
+    <!--Main Navigation-->
+
+    <!--Main Layout-->
+    
+    <!--Main Layout-->
+
+    <!-- SCRIPTS -->
+    <script src="js/compiled.js" type="text/javascript"></script>
+    <script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="resources/dist/js/bootstrap-notify.min.js" type="text/javascript"></script>
+    <script>
+  /*  $(function(){
+  $(".btn").on("click",function(){
+    $.notify({
+      title: '<strong>mensaje</strong>',
+      icon: 'fa fa-user',
+      message: "prueba!"
+    },{
+      type: 'info',
+      animate: {
+		    enter: 'animated fadeInUp',
+        exit: 'animated fadeOutRight'
+      },
+      placement: {
+        from: "top",
+        align: "right"
+      },
+      offset: 20,
+      spacing: 10,
+      z_index: 1031,
+      delay:10
+    });
+  });
+});
+
+setTimeout(function() {
+	$.notifyClose('top-right');
+}, 10);*/
+        new WOW().init();
+    </script>
+    
+</h:body>
+    
+
+</html>
+

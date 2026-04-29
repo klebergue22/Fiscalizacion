@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+
+        <link href="#{facesContext.externalContext.context.contextPath}/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/fonts.googleapis.com.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/ace.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/ace-rtl.min.css" rel="stylesheet" type="text/css" />
+
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <!--<link href="#{facesContext.externalContext.context.contextPath}/css/estilos.css" rel="stylesheet" type="text/css" />
+        
+        -->
+
+        <p:spacer height="10"/>
+        <h:form id="frmDocBodega" enctype="multipart/form-data">
+            <p:growl showDetail="true" />
+            <div class="container" style="padding-left:1%">
+                <div class="panel panel-primary " >
+                    <div class="row">
+                        <div class="clos-sm-8">
+                            <div class="modal-body">                                     
+                             
+                                <div class="form-group col-md-12">  
+                                    <p:outputLabel value="Periodo:" class=" col-md-1 control-label" />
+                                    <div class="col-md-2">
+                                        <p:selectOneMenu  id="idperiodo" value="#{documentoBodegaControlador.idPeriodo}" >
+                                            <f:selectItem itemLabel="-- Seleccione Periodo --" noSelectionOption="true"/>
+                                            <f:selectItems value="#{documentoBodegaControlador.listaPeriodo}" var="itemPeriodo"
+                                                           itemLabel="#{itemPeriodo}"
+                                                           itemValue="#{itemPeriodo}" />    
+                                             <p:ajax listener="#{documentoBodegaControlador.listadoOrdenesDeProduccion()}" process="@all" update=":frmDocBodega"/> 
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">  
+                                    <p:outputLabel value="Orden Compra:" class=" col-md-1 control-label" />
+                                    <div class="col-md-2">
+                                        <p:selectOneMenu  id="idOrdenes" value="#{documentoBodegaControlador.idOrden}" >
+                                            <f:selectItem itemLabel="-- Seleccione Orden Compra --" noSelectionOption="true"/>
+                                            <f:selectItems value="#{documentoBodegaControlador.listaOrdenesCombo}" var="itemOrden"
+                                                           itemLabel="#{itemOrden}"
+                                                           itemValue="#{itemOrden}" />     
+                                            <p:ajax listener="#{documentoBodegaControlador.listadoOrdenes()}" process="@all" update=":frmDocBodega"/> 
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-md-12">  
+                                    <p:outputLabel value="Tipo Documento:" class=" col-md-1 control-label" />
+                                    <div class="col-md-3">
+                                        <p:selectOneMenu  id="tipoDoc" value="#{documentoBodegaControlador.idTipoDoc}">
+                                            <f:selectItem itemLabel="-- Seleccione Documento --" noSelectionOption="true"/>
+                                            <f:selectItems value="#{documentoBodegaControlador.listaTipoDoc}" var="itemTipo"
+                                                           itemLabel="#{itemTipo.nombreDoc}"
+                                                           itemValue="#{itemTipo.idtipodoc}" />                                          
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <p:outputLabel value="Número documento: " class="col-md-1"/>
+                                    <div class="col-md-3">
+                                        <p:inputNumber id="nombres" value="#{documentoBodegaControlador.numeroDocumento}"  title="nombres"  placeholder="Ingrese número documento"/>
+                                        
+                                    </div>
+                                    <p:outputLabel value="Fecha: " class="col-md-1"/>
+                                    <div class="col-md-3">
+                                        <p:calendar id="cldFecha2" value="#{documentoBodegaControlador.fechaRegistro}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                                    </div>
+                                    
+                                    
+                                </div>
+                                
+                                <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">  
+                                    <div class="col-md-6">
+                                        <p:commandButton value="Grabar Registro" id="idGrabar" class="btn-xs btn btn-info" icon="ui-icon-disk" actionListener="#{documentoBodegaControlador.ingresarPago()}" process="@all" update="frmDocBodega" />       
+                                    </div>
+                                </div> 
+                                
+                                
+                                
+                            </div>  
+                        </div>  
+                    </div>
+                </div>
+                <p:messages id="msgUsuario" showDetail="true" autoUpdate="true" closable="true" globalOnly="true"/>
+            </div>
+            
+            <div class="container">
+                <div class="panel panel-default">
+                    <div class="panel-heading" style="font-weight:bold"> Listado de Ordenes de Compra </div>
+                    <div class="row">
+                        <div class="clos-sm-8">
+                            <p:dataTable id="dtSolicitud" value="#{documentoBodegaControlador.listaOrdenesCompra}" var="itemSolicitud"
+                                                class="panel-heading" paginator="true" paginatorPosition="bottom" rows="25" >
+                                
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="Periodo" />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.TDetOrdenCompraPK.periodoCodigo}" />
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="N. Orden" />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.TDetOrdenCompraPK.noOrden}" />
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="N. Pedido" />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.TDetOrdenCompraPK.noPedido}" />
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="N. Sec. Pedido" />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.TDetOrdenCompraPK.noRegPedido}" />
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="N. Articulo" />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.noArticulo}" />
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="Cantidad" />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.cantParaCompra}" />
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="N. Factura" />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.noFactura}" />
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="Fecha Factura" />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.fechaFactura}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>    
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="Tipo Doc." />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.idTipodoc}">                                                        
+                                    </h:outputText>    
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="Num. Doc." />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.numDocumento}"  />                                                                                            
+                                </p:column>
+                                <p:column >
+                                    <f:facet name="header">
+                                        <h:outputText value="Fecha Doc." />
+                                    </f:facet>
+                                    <h:outputText value="#{itemSolicitud.fechaDoc}" >                                                                                            
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>    
+                                </p:column>
+                                
+                                
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </h:form>
+        <ui:include src="../../sessionTimeOut.xhtml"/>
+    </h:body>
+</html>

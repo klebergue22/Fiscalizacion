@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_permisos" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="09b0713e-ddf6-49d1-b6a7-fd41b07f739a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="RH"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="318"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="668"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="ACCION" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT A.PRI_APELLIDO || ' ' || A.SEG_APELLIDO APELLIDOS,
+       A.NO_CEDULA,
+       A.SEGURO_SOCIAL,
+       A.NOMBRES NOMBRES,
+       C.PIE_FIRMA JEFE_PERSONAL,
+       E.PIE_FIRMA DIRECTOR,
+       D.NOMBRE_C RESPONSABLE_REGISTRO,
+       B.NO_ACCION,
+       B.FECHA,
+       B.NO_DECRETO,
+       B.NO_ACUERDO,
+       B.FECHA_RESOLUCION,
+       B.FECHA_RIGE,
+       B.EXPLICACION,
+       DECODE(NVL(B.L_INGRESO, 0), 1, 'X', '') INGRESO,
+       DECODE(NVL(B.L_ASCENSO, 0), 1, 'X', '') ASCENSO,
+       DECODE(NVL(B.L_UBICACION, 0), 1, 'X', '') UBICACION,
+       DECODE(NVL(B.L_TRASLADO, 0), 1, 'X', '') TRASLADO,
+       DECODE(NVL(B.L_VACACION, 0), 1, 'X', '') VACACION,
+       DECODE(NVL(B.L_SUBROGACION, 0), 1, 'X', '') SUBROGACION,
+       DECODE(NVL(B.L_ENCARGO, 0), 1, 'X', '') ENCARGO,
+       DECODE(NVL(B.L_COMISION, 0), 1, 'X', '') COMISION,
+       DECODE(NVL(B.L_REVALORACION, 0), 1, 'X', '') REVALORACION,
+       DECODE(NVL(B.L_RECLASIFICACION, 0), 1, 'X', '') RECLASIFICACION,
+       DECODE(NVL(B.L_RENUNCIA, 0), 1, 'X', '') RENUNCIA,
+       DECODE(NVL(B.L_SUPRESION, 0), 1, 'X', '') SUPRESION,
+       DECODE(NVL(B.L_DESTITUCION, 0), 1, 'X', '') DESTITUCION,
+       DECODE(NVL(B.L_JUBILACION, 0), 1, 'X', '') JUBILACION,
+       DECODE(NVL(B.L_NOMBRAMIENTO, 0), 1, 'X', '') NOMBRAMIENTO,
+       DECODE(NVL(B.L_TRASPASO, 0), 1, 'X', '') TRASPASO,
+       DECODE(NVL(B.L_CAMBIO, 0), 1, 'X', '') CAMBIO,
+       DECODE(NVL(B.L_INTERCAMBIO, 0), 1, 'X', '') INTERCAMBIO,
+       DECODE(NVL(B.L_LICENCIA, 0), 1, 'X', '') LICENCIA,
+       DECODE(NVL(B.L_REINTEGRO, 0), 1, 'X', '') REINTEGRO,
+       DECODE(NVL(B.L_RESTITUCION, 0), 1, 'X', '') RESTITUCION,
+       DECODE(NVL(B.L_REMOCION, 0), 1, 'X', '') REMOCION,
+       B.OTRO,
+       B.PROCESO_ACTUAL,
+       B.SUBPROCESO_ACTUAL,
+       B.LUGAR_ACTUAL,
+       B.PARTIDA_ACTUAL,
+       B.REMUNERACION_ACTUAL,
+       B.PUESTO_ACTUAL,
+       B.PROCESOS_PROPUESTO,
+       B.SUBPROCESO_PROPUESTO,
+       B.PUESTO_PROPUESTO,
+       B.LUGAR_PROPUESTO,
+       B.REMUNERACION_PROPUESTO,
+       B.PARTIDA_PROPUESTO,
+       B.NO_ACTA_FINAL,
+       B.FECHA_ACTA,
+       B.NO_RRHH
+  FROM RH.T_ACCION_PERSONAL B,
+       RH.T_DAT_EMPLEADO    A,
+       RH.T_DAT_EMPLEADO    C,
+       RH.T_DAT_EMPLEADO    D,
+       RH.T_DAT_EMPLEADO    E,
+       RH.T_DAT_EMPLEADO    F
+ WHERE A.NO_PERSONA(+) = B.NO_PERSONA
+   AND C.NO_PERSONA(+) = B.NO_JEFE_PERSONA
+   AND E.NO_PERSONA(+) = B.NO_DIRECTOR
+   AND D.NO_PERSONA(+) = B.NO_PERSONA_REGISTRO
+   AND F.NO_PERSONA(+) = B.NO_PERSONA_REEMPLAZA
+   AND B.NO_ACCION = $P{ACCION}]]>
+	</queryString>
+	<field name="APELLIDOS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="APELLIDOS"/>
+	</field>
+	<field name="NO_CEDULA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="NO_CEDULA"/>
+	</field>
+	<field name="SEGURO_SOCIAL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="SEGURO_SOCIAL"/>
+	</field>
+	<field name="NOMBRES" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="NOMBRES"/>
+	</field>
+	<field name="JEFE_PERSONAL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="JEFE_PERSONAL"/>
+	</field>
+	<field name="DIRECTOR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="DIRECTOR"/>
+	</field>
+	<field name="RESPONSABLE_REGISTRO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="RESPONSABLE_REGISTRO"/>
+	</field>
+	<field name="NO_ACCION" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="NO_ACCION"/>
+	</field>
+	<field name="FECHA" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="FECHA"/>
+	</field>
+	<field name="NO_DECRETO" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="NO_DECRETO"/>
+	</field>
+	<field name="NO_ACUERDO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="NO_ACUERDO"/>
+	</field>
+	<field name="FECHA_RESOLUCION" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_RESOLUCION"/>
+	</field>
+	<field name="FECHA_RIGE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_RIGE"/>
+	</field>
+	<field name="EXPLICACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="EXPLICACION"/>
+	</field>
+	<field name="INGRESO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="INGRESO"/>
+	</field>
+	<field name="ASCENSO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ASCENSO"/>
+	</field>
+	<field name="UBICACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="UBICACION"/>
+	</field>
+	<field name="TRASLADO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="TRASLADO"/>
+	</field>
+	<field name="VACACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="VACACION"/>
+	</field>
+	<field name="SUBROGACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="SUBROGACION"/>
+	</field>
+	<field name="ENCARGO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ENCARGO"/>
+	</field>
+	<field name="COMISION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="COMISION"/>
+	</field>
+	<field name="REVALORACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="REVALORACION"/>
+	</field>
+	<field name="RECLASIFICACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="RECLASIFICACION"/>
+	</field>
+	<field name="RENUNCIA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="RENUNCIA"/>
+	</field>
+	<field name="SUPRESION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="SUPRESION"/>
+	</field>
+	<field name="DESTITUCION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="DESTITUCION"/>
+	</field>
+	<field name="JUBILACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="JUBILACION"/>
+	</field>
+	<field name="NOMBRAMIENTO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="NOMBRAMIENTO"/>
+	</field>
+	<field name="TRASPASO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="TRASPASO"/>
+	</field>
+	<field name="CAMBIO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="CAMBIO"/>
+	</field>
+	<field name="INTERCAMBIO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="INTERCAMBIO"/>
+	</field>
+	<field name="LICENCIA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="LICENCIA"/>
+	</field>
+	<field name="REINTEGRO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="REINTEGRO"/>
+	</field>
+	<field name="RESTITUCION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="RESTITUCION"/>
+	</field>
+	<field name="REMOCION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="REMOCION"/>
+	</field>
+	<field name="OTRO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="OTRO"/>
+	</field>
+	<field name="PROCESO_ACTUAL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PROCESO_ACTUAL"/>
+	</field>
+	<field name="SUBPROCESO_ACTUAL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="SUBPROCESO_ACTUAL"/>
+	</field>
+	<field name="LUGAR_ACTUAL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="LUGAR_ACTUAL"/>
+	</field>
+	<field name="PARTIDA_ACTUAL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PARTIDA_ACTUAL"/>
+	</field>
+	<field name="REMUNERACION_ACTUAL" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="REMUNERACION_ACTUAL"/>
+	</field>
+	<field name="PUESTO_ACTUAL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PUESTO_ACTUAL"/>
+	</field>
+	<field name="PROCESOS_PROPUESTO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PROCESOS_PROPUESTO"/>
+	</field>
+	<field name="SUBPROCESO_PROPUESTO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="SUBPROCESO_PROPUESTO"/>
+	</field>
+	<field name="PUESTO_PROPUESTO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PUESTO_PROPUESTO"/>
+	</field>
+	<field name="LUGAR_PROPUESTO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="LUGAR_PROPUESTO"/>
+	</field>
+	<field name="REMUNERACION_PROPUESTO" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="REMUNERACION_PROPUESTO"/>
+	</field>
+	<field name="PARTIDA_PROPUESTO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PARTIDA_PROPUESTO"/>
+	</field>
+	<field name="NO_ACTA_FINAL" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="NO_ACTA_FINAL"/>
+	</field>
+	<field name="FECHA_ACTA" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_ACTA"/>
+	</field>
+	<field name="NO_RRHH" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="NO_RRHH"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="802" splitType="Stretch">
+			<textField>
+				<reportElement x="62" y="133" width="40" height="15" uuid="dea7059f-62c1-41a0-ab59-f743ac4e5cf0">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NO_ACCION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="176" width="150" height="15" uuid="726e9ae5-a96d-4829-aa8b-393ceed425a7"/>
+				<textElement>
+					<font fontName="Serif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOMBRES}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="176" width="150" height="15" uuid="6b2f7117-deab-44ae-b5ae-62a66871c854"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{APELLIDOS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" evaluationTime="Report" pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement key="textField" x="400" y="54" width="70" height="20" uuid="9c974253-ed80-4989-a1d6-58e64c78b122"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="250" width="100" height="15" uuid="322b2819-7cbc-48f1-95f3-25564bcdaf8a"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NO_CEDULA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="229" y="250" width="100" height="15" uuid="87c87151-c7cd-42f2-bf2c-6d71c2dbb80f"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{SEGURO_SOCIAL} != null ? $F{SEGURO_SOCIAL} : "")]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MM-yyyy">
+				<reportElement x="340" y="131" width="70" height="15" uuid="3898f7bb-2def-4800-a805-550b239341b6"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FECHA_RESOLUCION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MM-yyyy">
+				<reportElement x="410" y="250" width="100" height="15" uuid="807ac36c-0904-413d-b70f-961d3a4b8503"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FECHA_RIGE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="20" y="288" width="518" height="62" uuid="a42de12f-2b69-47ac-a4fa-558c73e484f7"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EXPLICACION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="18" y="359" width="100" height="13" uuid="ff99c37b-5ca0-4f01-ab19-849f325fd803"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{INGRESO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="18" y="395" width="100" height="13" uuid="a02f8f68-cf36-4c70-992f-242f44bcc642"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ASCENSO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="290" y="395" width="100" height="13" uuid="af81d4d4-08e5-4772-9202-6d83e67da73b"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{UBICACION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="359" width="100" height="13" uuid="6c888e7d-2354-4dc1-a1a5-97ed83193ba7"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{TRASLADO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="18" y="446" width="100" height="13" uuid="3226571e-4a5c-4047-bcb4-50f6d9d21632"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{VACACION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="18" y="411" width="100" height="13" uuid="c88e0c03-86c6-4c98-8418-fbbe0f39626b"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{SUBROGACION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="18" y="428" width="100" height="13" uuid="06f316ca-386a-488d-8802-fcadcbe78783"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ENCARGO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="428" width="100" height="13" uuid="41e1ca7f-905c-4ba7-b7b2-8fa7cbaea73f"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{COMISION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="290" y="359" width="100" height="13" uuid="c3ea4d41-2cc5-4c30-9dd6-4f5f4d69f109"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{REVALORACION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="290" y="377" width="100" height="13" uuid="311d3dea-b472-477e-b5ea-ecb6064be4cc"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{RECLASIFICACION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="290" y="446" width="100" height="13" uuid="858a11c0-a69e-4618-800f-ecb8feef3b87"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{RENUNCIA} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="359" width="100" height="13" uuid="4283cccd-0a5f-4a30-a4cc-a78aa3da10a1"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{SUPRESION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="377" width="100" height="13" uuid="f83a147b-7b91-4f16-8c6a-6e9f25cfce3f"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{DESTITUCION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="411" width="100" height="13" uuid="c9e0dba4-22c7-4c66-9fbe-c37b7ceef521"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{JUBILACION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="435" y="428" width="106" height="13" uuid="6c887d20-b7d2-48ef-855a-7baeed1d1192"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{OTRO} != null ? $F{OTRO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="87" y="484" width="180" height="13" uuid="d1f54e9d-1838-48de-9fc0-be9b5a83f775"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PROCESO_ACTUAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="117" y="500" width="150" height="13" uuid="a7ad8143-095a-4e66-a76b-67bcf9d388d1"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{SUBPROCESO_ACTUAL} != null ? $F{SUBPROCESO_ACTUAL} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="117" y="527" width="150" height="13" uuid="6ff2a374-a7a4-4dc0-abfd-ed8195485a36"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{LUGAR_ACTUAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="170" y="556" width="96" height="13" uuid="d6548335-88a4-413c-adfe-4165b4065a4e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PARTIDA_ACTUAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="389" y="485" width="140" height="13" uuid="b9a58790-6577-4bf3-a3fe-cf72eef72094"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{PROCESOS_PROPUESTO} != null ? $F{PROCESOS_PROPUESTO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="389" y="501" width="140" height="13" uuid="391cbd2a-1f10-47d1-9ac5-e1ff6e5e05e7"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{SUBPROCESO_PROPUESTO} != null ? $F{SUBPROCESO_PROPUESTO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="360" y="516" width="169" height="13" uuid="f39601e2-1afb-4778-b5b8-9ed58af58880"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{PUESTO_PROPUESTO} != null ? $F{PUESTO_PROPUESTO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="389" y="531" width="140" height="13" uuid="828ece41-28fc-491c-9c3e-0df68dad651c"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{LUGAR_PROPUESTO} != null ? $F{LUGAR_PROPUESTO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="430" y="544" width="98" height="13" uuid="73f86cac-0741-4b36-9615-574ebcb0df33"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{REMUNERACION_PROPUESTO} != null ? $F{REMUNERACION_PROPUESTO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="430" y="559" width="98" height="13" uuid="115677b3-929a-4a3c-96bb-f4ecda4565b8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{PARTIDA_PROPUESTO} != null ? $F{PARTIDA_PROPUESTO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="351" y="661" width="180" height="10" uuid="1d091062-e15e-4600-b0c1-82e90b0aac78"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{JEFE_PERSONAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="358" y="781" width="180" height="10" uuid="e752aa99-9af8-47b6-9e36-b9c9420b0ec8"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RESPONSABLE_REGISTRO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="213" y="726" width="199" height="10" uuid="c9a19a68-b8dd-478a-9f8d-227b8092fd5d"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{DIRECTOR} != null ? $F{DIRECTOR} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="170" y="541" width="96" height="13" uuid="d17154db-5c97-4add-a863-6804d59dfa66"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REMUNERACION_ACTUAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="513" width="192" height="13" uuid="fcf54d45-9eef-45bd-a349-0422d5a09761"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PUESTO_ACTUAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="18" y="377" width="100" height="13" uuid="8ed0eaa1-afeb-4de3-95f2-7e838cae006a"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{NOMBRAMIENTO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="377" width="100" height="13" uuid="e2ac5b34-db03-4bca-8bb9-b411965a0382"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{TRASPASO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="395" width="100" height="13" uuid="f1f4c8fe-c651-4b46-90b4-b5298457fa57"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{CAMBIO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="411" width="100" height="13" uuid="958a182a-3a24-408a-a288-75e3dff0c11f"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{INTERCAMBIO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="446" width="100" height="13" uuid="7ef5dcc4-7c0b-4e8a-9d6a-0e09e7703364"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{LICENCIA} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="290" y="411" width="100" height="13" uuid="dc60cbf6-b98d-414a-a0e9-b83c6f5b2d92"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{REINTEGRO} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="290" y="428" width="100" height="13" uuid="4c37aa76-1200-4380-868c-f1203adba5ef"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{RESTITUCION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="395" width="100" height="13" uuid="7270da73-d53d-42f5-aa03-5838032fefd1"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{REMOCION} != null ? "S" : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="112" y="106" width="58" height="15" uuid="4c555f63-0329-4664-9512-ca79335483f2"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{NO_DECRETO} != null ? $F{NO_DECRETO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="267" y="106" width="60" height="15" uuid="d64ed997-7dd1-4b1a-86d5-f0f25f473c7a"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{NO_ACUERDO} != null ? $F{NO_ACUERDO} : "N")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="430" y="106" width="46" height="15" uuid="4ec8720e-5126-4527-a585-0ebb14146d42"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{NO_DECRETO} != null || $F{NO_ACUERDO} != null) ? "" : "X")]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

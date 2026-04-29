@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+   <h:head>
+     
+        <link href="#{facesContext.externalContext.context.contextPath}/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/tableLayout.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/cssLayout.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/fonts.googleapis.com.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/ace.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/ace-rtl.min.css" rel="stylesheet" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+     
+    </h:head>
+    
+    <script type="text/javascript">
+    //<![CDATA[
+    function start() {
+        window['progress'] = setInterval(function() {
+    var pbClient1 = PF('pbClient1'),
+    oldValue = pbClient1.getValue(),
+    newValue = oldValue + 10;
+
+    pbClient1.setValue(pbClient1.getValue() + 10);
+
+    if(newValue === 100) {
+        clearInterval(window['progress']);
+    }
+        }, 1000);
+    }
+
+    function cancel() {
+        clearInterval(window['progress']);
+        PF('pbClient1').setValue(0);
+        PF('startButton1').enable();
+    }
+    //]]>
+    </script>
+    
+    
+   <p:panel  style="font-size: larger;font-weight: bold; color: #004085" class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        
+        <h:form id="repAcciones">
+            
+             <p:growl id="msgs" showDetail="true"  />
+             
+             <div class="form-group col-md-12">
+                 <h:panelGrid id="panelMenu" columns="2">  
+
+                     <p:outputLabel value="Empleado:" />
+                     <p:selectOneMenu  id="empleado" value="#{reporteAccionPerControlador.idEmpleado}"                                                 
+                                       required="false" >
+                         <f:selectItem itemLabel="-- Seleccione Empleado --" noSelectionOption="true"/>
+                         <f:selectItems value="#{reporteAccionPerControlador.listaEmpleados}" var="itemEmp"
+                                        itemLabel="#{itemEmp.nombreC}"
+                                        itemValue="#{itemEmp.noPersona}" />  
+                         <p:ajax listener="#{reporteAccionPerControlador.handleFacturaChange()}" process="@all" update=":repAcciones"/> 
+                     </p:selectOneMenu>
+                 </h:panelGrid>
+            </div>    
+             
+            <div class="form-group col-md-12">     
+                 <p:dataTable id="dtMenu" value="#{reporteAccionPerControlador.listaAcciones}" var="itemAccion"
+                              paginator="true" paginatorPosition="bottom" rows="4" style="width:80%">
+
+                     <p:column style="width:40px">
+                         <f:facet name="header">
+                             <h:outputText value="Empleado" />
+                         </f:facet>
+                         <h:outputText value="#{itemAccion.nombreC}" />
+                     </p:column>
+                     <p:column style="width:20px; text-align: center">
+                         <f:facet name="header">
+                             <h:outputText value="Fecha Resolución" />
+                         </f:facet>
+                         <h:outputText value="#{itemAccion.fechaResolucion}">
+                             <f:convertDateTime pattern="dd/MM/yyyy" />
+                         </h:outputText>
+                     </p:column>
+                     <p:column style="width:20px; text-align: center">
+                         <f:facet name="header">
+                             <h:outputText value="Fecha Rige" />
+                         </f:facet>
+                         <h:outputText value="#{itemAccion.fechaRige}">
+                             <f:convertDateTime pattern="dd/MM/yyyy" />
+                         </h:outputText>
+                     </p:column>
+                     <p:column style="width:15px; text-align: center" >
+                         <f:facet name="header">
+                             <h:outputText value="Nro. Acción" />
+                         </f:facet>
+                         <h:outputText value="#{itemAccion.noAccion}" />
+                     </p:column>
+                 </p:dataTable>
+            </div>           
+                                
+            <div class="form-group col-md-12">
+                <p:outputLabel value="Número Acción: " class=" col-lg-1 col-md-1 control-label"/>    
+                <div class="col-md-6">
+                    <p:inputNumber id="valorcert" value="#{reporteAccionPerControlador.codigo}" title="codigo" placeholder="Ingrese la acción" inputStyle="width:20%" decimalPlaces="0" maxlength="4"  />
+                </div>
+            </div>
+            <br /><br />
+            
+            <p:commandButton value="Generar Reporte" class="btn-xs btn btn-info" 
+                             update=":repAcciones" process="@all"
+                             actionListener="#{reporteAccionPerControlador.generateReport}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1"  />
+                        
+            <br /><br />
+            
+             <p:progressBar id="progressBarClient" widgetVar="pbClient1" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
+             <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteAccionPerControlador.media ne null}" width="1400" height="800" value="#{reporteAccionPerControlador.media}" player="pdf"/>
+            
+            
+        </h:form>
+      </p:panel>
+    
+</html>

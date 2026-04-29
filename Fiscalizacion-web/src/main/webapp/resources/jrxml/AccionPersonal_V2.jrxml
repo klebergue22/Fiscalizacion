@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AccionPersonalCompleto" pageWidth="595" pageHeight="842" sectionType="Part" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" uuid="d2716064-8ae4-40cf-a575-33afba400e3a">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="RH"/>
+	<property name="net.sf.jasperreports.print.create.bookmarks" value="true"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="NUM_DESDE" class="java.lang.String"/>
+	<parameter name="NUM_HASTA" class="java.lang.String"/>
+	<parameter name="fondo3" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:/Users/VERA_MAYRA/Documents/accion2JPG.JPG"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fondo4" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:/Users/VERA_MAYRA/Documents/accionreverso2.JPG"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[select B.NO_ACCION       
+ FROM T_ACCION_PERSONAL B       
+ where  B.NO_ACCION >= $P{NUM_DESDE} and B.NO_ACCION <= $P{NUM_HASTA}]]>
+	</queryString>
+	<field name="NO_ACCION" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="NO_ACCION"/>
+	</field>
+	<detail>
+		<part uuid="b6f99ecc-dfb8-4d69-92cd-62780dd8a562">
+			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd">
+				<subreportParameter name="REPORT_CONNECTION">
+					<subreportParameterExpression><![CDATA[$P{REPORT_CONNECTION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ACCION">
+					<subreportParameterExpression><![CDATA[$F{NO_ACCION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fondo1">
+					<subreportParameterExpression><![CDATA[$P{fondo3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA["reporte_acciones_3.jasper"]]></subreportExpression>
+			</p:subreportPart>
+		</part>
+		<part uuid="c3fa3117-c0b3-428d-bfea-eec6a21898e8">
+			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd">
+				<subreportParameter name="REPORT_CONNECTION">
+					<subreportParameterExpression><![CDATA[$P{REPORT_CONNECTION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fondo2">
+					<subreportParameterExpression><![CDATA[$P{fondo4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ACCION">
+					<subreportParameterExpression><![CDATA[$F{NO_ACCION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA["reporte_acciones_reverso2.jasper"]]></subreportExpression>
+			</p:subreportPart>
+		</part>
+	</detail>
+</jasperReport>

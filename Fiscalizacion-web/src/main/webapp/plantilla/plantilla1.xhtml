@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <c:set var="context" value="${request.contextPath}" /> 
+   
+    <h:head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <title>SisProPaDoc | Inicio</title>
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+        <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css"  />
+        <script src="../js/jquery-3.3.1.min.js" type="text/javascript"></script>
+        <link href="../css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+        <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"/>-->
+        <link href="../css/ionicons.min.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="${request.contextPath}/resources/dist/css/AdminLTE.min.css"/>
+        <!--<link rel="stylesheet" href="${request.contextPath}/resources/dist/css/skins/skin-blue.min.css"/>-->
+        <!--<link href="../resources/dist/css/skins/skin-purple-light.css" rel="stylesheet" type="text/css"/>-->
+        <link href="../resources/dist/css/skins/skin-green.css" rel="stylesheet" type="text/css"/>
+        <link href="../css/palette.css" rel="stylesheet" type="text/css"/>
+        <link href="../resources/dist/css/materialdesignicons.min.css" rel="stylesheet" type="text/css"/>
+        <style>
+            
+            #dvLoading	{
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 50%;
+                top: 50%;
+                margin: -25px 0 0 -25px;
+            }
+
+        </style>
+
+    </h:head>
+
+    <h:body class="hold-transition skin-green sidebar-mini  ">
+        <div id="dvLoading" class="col-md-3">
+           
+            <!-- /.box -->
+        </div>
+        <div class="wrapper">
+
+            <!-- Main Header -->
+            <header class="main-header">
+
+                <!-- Logo -->
+                <a href="index2.jsp" class="logo">
+                    <!-- mini logo for sidebar mini 50x50 pixels -->
+                    <!--<span class="logo-mini"><b>A</b>LT</span>-->
+                    <!-- logo for regular state and mobile devices -->
+                    <!--<span class="logo-lg"><b>Admin</b>LTE</span>-->
+                </a>
+
+                <!-- Header Navbar -->
+                
+                <nav class="navbar navbar-static-top" role="navigation">
+              
+                    <!-- Sidebar toggle button-->
+                    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                        <span class="sr-only">Toggle navigation</span>
+                    </a>
+                    <!-- Navbar Right Menu -->
+                    <div class="navbar-custom-menu">
+                        <ul class="nav navbar-nav">
+                            <!-- Messages: style can be found in dropdown.less-->
+                            <li class="dropdown messages-menu">
+                                <!-- Menu toggle button -->
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="label label-success"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="header"></li>
+                                    <li>
+                                        <!-- inner menu: contains the messages -->
+                                        <!-- /.menu -->
+                                    </li>
+                                    <li class="footer"><a href="#">See All Messages</a></li>
+                                </ul>
+                            </li>
+                            <!-- /.messages-menu -->
+
+                            <!-- Notifications Menu -->
+                            <li class="dropdown notifications-menu">
+                                <!-- Menu toggle button -->
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-bell-o"></i>
+                                    <span class="label label-warning"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="header"></li>
+                                    <li>
+                                        <!-- Inner Menu: contains the notifications -->
+                                        <ul class="menu">
+                                            <li><!-- start notification -->
+                                                <a href="#">
+                                                    <i class="fa fa-users text-aqua"></i> 
+                                                </a>
+                                            </li>
+                                            <!-- end notification -->
+                                        </ul>
+                                    </li>
+                                    <li class="footer"><a href="#"></a></li>
+                                </ul>
+                            </li>
+                            <!-- Tasks Menu -->
+                            <li class="dropdown tasks-menu">
+                                <!-- Menu Toggle Button -->
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-flag-o"></i>
+                                    <span id="numero_tarea" class="label label-danger"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li id="label_tarea" class="header"></li>
+                                    <li>
+                                        <!-- Inner menu: contains the tasks -->
+                                        <ul class="menu">
+                                            <li><!-- Task item -->
+                                                <a href="#">
+                                                    <!-- Task title and progress text -->
+                                                    <h3>
+                                                        Design some buttons
+                                                        <small id="porciento_tarea" class="pull-right">20%</small>
+                                                    </h3>
+                                                    <!-- The progress bar -->
+                                                    <div class="progress xs">
+                                                        <!-- Change the css width attribute to simulate progress -->
+                                                        <div id="progreso" class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                                            <span id="porciento_etiqueta" class="sr-only">20% Complete</span>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                            <!-- end task item -->
+                                        </ul>
+                                    </li>
+                                    <li class="footer">
+                                        <a href="#"></a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- User Account Menu -->
+                            <li class="dropdown user user-menu">
+                                <!-- Menu Toggle Button -->
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <!-- The user image in the navbar-->
+                                    <!--<img src="${request.contextPath}/resources/dist/img/foto_yo.jpg" class="user-image" alt="User Image"/>-->
+                                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                                    <span class="hidden-xs">Bienvenido #{menuOP.usuario.nombreCompleto}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <!-- The user image in the menu -->
+                                    
+                                    <!-- Menu Body -->
+                                    
+                                    <!-- Menu Footer-->
+                                    <li class="user-footer">
+                                        <div class="pull-right">
+                                           
+                                            <h:form> 
+                                                <h:commandLink class="btn btn-default btn-flat fa fa-power-off fa-lg"  value=" Salir" action="#{loginOP.cerrarSession1}"/>
+                                                    
+                                            </h:form>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- Control Sidebar Toggle Button -->
+                            <li>
+                                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </header>
+
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="main-sidebar">
+                <!-- sidebar: style can be found in sidebar.less -->
+                <section class="sidebar">
+
+                    <!-- Sidebar user panel (optional) -->
+                    <div class="user-panel">
+                       <div class="pull-left image">
+                            <img src="${request.contextPath}/resources/dist/img/silueta.jpg" class="img-circle" alt="User Image"/>
+                        </div>
+                        <div class="pull-left info">
+                            <p>#{menuOP.usuario.nombreCompleto}</p>
+                            <!-- Status -->
+                            <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+                        </div>
+                    </div>
+
+                    
+                    <!-- /.search form -->
+                    <!-- Sidebar Menu -->
+                    <ul id="menu_lateral" class="sidebar-menu">
+                        <li class="header"><i class="fa fa-home"></i> INICIO</li>
+                        <!-- Optionally, you can add icons to the links -->
+                        <li class="treeview">
+                             <a href="#"><i class="fa fa-users fa-lg"></i> <span>Administracion</span> <i class="fa fa-angle-left pull-right"></i></a>
+                             <ul class="treeview-menu">
+                                 <c:forEach items="#{menuOP.menuAdministracion}" var="menua" step="1">
+                                     <li>
+                                      <a href="#" onclick="MenuForma('#{menua.idPagina.url}','#{menua.idPagina.nombre}', '');"> <i class="fa fa-angle-right"></i><span>#{menua.nombre} </span></a>                         
+                                                                        </li>
+                                     
+                                     
+                                      <!--<li><a href="#" onclick="MenuForma('faces/MantenimientoBodegas.xhtml', 'AJAX jQuery ServLet ', 'LLamada a un Servlet desde un ajax jQuery');"  ><i class="fa fa-link"></i> <span>Ejemplo AJAX</span></a></li>-->
+                                        </c:forEach>
+                             </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#"><i class="fa fa-gears fa-lg"></i> <span> Administrativo - Financiero</span> <i class="fa fa-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                               <li class="treeview">
+                                    <a href="#"><i class="fa fa-file"></i> <span>Financiero</span> <i class="fa fa-angle-left pull-right"></i></a>
+                                    <ul class="treeview-menu"> 
+                                       
+                                        <c:forEach items="#{menuOP.menuPapeletas}" var="menu">
+                                           <li>
+                                                <a href="#" onclick="MenuForma('#{menu.idPagina.url}','#{menu.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menu.nombre}    </a>
+                                            </li>
+                                        </c:forEach>
+                                           
+                                    </ul>
+                               
+                               </li>
+                               <li class="treeview">
+                                    <a href="#"><i class="fa fa-book fa-lg"></i> <span>Bodegas</span> <i class="fa fa-angle-left pull-right"></i></a>
+                                    <ul class="treeview-menu"> 
+                                        <c:forEach items="#{menuOP.menuDocumentos}" var="menud">
+                                            <li><a href="#" onclick="MenuForma('#{menud.idPagina.url}','#{menud.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menud.nombre} </a></li>
+                                        </c:forEach>
+                                    </ul>
+                               
+                               </li>
+                                <li class="treeview">
+                                    <a href="#"><i class="fa fa-clipboard fa-lg"></i> <span>Reportes Personal</span> <i class="fa fa-angle-left pull-right"></i></a>
+                                    <ul class="treeview-menu"> 
+                                        <c:forEach items="#{menuOP.menuPreimpresos}" var="menui">
+                                            <li><a href="#" onclick="MenuForma('#{menui.idPagina.url}','#{menui.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menui.nombre} </a></li>
+                                        </c:forEach>
+                                    </ul>
+                               
+                               </li>
+                                
+                                 <li class="treeview">
+                                    <a href="#"><i class="fa fa-bar-chart fa-lg"></i> <span>Reportes Talento Humano</span> <i class="fa fa-angle-left pull-right"></i></a>
+                                    <ul class="treeview-menu"> 
+                                        <c:forEach items="#{menuOP.menuReportes}" var="menur">
+                                            <li><a href="#" onclick="MenuForma('#{menur.idPagina.url}','#{menur.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menur.nombre} </a></li>
+                                        </c:forEach>
+                                    </ul>
+                               
+                               </li>
+                                
+                               
+                                
+                            </ul>
+                        </li>
+                    </ul>
+                    <!-- /.sidebar-menu -->
+                </section>
+                <!-- /.sidebar -->
+            </aside>
+           
+
+               
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                <section class="content-header">
+                    <h1 id="header_page_descript">
+                    </h1>
+                </section>
+                <section id="contenido" class="content" >
+                </section>
+            </div>
+            <!-- /.content-wrapper -->
+
+            <!-- Main Footer -->
+            <footer class="main-footer">
+                <!-- To the right -->
+                <div class="pull-right hidden-xs">
+
+
+                </div>
+                <!-- Default to the left -->
+                <strong>Copyright  2018 <a href="#">IGM</a>.</strong> Todos los derechos reservados.
+            </footer>
+
+            <!-- Control Sidebar -->
+           
+            <!-- /.control-sidebar -->
+            <!-- Add the sidebar's background. This div must be placed
+                 immediately after the control sidebar -->
+            <div class="control-sidebar-bg"></div>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- REQUIRED JS SCRIPTS -->
+
+        <!-- jQuery 2.1.4 -->
+        <!--<script src="${request.contextPath}/resources/plugins/jQuery/jQuery-2.1.4.min.js"></script>-->
+        
+        <!-- Bootstrap 3.3.5 -->
+        <script src="${request.contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>
+        <!-- AdminLTE App -->
+        <script src="${request.contextPath}/resources/dist/js/app.min.js"></script>
+        <script>
+            function MenuForma(forma, header_str, optional_str) {
+
+                $('#dvLoading').css("display", "inline");
+                $("#header_page_descript").empty();
+                $("#contenido").html("").load(forma, function (responseText, textStatus, jqXHR) {
+                    $("#header_page_descript").html(header_str + "<small>" + optional_str + "</small>");
+                    $('#dvLoading').css("display", "none");
+                });
+            }
+            $(document).ready(function () {
+
+            });
+        </script>
+        <!-- Optionally, you can add Slimscroll and FastClick plugins.
+             Both of these plugins are recommended to enhance the
+             user experience. Slimscroll is required when using the
+             fixed layout. -->
+    </h:body>
+</html>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <link href="#{facesContext.externalContext.context.contextPath}/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/tableLayout.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/cssLayout.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/fonts.googleapis.com.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/ace.min.css" rel="stylesheet" type="text/css" />
+        <link href="#{facesContext.externalContext.context.contextPath}/css/ace-rtl.min.css" rel="stylesheet" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <h:form id="frmUsuarios" >
+            <p:growl id="msgs" showDetail="true"  />
+            <div class="container">
+                <div>
+                    <div class="panel-heading sm-12" style="font-weight:bold"></div>
+                    <div class="row">
+                        <div class="clos-sm-8">
+                             
+                           <p:dataTable id="singleDT" rowKey="#{item.idUsuario}" value="#{usuarioOP.usuarios}" var="item" paginator="true" lazy="true" class="panel-heading sm-10" paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         selectionMode="single" selection="#{usuarioOP.usuarioSeleccionado}"  rows="15">
+                                <f:facet name="header">
+                                 
+                                    <p:commandButton value="#{General.agregarUsuario}" icon="ui-icon-plus" style="color: #7B1FA2;position: relative;right:43%" class="sm-8" onclick="PF('dlgRegistrarUsuarios').show();"/>
+                                </f:facet>
+                               
+                               <p:column headerText="#{General.idUsuario}">
+                                    <h:outputText value="#{item.idUsuario}"/>
+                                </p:column>
+                               <p:column headerText="#{General.usuario}">
+                                    <h:outputText value="#{item.usuario}"/>
+                                </p:column>
+                              <p:column headerText="#{General.nombreCompleto}">
+                                    <h:outputText value="#{item.nombreCompleto}"/>
+                                </p:column>
+                                
+                                 <p:column headerText="#{General.perfil}">
+                                    <h:outputText value="#{item.idPerfil.descripcion}"/>
+                                </p:column>
+                               
+                               <p:column headerText="#{General.idperfil}">
+                                   <h:outputText value="#{item.idPerfil.idperfil}"/>
+                                </p:column>
+                               
+                                 <f:facet name="footer">
+                                     <p:commandButton process="singleDT" update=":frmUsuarios:idPerfil2,:frmUsuarios:idUsuario2,:frmUsuarios:usuarioa,:frmUsuarios:nombreCompletoa,:frmUsuarios:passworda" icon="ui-icon-pencil" style="color: #7B1FA2;position: relative" class="sm-8" value="#{General.resetarPassword}" oncomplete="PF('dlgResetearPassword').show()"  />
+                                 </f:facet>
+                            </p:dataTable>
+
+
+                            <p:messages id="msgUsuario" showDetail="true" autoUpdate="true" closable="true" globalOnly="true"/>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p:dialog widgetVar="dlgResetearPassword" header="#{General.resetarPassword}" showHeader="false"  modal="false" fitViewport="false"  width="30%" >
+                <div class="panel panel-default">
+                    
+                    <div class="panel-heading" style="font-weight:bold">#{General.resetarPassword}</div>
+                    <div class="row">
+                        <div class="clos-sm-8">
+                            <div class="modal-body">
+                                <div class="form-group col-md-12">
+                                    <h:outputText value="#{General.usuario}:" class=" col-md-4 control-label"/>
+                                    <div class="col-md-6">
+                                        <h:outputText id="usuarioa" value="#{usuarioOP.usuarioSeleccionado.usuario}" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <h:outputText value="#{General.nombreCompleto}:" class=" col-md-4 control-label" />
+                                    <div class="col-md-6">
+                                        <h:outputText id="nombreCompletoa" value="#{usuarioOP.usuarioSeleccionado.nombreCompleto}" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <h:outputText value="#{General.idUsuario}:" class=" col-md-4 control-label" />
+                                    <div class="col-md-6">
+                                        <h:outputText id="idUsuario2" value="#{usuarioOP.usuarioSeleccionado.idUsuario}" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <h:outputText value="#{General.idperfil}:" class=" col-md-4 control-label" />
+                                    <div class="col-md-6">
+                                        <h:outputText id="idPerfil2" value="#{usuarioOP.usuarioSeleccionado.idPerfil.idperfil}" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <h:outputText value="#{General.password}:" class=" col-md-4 control-label" />
+                                    <div class="col-md-6">
+                                        <h:inputText id="passworda" value="#{usuarioOP.passwordCambiado}"/>
+
+                                    </div>
+                                </div>
+                                <div class=" col xs-8 col-md-8 col-lg-8">
+                                    <div class="col xs-4 col-md-4 col-lg-4">
+                                        <p:commandButton value="resetear" id="idresetear" class="btn-xs btn btn-info" icon="ui-icon-disk" actionListener="#{usuarioOP.resetearPassword}" update=":frmUsuarios" oncomplete="PF('dlgResetearPassword').hide();"/>              
+                                    </div>
+                                    <div class="col xs-4 col-md-4 col-lg-4 col-lg-4">
+                                        <p:commandButton value="#{General.cerrar}" id="idcerrara" class="btn-xs btn btn-success"  icon="ui-icon-close" oncomplete="PF('dlgResetearPassword').hide();"/>  	  
+                                    </div>                               
+                                </div>
+                            </div>
+                        </div>         
+                    </div>
+                    
+                   
+                </div>
+            </p:dialog>
+            
+           <p:dialog widgetVar="dlgRegistrarUsuarios" header="#{General.tituloPanelUsuarios}" showHeader="false"  modal="false" fitViewport="false" width="40%" >
+                <div class="panel panel-default">
+                    <div class="panel-heading" style="font-weight:bold">#{General.tituloPanelUsuario}</div>
+                    <div class="row">
+                        <div class="clos-sm-8">
+                            <div class="modal-body">
+                                <div class="form-group col-md-12">
+                                    <p:outputLabel value="#{General.usuario}:" for="usuario" class=" col-md-4 control-label"/>
+                                    <div class="col-md-6">
+                                        <p:inputText id="usuario" value="#{usuarioOP.usuario.usuario}" title="Usuario" placeholder="#{General.mensajeUsuario}" />
+                                    </div>
+                                </div>                                
+                                
+                                <div class="form-group col-md-12">
+                                    <p:outputLabel value="#{General.password}:" for="password" class=" col-md-4 control-label" />
+                                    <div class="col-md-6">
+                                        <p:inputText id="password" type="password" value="#{usuarioOP.usuario.password}" title="Password" placeholder="#{General.mensajePassword}" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <p:outputLabel value="#{General.nombreCompleto}:" for="nombreCompleto" class=" col-md-4 control-label" />
+                                    <div class="col-md-6">
+                                        <p:inputText id="nombreCompleto" value="#{usuarioOP.usuario.nombreCompleto}" title="NombreCompleto" placeholder="#{General.mensajeNombre}" />
+                                    </div>
+                                </div>       
+                                <div class="form-group col-md-12">
+                                    <p:outputLabel value="Tipo de Usuario:" class=" col-md-4 control-label"/>
+                                    <div class="col-md-6">
+                                    <p:selectOneMenu  id="tipoUsuario" value="#{usuarioOP.perfil.idperfil}"                                                
+                                                      required="false" >
+                                        <f:selectItem itemLabel="-- Seleccione Tipo Usuario --" noSelectionOption="true"/>
+                                        <f:selectItems value="#{usuarioOP.perfiles}" var="itemPerfil"
+                                                       itemLabel="#{itemPerfil.descripcion}"
+                                                       itemValue="#{itemPerfil.idperfil}" />                           
+                                    </p:selectOneMenu>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <div class=" col xs-8 col-md-8 col-lg-8">
+                                <div class="col xs-4 col-md-4 col-lg-4">
+
+                                    <p:commandButton value="#{General.guardar}" id="idguardar" class="btn-xs btn btn-info" icon="ui-icon-disk" actionListener="#{usuarioOP.ingresarUsuario}" update="frmUsuarios" oncomplete="PF('dlgRegistrarUsuarios').hide();"/>       
+
+                                </div>
+                                <div class="col xs-4 col-md-4 col-lg-4 col-lg-4">
+                                    <p:commandButton value="#{General.cerrar}" id="idcerrar" class="btn-xs btn btn-success"  icon="ui-icon-close" oncomplete="PF('dlgRegistrarUsuarios').hide();"/>  	  
+                                </div>
+                            </div>
+                        </div>         
+                    </div>
+                </div>	
+            </p:dialog>
+            
+             
+        </h:form>
+        <ui:include src="../sessionTimeOut.xhtml"/>
+    </h:body>
+</html>

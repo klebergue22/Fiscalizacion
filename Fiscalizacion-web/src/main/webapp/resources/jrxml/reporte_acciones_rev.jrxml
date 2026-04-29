@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_permisos" pageWidth="595" pageHeight="842" columnWidth="575" leftMargin="0" rightMargin="20" topMargin="0" bottomMargin="0" uuid="09b0713e-ddf6-49d1-b6a7-fd41b07f739a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="753"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="235"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="RHIGM"/>
+	<parameter name="ACCION" class="java.lang.String"/>
+	<parameter name="fondo2" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:/PROYECTO FISC/IMAGENES/accionr.JPEG"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT     
+    A.NOMBRE_C,
+    A.NO_CEDULA CEDULA_POSESIONADO,
+    B.NO_CAUCION, 
+    B.FECHA_CAUCION, 
+    B.OBS_CAUCION, 
+    B.PUESTO_REEMPLAZA, 
+    B.OBS_REEMPLAZA, 
+    B.NO_ACCION_REEMPLAZA, 
+    B.FECHA_ACCION_REEMPLAZA, 
+    B.COLEGIO_PROFESIONALES, 
+    B.NO_AFILIACION_COLEGIO, 
+    B.FECHA_AFILIACION, 
+    B.LUGAR_POSESION, 
+    B.FECHA_POSESION,
+    C.NOMBRE_C RESPONSABLE_ELABORACION,
+    D.NOMBRE_C RESPONSABLE_REVISION,              
+    E.NOMBRE_C RESPONSABLE_NOTIFICACION,
+    F.NOMBRE_C RESPONSABLE_REGISTROYCONTROL,    
+    P.DESCRIP CARGO_ELABORA,
+    Q.DESCRIP CARGO_REVISA,
+    R.DESCRIP CARGO_NOTIFICA,
+    S.DESCRIP CARGO_REYCO
+FROM     RH.T_ACCION_PERSONAL2025 B, 
+    RH.T_DAT_EMPLEADO A,     
+    RH.T_DAT_EMPLEADO C,       
+    RH.T_DAT_EMPLEADO D,
+    RH.T_DAT_EMPLEADO E,
+    RH.T_DAT_EMPLEADO F,    
+    RH.T_CONTRATACIONES X,
+    RH.T_CONTRATACIONES Y,
+    RH.T_CONTRATACIONES V,
+    RH.T_CONTRATACIONES W,        
+    RH.T_FUNCION         P,
+    RH.T_FUNCION         Q,
+    RH.T_FUNCION         R,
+    RH.T_FUNCION         S    
+WHERE A.NO_PERSONA (+) = B.NO_PERSONA     
+    AND C.NO_PERSONA (+) = B.NO_PERSONA_ELABORACION
+    AND D.NO_PERSONA (+) = B.NO_PERSONA_REVI
+    AND E.NO_PERSONA (+) = B.NO_PERSONA_NOTI
+    AND F.NO_PERSONA (+) = B.NO_PERSONA_REYCO
+    AND X.NO_PERSONA (+) = B.NO_PERSONA_ELABORACION
+    AND Y.NO_PERSONA (+) = B.NO_PERSONA_REVI
+    AND V.NO_PERSONA (+) = B.NO_PERSONA_NOTI
+    AND W.NO_PERSONA (+) = B.NO_PERSONA_REYCO
+    AND X.NO_FUNCION = P.NO_FUNCION  AND X.F_SALIDA IS NULL
+    AND Y.NO_FUNCION = Q.NO_FUNCION  AND Y.F_SALIDA IS NULL
+    AND V.NO_FUNCION = R.NO_FUNCION  AND V.F_SALIDA IS NULL
+    AND W.NO_FUNCION = S.NO_FUNCION  AND W.F_SALIDA IS NULL
+    AND B.NO_ACCION = $P{ACCION}]]>
+	</queryString>
+	<field name="NOMBRE_C" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="NOMBRE_C"/>
+		<property name="com.jaspersoft.studio.field.label" value="NOMBRE_C"/>
+	</field>
+	<field name="CEDULA_POSESIONADO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CEDULA_POSESIONADO"/>
+		<property name="com.jaspersoft.studio.field.label" value="CEDULA_POSESIONADO"/>
+	</field>
+	<field name="NO_CAUCION" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="NO_CAUCION"/>
+		<property name="com.jaspersoft.studio.field.label" value="NO_CAUCION"/>
+	</field>
+	<field name="FECHA_CAUCION" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="FECHA_CAUCION"/>
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_CAUCION"/>
+	</field>
+	<field name="OBS_CAUCION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OBS_CAUCION"/>
+		<property name="com.jaspersoft.studio.field.label" value="OBS_CAUCION"/>
+	</field>
+	<field name="PUESTO_REEMPLAZA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PUESTO_REEMPLAZA"/>
+		<property name="com.jaspersoft.studio.field.label" value="PUESTO_REEMPLAZA"/>
+	</field>
+	<field name="OBS_REEMPLAZA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OBS_REEMPLAZA"/>
+		<property name="com.jaspersoft.studio.field.label" value="OBS_REEMPLAZA"/>
+	</field>
+	<field name="NO_ACCION_REEMPLAZA" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="NO_ACCION_REEMPLAZA"/>
+		<property name="com.jaspersoft.studio.field.label" value="NO_ACCION_REEMPLAZA"/>
+	</field>
+	<field name="FECHA_ACCION_REEMPLAZA" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="FECHA_ACCION_REEMPLAZA"/>
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_ACCION_REEMPLAZA"/>
+	</field>
+	<field name="COLEGIO_PROFESIONALES" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="COLEGIO_PROFESIONALES"/>
+		<property name="com.jaspersoft.studio.field.label" value="COLEGIO_PROFESIONALES"/>
+	</field>
+	<field name="NO_AFILIACION_COLEGIO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="NO_AFILIACION_COLEGIO"/>
+		<property name="com.jaspersoft.studio.field.label" value="NO_AFILIACION_COLEGIO"/>
+	</field>
+	<field name="FECHA_AFILIACION" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="FECHA_AFILIACION"/>
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_AFILIACION"/>
+	</field>
+	<field name="LUGAR_POSESION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="LUGAR_POSESION"/>
+		<property name="com.jaspersoft.studio.field.label" value="LUGAR_POSESION"/>
+	</field>
+	<field name="FECHA_POSESION" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="FECHA_POSESION"/>
+		<property name="com.jaspersoft.studio.field.label" value="FECHA_POSESION"/>
+	</field>
+	<field name="RESPONSABLE_ELABORACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RESPONSABLE_ELABORACION"/>
+		<property name="com.jaspersoft.studio.field.label" value="RESPONSABLE_ELABORACION"/>
+	</field>
+	<field name="RESPONSABLE_REVISION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RESPONSABLE_REVISION"/>
+		<property name="com.jaspersoft.studio.field.label" value="RESPONSABLE_REVISION"/>
+	</field>
+	<field name="RESPONSABLE_NOTIFICACION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RESPONSABLE_NOTIFICACION"/>
+		<property name="com.jaspersoft.studio.field.label" value="RESPONSABLE_NOTIFICACION"/>
+	</field>
+	<field name="RESPONSABLE_REGISTROYCONTROL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RESPONSABLE_REGISTROYCONTROL"/>
+		<property name="com.jaspersoft.studio.field.label" value="RESPONSABLE_REGISTROYCONTROL"/>
+	</field>
+	<field name="CARGO_ELABORA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CARGO_ELABORA"/>
+		<property name="com.jaspersoft.studio.field.label" value="CARGO_ELABORA"/>
+	</field>
+	<field name="CARGO_REVISA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CARGO_REVISA"/>
+		<property name="com.jaspersoft.studio.field.label" value="CARGO_REVISA"/>
+	</field>
+	<field name="CARGO_NOTIFICA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CARGO_NOTIFICA"/>
+		<property name="com.jaspersoft.studio.field.label" value="CARGO_NOTIFICA"/>
+	</field>
+	<field name="CARGO_REYCO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CARGO_REYCO"/>
+		<property name="com.jaspersoft.studio.field.label" value="CARGO_REYCO"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="802" splitType="Stretch">
+			<image>
+				<reportElement x="1" y="0" width="595" height="802" uuid="ba5a5baa-c63f-40e4-8c13-0e2fdbbca024">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{fondo2}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="50" y="154" width="221" height="13" uuid="cbc334a4-86d5-4eb8-9fb4-bf9c76993ac5"/>
+				<textElement textAlignment="Center">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOMBRE_C}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="189" width="100" height="13" uuid="ad2be597-2663-40a3-bccf-effefef97829"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CEDULA_POSESIONADO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="172" width="100" height="13" uuid="580c1ae4-2c36-4a26-ad0a-b2afe2db1beb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{FECHA_POSESION} != null ? $F{FECHA_POSESION} : "")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="69" y="330" width="138" height="13" uuid="ef207424-8155-4669-8610-c2c358e6476b"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RESPONSABLE_ELABORACION}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="51" y="190" width="30" height="13" uuid="d8a7232a-20f7-431c-96e8-309c967f77ee"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[C.I.:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="403" y="330" width="152" height="13" uuid="6e2104b6-511f-4f8d-999c-b78154e68b47"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RESPONSABLE_REGISTROYCONTROL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="235" y="705" width="160" height="13" uuid="b0a3d108-7d62-4108-a401-5b92134b5fea">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RESPONSABLE_NOTIFICACION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="69" y="343" width="138" height="13" uuid="436826f8-9edb-450e-8d61-c954c199dc8b"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CARGO_ELABORA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="403" y="343" width="138" height="13" uuid="a5e4fac2-d79a-4d8c-8eee-979ffddf53d1"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CARGO_REYCO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="235" y="717" width="160" height="13" uuid="4e943289-2cc0-48c8-931e-58c8ab514e78">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CARGO_NOTIFICA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="230" y="343" width="138" height="13" uuid="cfeb6aec-7f56-4c67-9a43-8e78e531babf"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CARGO_REVISA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="230" y="330" width="152" height="13" uuid="9a8a76d1-0ef1-44e9-a9a5-cd631b974b07"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RESPONSABLE_REVISION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>
