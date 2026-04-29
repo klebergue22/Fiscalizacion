@@ -113,6 +113,29 @@ public class ReporteNoTimbradoControlador extends FacesUtil implements Serializa
             //log.error(e.getMessage(), e);
         }
     }
+
+    public void generarReporteOchoHorasSemanal() {
+        try {
+            this.setRenderBarra(true);
+
+            if (fechaDesde == null) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA"));
+            } else {
+                Map<String, Object> map = new HashMap<>();
+                Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1", "PERMISOS", "PERMIGM2012");
+                map.put("pathImagen", JasperReportUtil.PATH_IMAGES);
+                String fecha = formatoFecha.format(fechaDesde);
+                map.put("FechaDesde", fecha);
+
+                outputStream = JasperReportUtil.getOutputStreamFromReport(conexion, map, JasperReportUtil.PATH_REPORTE_OCHO_HORAS_SEMANAL);
+                media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
+                conexion.close();
+            }
+
+        } catch (Exception e) {
+            //log.error(e.getMessage(), e);
+        }
+    }
     
     
     public String getNameFilePdf() {
