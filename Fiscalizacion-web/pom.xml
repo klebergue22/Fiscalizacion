@@ -25,30 +25,24 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>Fiscalizacion-ejb</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rrhh</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>inventario-ejb</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>6.14.0</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports-functions</artifactId>
-            <version>6.20.5</version>
             <type>jar</type>
         </dependency>
         <dependency>
