@@ -176,9 +176,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <compilerArgs>
-                        <endorseddirs>${endorsed.dir}</endorseddirs>
-                    </compilerArgs>
                 </configuration>
             </plugin>
 <!--            <plugin>
