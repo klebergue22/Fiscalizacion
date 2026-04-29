@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_ocho_horas_semanal" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c6bfcf43-4b9f-4e49-a4df-3bc762f4af59">
+	<parameter name="pathImagen" class="java.lang.String"/>
+	<parameter name="FechaDesde" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT q.no_persona,
+       q.codigo,
+       q.nombre_c,
+       q.horas_semana
+  FROM (
+        SELECT e.no_persona,
+               TO_NUMBER(e.codigo) AS codigo,
+               e.nombre_c,
+               ROUND(SUM(d.horas_dia), 2) AS horas_semana
+          FROM t_dat_empleado e
+          JOIN t_contrataciones c ON c.no_persona = e.no_persona
+          JOIN (
+                SELECT r.codigo,
+                       TRUNC(r.fecha) AS fecha_dia,
+                       GREATEST((MAX(r.fecha) - MIN(r.fecha)) * 24, 0) AS horas_dia
+                  FROM reloj r
+                 WHERE TRUNC(r.fecha, 'IW') = TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY'), 'IW')
+                 GROUP BY r.codigo, TRUNC(r.fecha)
+               ) d ON d.codigo = TO_NUMBER(e.codigo)
+         WHERE c.estado = 'V'
+           AND c.c_contrato IN (28, 32)
+         GROUP BY e.no_persona, TO_NUMBER(e.codigo), e.nombre_c
+       ) q
+ WHERE q.horas_semana < 8
+ ORDER BY q.codigo]]>
+	</queryString>
+	<field name="NO_PERSONA" class="java.math.BigDecimal"/>
+	<field name="CODIGO" class="java.math.BigDecimal"/>
+	<field name="NOMBRE_C" class="java.lang.String"/>
+	<field name="HORAS_SEMANA" class="java.math.BigDecimal"/>
+	<title>
+		<band height="90">
+			<staticText>
+				<reportElement x="74" y="0" width="426" height="25" uuid="8f131077-b996-4563-82cf-f608f3e6637d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="18" isBold="true"/></textElement>
+				<text><![CDATA[INSTITUTO GEOGRAFICO MILITAR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="45" y="25" width="500" height="22" uuid="3e2280aa-b353-4046-a287-5596248454c0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="14" isBold="true"/></textElement>
+				<text><![CDATA[REPORTE DE PERSONAL QUE NO CUMPLE 8 HORAS (SEMANAL)]]></text>
+			</staticText>
+			<staticText><reportElement x="30" y="58" width="88" height="20" uuid="fe8b2f0b-1f16-4d32-9970-58643f7b53e2"/><text><![CDATA[Fecha Consulta:]]></text></staticText>
+			<textField><reportElement x="118" y="58" width="100" height="20" uuid="d7827b62-a989-45b2-b8cb-986994cee3ab"/><textFieldExpression><![CDATA[$P{FechaDesde}]]></textFieldExpression></textField>
+			<staticText><reportElement x="417" y="57" width="80" height="20" uuid="f8d6f4af-5e06-42b9-8ce1-a53f10f6c801"/><text><![CDATA[Fecha Reporte:]]></text></staticText>
+			<textField evaluationTime="Report" pattern="dd/MM/yyyy"><reportElement x="497" y="57" width="70" height="20" uuid="8bef7a82-4f75-4353-99e2-b1f00d117a9f"/><textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression></textField>
+			<image><reportElement x="0" y="0" width="60" height="47" uuid="1e27e58e-9879-4c30-9f2d-ab13c18487c4"/><imageExpression><![CDATA[$P{pathImagen}]]></imageExpression></image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="24">
+			<line><reportElement x="-10" y="1" width="577" height="1" forecolor="#4A17E3" uuid="7ca8f3ab-11e4-490d-9c9d-5782c96ac2fa"/></line>
+			<line><reportElement x="-9" y="22" width="577" height="1" forecolor="#1828B8" uuid="ad712cf0-cbe7-4833-82c0-1cd2db42b89a"/></line>
+			<staticText><reportElement x="3" y="4" width="97" height="15" uuid="5a0644f9-c75f-43b2-bf7f-d385a4fd2ea4"/><textElement textAlignment="Center"><font size="9" isBold="true"/></textElement><text><![CDATA[NRO. PERSONA]]></text></staticText>
+			<staticText><reportElement x="100" y="4" width="74" height="15" uuid="baac8eb2-9138-4ab8-aaf7-5f4cb0b71ebb"/><textElement textAlignment="Center"><font size="9" isBold="true"/></textElement><text><![CDATA[COD. TIMBRE]]></text></staticText>
+			<staticText><reportElement x="207" y="4" width="220" height="15" uuid="fc6b8a7d-c3cf-4f8d-a6f8-3c8074d31a16"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[EMPLEADO]]></text></staticText>
+			<staticText><reportElement x="430" y="4" width="120" height="15" uuid="03e68c57-74f0-4cc1-87a9-09a6f8fc76c4"/><textElement textAlignment="Center"><font size="9" isBold="true"/></textElement><text><![CDATA[HORAS SEMANA]]></text></staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14">
+			<textField><reportElement x="0" y="0" width="100" height="12" uuid="ed7b4f24-2381-4948-9d39-2e9d3a6f9298"/><textElement textAlignment="Center"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{NO_PERSONA}]]></textFieldExpression></textField>
+			<textField><reportElement x="101" y="0" width="74" height="12" uuid="ab56237a-e55f-4f84-ac32-d3adad6ee543"/><textElement textAlignment="Center"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{CODIGO}]]></textFieldExpression></textField>
+			<textField><reportElement x="207" y="0" width="212" height="12" uuid="2de568df-b6f0-4725-b7cc-744523f4de5f"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[$F{NOMBRE_C}]]></textFieldExpression></textField>
+			<textField pattern="#,##0.00"><reportElement x="430" y="0" width="120" height="12" uuid="b12f4234-f657-49ee-8cb5-a9e12ad3a3c0"/><textElement textAlignment="Center"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{HORAS_SEMANA}]]></textFieldExpression></textField>
+		</band>
+	</detail>
+</jasperReport>
