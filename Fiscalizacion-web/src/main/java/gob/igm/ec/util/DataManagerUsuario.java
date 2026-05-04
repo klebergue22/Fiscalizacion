@@ -1,7 +1,7 @@
 
 package gob.igm.ec.util;
 
-import gob.igm.ec.modelo.TUsuarios;
+import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
@@ -9,7 +9,9 @@ import javax.faces.bean.SessionScoped;
 
 @ManagedBean
 @SessionScoped
-public class DataManagerUsuario {
+public class DataManagerUsuario implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     //private TUsuarios usuario;
     private String usuario;
