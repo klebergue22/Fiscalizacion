@@ -62,7 +62,7 @@ public class ReportePermisoPersonal extends FacesUtil implements Serializable {
     @ManagedProperty("#{dataManagerUsuario}")
     private DataManagerUsuario usuarioManager;
     
-    @EJB
+    @EJB(lookup = "java:global/Fiscalizacion-ear-1.0/rrhh-1.0/DatosEmpleadoServicio!gob.igm.rh.servicio.DatosEmpleadoServicio")
     private DatosEmpleadoServicio datosEmpleadoEJB;    
     
     public ReportePermisoPersonal(){
