@@ -73,7 +73,7 @@ public class LoginOP extends FacesUtil implements Serializable {
                
             }
         } catch (Exception ex) {
-            regla = "#";
+            regla = null;
             //Logger.getLogger(BodegaOP.class.getName()).log(Level.SEVERE, null, ex);
             FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
             this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
