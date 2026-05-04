@@ -47,7 +47,7 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
     
     private List<VGestionesVigentes> listadoGestiones;
     
-    @EJB
+    @EJB(lookup = "java:global/Fiscalizacion-ear-1.0/rrhh-1.0/DatosEmpleadoServicio!gob.igm.rh.servicio.DatosEmpleadoServicio")
     private DatosEmpleadoServicio servicioListadoGestiones;  
     
     @PostConstruct

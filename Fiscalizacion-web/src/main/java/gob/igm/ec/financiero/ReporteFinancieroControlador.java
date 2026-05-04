@@ -64,8 +64,8 @@ private StreamedContent media;
             else  {
             Map<String, Object> map = new HashMap<>();
             
-            Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","FINANCIERO","oraclefin2010");
-            //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
+           // Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","FINANCIERO","oraclefin2010");
+            Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
             map.put("pathImagen",JasperReportUtil.PATH_IMAGES);
             
             map.put("CODIGO", this.codigo);

@@ -11,12 +11,9 @@ import gob.igm.ec.servicios.TUsuarioFacade;
 import gob.igm.ec.util.DataManagerUsuario;
 import gob.igm.ec.util.EncriptUtil;
 import gob.igm.ec.util.FacesUtil;
-import gob.igm.ec.util.SessionUtils;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.Serializable;
 import javax.ejb.EJB;
 import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -26,9 +23,11 @@ import javax.faces.bean.ViewScoped;
 @Named(value = "loginOP")
 @ViewScoped
 //@RequestScoped
-public class LoginOP extends FacesUtil {
+public class LoginOP extends FacesUtil implements Serializable {
     
-    private EncriptUtil encriptUtil;
+    private static final long serialVersionUID = 1L;
+    
+    private transient EncriptUtil encriptUtil;
     private String clave;
     private String aliasBase;
     private String mensaje;
@@ -51,11 +50,11 @@ public class LoginOP extends FacesUtil {
     }
     
     public String ingresar() {
-        String regla = "faces/inicial.xhtml";
+        String regla = "/inicial.xhtml?faces-redirect=true";
         //String regla="faces/welcomePrimefaces";
         //String regla = "/inicial.xhtml";
         try {
-            String cifrado = this.encriptUtil.getMD5(this.clave);
+            String cifrado = EncriptUtil.getMD5(this.clave);
             TUsuarios usuario = this.tUsuarioFacade.buscarUsuarioClave(this.aliasBase, cifrado);           
             
             if (usuario != null) {
@@ -95,7 +94,7 @@ public class LoginOP extends FacesUtil {
     
    public String cerrarSession1() {
     //public void cerrarSession() {
-         String regla = "faces/index.xhtml";
+         String regla = "/index.xhtml?faces-redirect=true";
         super.getRequest().getSession(true).invalidate();
          this.setRenderMensaje(false);
         return regla;
