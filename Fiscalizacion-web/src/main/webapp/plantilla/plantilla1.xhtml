@@ -261,8 +261,6 @@
                                
                                </li>
                                 
-                               
-                                
                             </ul>
                         </li>
                     </ul>
@@ -314,11 +312,19 @@
         <!-- AdminLTE App -->
         <script src="${request.contextPath}/resources/dist/js/app.min.js"></script>
         <script>
+            function normalizarUrlMenu(forma) {
+                var ruta = (forma || '').replace(/^\/+/, '');
+                while (ruta.indexOf('faces/') === 0) {
+                    ruta = ruta.substring('faces/'.length);
+                }
+                return '#{facesContext.externalContext.requestContextPath}/faces/' + ruta;
+            }
+
             function MenuForma(forma, header_str, optional_str) {
 
                 $('#dvLoading').css("display", "inline");
                 $("#header_page_descript").empty();
-                $("#contenido").html("").load(forma, function (responseText, textStatus, jqXHR) {
+                $("#contenido").html("").load(normalizarUrlMenu(forma), function (responseText, textStatus, jqXHR) {
                     $("#header_page_descript").html(header_str + "<small>" + optional_str + "</small>");
                     $('#dvLoading').css("display", "none");
                 });
