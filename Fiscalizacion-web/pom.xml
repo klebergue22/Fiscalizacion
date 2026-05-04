@@ -145,6 +145,24 @@
             <artifactId>jasperreports-fonts</artifactId>
             <version>6.5.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.igm</groupId>
+            <artifactId>Fiscalizacion-ejb</artifactId>
+            <version>1.0</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>com.igm</groupId>
+            <artifactId>rrhh</artifactId>
+            <version>1.0</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>com.igm</groupId>
+            <artifactId>inventario-ejb</artifactId>
+            <version>1.0</version>
+            <type>ejb</type>
+        </dependency>
     </dependencies>
 
  
