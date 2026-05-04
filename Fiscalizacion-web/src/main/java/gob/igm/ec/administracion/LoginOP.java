@@ -12,9 +12,10 @@ import gob.igm.ec.util.DataManagerUsuario;
 import gob.igm.ec.util.EncriptUtil;
 import gob.igm.ec.util.FacesUtil;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.inject.Named;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -26,6 +27,7 @@ import javax.faces.bean.ViewScoped;
 public class LoginOP extends FacesUtil implements Serializable {
     
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(LoginOP.class.getName());
     
     private transient EncriptUtil encriptUtil;
     private String clave;
@@ -70,15 +72,16 @@ public class LoginOP extends FacesUtil implements Serializable {
                 menuOP.cargarMenus();
                 this.setMensaje("");
                 this.setRenderMensaje(false);
-               
+            } else {
+                regla = null;
+                this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
+                this.setRenderMensaje(true);
             }
         } catch (Exception ex) {
-            regla = "#";
-            //Logger.getLogger(BodegaOP.class.getName()).log(Level.SEVERE, null, ex);
-            FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
+            regla = null;
+            LOGGER.log(Level.SEVERE, "Error al validar credenciales de usuario", ex);
             this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
             this.setRenderMensaje(true);
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, super.getRecursoGeneral().getString("msgErrorLogin"), ""));
         }
         return regla;
     }
