@@ -66,6 +66,11 @@
                                      update="frmRepNoTimbrado" process="@all"
                                      actionListener="#{reporteNoTimbradoControlador.generarReporteNoTimbradoLosep()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1"  />
                 </div>
+                <div class="col-lg-3 col-md-3">
+                    <p:commandButton value="No cumple 8 horas (semanal)" class="btn-xs btn btn-warning"
+                                     update="frmRepNoTimbrado" process="@all"
+                                     actionListener="#{reporteNoTimbradoControlador.generarReporteOchoHorasSemanal()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1" />
+                </div>
             </div>  
             
             <br /><br />
