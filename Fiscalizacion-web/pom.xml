@@ -26,18 +26,21 @@
             <artifactId>Fiscalizacion-ejb</artifactId>
             <version>${project.version}</version>
             <type>ejb</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rrhh</artifactId>
             <version>${project.version}</version>
             <type>ejb</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>inventario-ejb</artifactId>
             <version>${project.version}</version>
             <type>ejb</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
@@ -192,11 +195,6 @@
     <version>3.4.0</version>
     <configuration>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <archive>
-            <manifestEntries>
-                <Class-Path>Fiscalizacion-ejb-1.0.jar rrhh-1.0.jar inventario-ejb-1.0.jar</Class-Path>
-            </manifestEntries>
-        </archive>
     </configuration>
 </plugin>
             <plugin>
