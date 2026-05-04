@@ -56,7 +56,7 @@ public class ReporteAccionPerControlador extends FacesUtil implements Serializab
     private List<VDatoEmp> listaEmpleados;
     private List<VAccionesPer> listaAcciones;
     
-    @EJB(lookup = "java:global/Fiscalizacion-ear-1.0/rrhh-1.0/DatosEmpleadoServicio!gob.igm.rh.servicio.DatosEmpleadoServicio")
+    @EJB(name = "gob.igm.ec.reportes.ReporteAccionPerControlador/datosEmpleadoEJB", lookup = "java:global/Fiscalizacion-ear-1.0/rrhh-1.0/DatosEmpleadoServicio!gob.igm.rh.servicio.DatosEmpleadoServicio")
     private DatosEmpleadoServicio datosEmpleadoEJB;    
 
     

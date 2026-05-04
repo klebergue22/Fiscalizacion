@@ -56,7 +56,7 @@ private String codigoTimbre;
 
 private List<VDatoEmp> listaEmpleado;
 
-@EJB(lookup = "java:global/Fiscalizacion-ear-1.0/rrhh-1.0/DatosEmpleadoServicio!gob.igm.rh.servicio.DatosEmpleadoServicio")
+@EJB(name = "gob.igm.ec.reportes.ReporteTimbradoPersonal/datosEmpleadoEJB", lookup = "java:global/Fiscalizacion-ear-1.0/rrhh-1.0/DatosEmpleadoServicio!gob.igm.rh.servicio.DatosEmpleadoServicio")
 private DatosEmpleadoServicio datosEmpleadoEJB;    
 
 @ManagedProperty("#{dataManagerUsuario}")
