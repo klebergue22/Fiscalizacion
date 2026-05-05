@@ -63,14 +63,35 @@ public class ReporteOchoHorasSemanalControlador extends FacesUtil implements Ser
 
     public void downloadFile() {
         try {
+            if (fechaDesde == null || fechaHasta == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE GENERAR EL REPORTE CON FECHA INICIO Y FECHA FIN"));
+                return;
+            }
+
+            if (fechaHasta.before(fechaDesde)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "LA FECHA FIN NO PUEDE SER MENOR A LA FECHA INICIO"));
+                return;
+            }
+
+            outputStream = reporteOchoHorasSemanalServicio.generar(fechaDesde, fechaHasta);
+            if (outputStream == null || outputStream.size() == 0) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF"));
+                return;
+            }
+
             FacesContext facesContext = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
             response.reset();
             response.setContentType("application/pdf");
             response.setHeader("Content-disposition", "attachment; filename=" + getNameFilePdf() + ".pdf");
+            response.setContentLength(outputStream.size());
 
             OutputStream output = response.getOutputStream();
             output.write(outputStream.toByteArray());
+            output.flush();
             output.close();
 
             facesContext.responseComplete();
