@@ -4,8 +4,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:p="http://primefaces.org/ui">
    <h:head>
      
         <link href="#{facesContext.externalContext.context.contextPath}/css/default.css" rel="stylesheet" type="text/css" />
@@ -66,19 +65,11 @@
                                      update="frmRepNoTimbrado" process="@all"
                                      actionListener="#{reporteNoTimbradoControlador.generarReporteNoTimbradoLosep()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1"  />
                 </div>
-                <div class="col-lg-3 col-md-3">
-                    <p:commandButton value="No cumple 8 horas (semanal)" class="btn-xs btn btn-warning"
-                                     update="frmRepNoTimbrado" process="@all"
-                                     actionListener="#{reporteOchoHorasSemanalControlador.generarReporteOchoHorasSemanal()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1" >
-                        <f:setPropertyActionListener target="#{reporteOchoHorasSemanalControlador.fechaDesde}" value="#{reporteNoTimbradoControlador.fechaDesde}" />
-                    </p:commandButton>
-                </div>
             </div>  
             
             <br /><br />
             <p:progressBar id="progressBarClient" widgetVar="pbClient" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
             <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteNoTimbradoControlador.media ne null}" width="1400" height="800" value="#{reporteNoTimbradoControlador.media}" player="pdf"/>
-            <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteOchoHorasSemanalControlador.media ne null}" width="1400" height="800" value="#{reporteOchoHorasSemanalControlador.media}" player="pdf"/>
   
         </h:form>
       </p:panel>
