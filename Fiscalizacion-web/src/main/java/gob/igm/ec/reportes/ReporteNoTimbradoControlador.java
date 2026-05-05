@@ -62,8 +62,8 @@ public class ReporteNoTimbradoControlador extends FacesUtil implements Serializa
             } else  {
             Map<String, Object> map = new HashMap<>();
             
-          //  Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","PERMISOS","PERMIGM2012");
-            Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
+            Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","PERMISOS","PERMIGM2012");
+            //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
             map.put("pathImagen",JasperReportUtil.PATH_IMAGES);            
             String fecha=formatoFecha.format(fechaDesde);
            // String fecha2=formatoFecha.format(fechaHasta);
@@ -113,7 +113,8 @@ public class ReporteNoTimbradoControlador extends FacesUtil implements Serializa
             //log.error(e.getMessage(), e);
         }
     }
-
+    
+    
     public String getNameFilePdf() {
         return "reporteNoTimbrados";
     }
