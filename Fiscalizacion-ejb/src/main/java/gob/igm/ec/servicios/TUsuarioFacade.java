@@ -6,6 +6,7 @@
 package gob.igm.ec.servicios;
 
 import gob.igm.ec.dao.CrudDAO;
+import gob.igm.ec.modelo.TPerfil;
 import gob.igm.ec.modelo.TUsuarios;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -60,9 +61,9 @@ public class TUsuarioFacade extends CrudDAO {
             final boolean tieneEstado = this.tieneColumnaEstado();
             final String sql = tieneEstado
                     ? "SELECT ID_USUARIO, USUARIO, PASSWORD, NOMBRE_COMPLETO, PERFIL, DIGNIDAD, ID_DIGNIDAD, BODEGA, ID_PERFIL, ESTADO "
-                    + "FROM T_USUARIOS WHERE USUARIO = ? AND PASSWORD = ?"
+                    + "FROM FISCALIZACION.T_USUARIOS WHERE USUARIO = ? AND PASSWORD = ?"
                     : "SELECT ID_USUARIO, USUARIO, PASSWORD, NOMBRE_COMPLETO, PERFIL, DIGNIDAD, ID_DIGNIDAD, BODEGA, ID_PERFIL "
-                    + "FROM T_USUARIOS WHERE USUARIO = ? AND PASSWORD = ?";
+                    + "FROM FISCALIZACION.T_USUARIOS WHERE USUARIO = ? AND PASSWORD = ?";
 
             Query query = super.em.createNativeQuery(sql);
             query.setParameter(1, usuario);
@@ -78,10 +79,11 @@ public class TUsuarioFacade extends CrudDAO {
             tu.setDignidad((String) row[5]);
             tu.setIdDignidad(this.toBigInteger(row[6]));
             tu.setBodega(this.toBigInteger(row[7]));
+            tu.setIdPerfil(row[8] != null ? new TPerfil((BigDecimal) row[8]) : null);
             tu.setEstado(tieneEstado ? this.toBigInteger(row[9]) : null);
             return tu;
         } catch (NoResultException e) {
-            throw new Exception(e.getMessage(), e);
+            return null;
         } catch (NonUniqueResultException e) {
             throw new Exception(e.getMessage(), e);
         } catch (Exception e) {
@@ -103,7 +105,7 @@ public class TUsuarioFacade extends CrudDAO {
     }
 
     private boolean tieneColumnaEstado() {
-        Query query = super.em.createNativeQuery("SELECT COUNT(1) FROM ALL_TAB_COLUMNS WHERE OWNER = USER AND TABLE_NAME = 'T_USUARIOS' AND COLUMN_NAME = 'ESTADO'");
+        Query query = super.em.createNativeQuery("SELECT COUNT(1) FROM ALL_TAB_COLUMNS WHERE OWNER = 'FISCALIZACION' AND TABLE_NAME = 'T_USUARIOS' AND COLUMN_NAME = 'ESTADO'");
         Number total = (Number) query.getSingleResult();
         return total != null && total.intValue() > 0;
     }
