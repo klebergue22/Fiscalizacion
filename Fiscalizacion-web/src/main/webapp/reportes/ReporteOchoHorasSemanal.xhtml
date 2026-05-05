@@ -45,7 +45,7 @@
             <div class="form-group col-md-12">
                 <p:outputLabel value="Fecha: " class=" col-lg-1 col-md-1 control-label"/>
                 <div class="col-lg-3 col-md-3">
-                    <p:calendar id="cldFecha" value="#{reporteOchoHorasSemanalControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                    <p:calendar id="cldFecha" value="#{reporteOchoHorasSemanalControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="c-20:c+5"/>
                 </div>
             </div>
 
