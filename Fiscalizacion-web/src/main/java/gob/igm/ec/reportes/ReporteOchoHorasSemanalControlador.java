@@ -67,7 +67,7 @@ public class ReporteOchoHorasSemanalControlador extends FacesUtil implements Ser
             HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
             response.reset();
             response.setContentType("application/pdf");
-            response.setHeader("Content-disposition", "attachment; filename=" + getNameFilePdf());
+            response.setHeader("Content-disposition", "attachment; filename=" + getNameFilePdf() + ".pdf");
 
             OutputStream output = response.getOutputStream();
             output.write(outputStream.toByteArray());
