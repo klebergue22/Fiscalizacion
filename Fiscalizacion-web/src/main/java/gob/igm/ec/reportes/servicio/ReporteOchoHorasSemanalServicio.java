@@ -20,10 +20,11 @@ public class ReporteOchoHorasSemanalServicio {
 
     private final DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
 
-    public ByteArrayOutputStream generar(Date fechaDesde) throws Exception {
+    public ByteArrayOutputStream generar(Date fechaDesde, Date fechaHasta) throws Exception {
         Map<String, Object> parametros = new HashMap<>();
         parametros.put("pathImagen", JasperReportUtil.PATH_IMAGES);
         parametros.put("FechaDesde", formatoFecha.format(fechaDesde));
+        parametros.put("FechaHasta", formatoFecha.format(fechaHasta));
 
         try (Connection conexion = DriverManager.getConnection(URL, USER, PASSWORD)) {
             return JasperReportUtil.getOutputStreamFromReport(conexion, parametros, JasperReportUtil.PATH_REPORTE_OCHO_HORAS_SEMANAL);

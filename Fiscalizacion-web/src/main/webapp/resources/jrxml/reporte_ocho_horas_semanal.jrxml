@@ -2,6 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_ocho_horas_semanal" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c6bfcf43-4b9f-4e49-a4df-3bc762f4af59">
 	<parameter name="pathImagen" class="java.lang.String"/>
 	<parameter name="FechaDesde" class="java.lang.String"/>
+	<parameter name="FechaHasta" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT q.no_persona,
        q.codigo,
@@ -229,10 +230,10 @@
                ) em
           LEFT JOIN inventarios.t_areas ar ON ar.no_cd = em.no_cd
           CROSS JOIN (
-                SELECT TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY'), 'IW') + LEVEL - 1 AS fecha,
-                       TRIM(TO_CHAR(TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY'), 'IW') + LEVEL - 1, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH')) AS dia_semana
+                SELECT TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1 AS fecha,
+                       TRIM(TO_CHAR(TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH')) AS dia_semana
                   FROM dual
-               CONNECT BY LEVEL <= 5
+               CONNECT BY LEVEL <= TRUNC(TO_DATE($P{FechaHasta}, 'DD/MM/YYYY')) - TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + 1
                ) cal
           LEFT JOIN rh.turnos t
             ON t.codigo = em.codigo
@@ -268,19 +269,21 @@
 	<title>
 		<band height="90">
 			<staticText>
-				<reportElement x="74" y="0" width="426" height="25" uuid="8f131077-b996-4563-82cf-f608f3e6637d"/>
+				<reportElement x="70" y="0" width="650" height="25" uuid="8f131077-b996-4563-82cf-f608f3e6637d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="18" isBold="true"/></textElement>
 				<text><![CDATA[INSTITUTO GEOGRAFICO MILITAR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="45" y="25" width="500" height="22" uuid="3e2280aa-b353-4046-a287-5596248454c0"/>
+				<reportElement x="70" y="25" width="650" height="22" uuid="3e2280aa-b353-4046-a287-5596248454c0"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="14" isBold="true"/></textElement>
-				<text><![CDATA[REPORTE DE PERSONAL QUE NO CUMPLE 8 HORAS (SEMANAL)]]></text>
+				<text><![CDATA[PERSONAL QUE NO CUMPLE OCHO HORAS DE TRABAJO]]></text>
 			</staticText>
-			<staticText><reportElement x="30" y="58" width="88" height="20" uuid="fe8b2f0b-1f16-4d32-9970-58643f7b53e2"/><text><![CDATA[Fecha Consulta:]]></text></staticText>
-			<textField><reportElement x="118" y="58" width="100" height="20" uuid="d7827b62-a989-45b2-b8cb-986994cee3ab"/><textFieldExpression><![CDATA[$P{FechaDesde}]]></textFieldExpression></textField>
-			<staticText><reportElement x="417" y="57" width="80" height="20" uuid="f8d6f4af-5e06-42b9-8ce1-a53f10f6c801"/><text><![CDATA[Fecha Reporte:]]></text></staticText>
-			<textField evaluationTime="Report" pattern="dd/MM/yyyy"><reportElement x="497" y="57" width="70" height="20" uuid="8bef7a82-4f75-4353-99e2-b1f00d117a9f"/><textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression></textField>
+			<staticText><reportElement x="30" y="58" width="80" height="20" uuid="fe8b2f0b-1f16-4d32-9970-58643f7b53e2"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha inicio:]]></text></staticText>
+			<textField><reportElement x="112" y="58" width="80" height="20" uuid="d7827b62-a989-45b2-b8cb-986994cee3ab"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[$P{FechaDesde}]]></textFieldExpression></textField>
+			<staticText><reportElement x="205" y="58" width="70" height="20" uuid="df732654-a330-4183-8f8f-90bbfe0d279d"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha fin:]]></text></staticText>
+			<textField><reportElement x="272" y="58" width="80" height="20" uuid="18b62bc4-464a-4c4e-b83c-951034752a4d"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[$P{FechaHasta}]]></textFieldExpression></textField>
+			<staticText><reportElement x="600" y="57" width="82" height="20" uuid="f8d6f4af-5e06-42b9-8ce1-a53f10f6c801"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha reporte:]]></text></staticText>
+			<textField evaluationTime="Report" pattern="dd/MM/yyyy"><reportElement x="684" y="57" width="70" height="20" uuid="8bef7a82-4f75-4353-99e2-b1f00d117a9f"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression></textField>
 			<image><reportElement x="0" y="0" width="60" height="47" uuid="1e27e58e-9879-4c30-9f2d-ab13c18487c4"/><imageExpression><![CDATA[$P{pathImagen}]]></imageExpression></image>
 		</band>
 	</title>
@@ -292,12 +295,12 @@
 			<staticText><reportElement x="47" y="4" width="70" height="15" uuid="baac8eb2-9138-4ab8-aaf7-5f4cb0b71ebb"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
 			<staticText><reportElement x="120" y="4" width="65" height="15" uuid="fc6b8a7d-c3cf-4f8d-a6f8-3c8074d31a16"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
 			<staticText><reportElement x="188" y="4" width="190" height="15" uuid="03e68c57-74f0-4cc1-87a9-09a6f8fc76c4"/><textElement><font size="8" isBold="true"/></textElement><text><![CDATA[EMPLEADO]]></text></staticText>
-			<staticText><reportElement x="382" y="4" width="75" height="15" uuid="1e3c3201-d9f3-4d5c-b873-f560fda65301"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[HORARIO]]></text></staticText>
-			<staticText><reportElement x="460" y="4" width="54" height="15" uuid="3c10ef99-2a1d-4ab9-b34f-74c7f24568ef"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[INICIO]]></text></staticText>
-			<staticText><reportElement x="517" y="4" width="50" height="15" uuid="7d949c2f-54cc-40e6-9115-66eced61f143"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[FIN]]></text></staticText>
-			<staticText><reportElement x="570" y="4" width="45" height="15" uuid="5ec4e710-293c-4ddb-a840-6565af5fa8ed"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[HORAS]]></text></staticText>
-			<staticText><reportElement x="618" y="4" width="62" height="15" uuid="89ac7253-f16a-4fa3-a123-a2816ff827a1"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[TARDE]]></text></staticText>
-			<staticText><reportElement x="683" y="4" width="118" height="15" uuid="93b189d1-34fc-48da-9fd5-064eeaaf217c"/><textElement><font size="8" isBold="true"/></textElement><text><![CDATA[TIMBRES / PERMISOS]]></text></staticText>
+			<staticText><reportElement x="382" y="4" width="78" height="15" uuid="1e3c3201-d9f3-4d5c-b873-f560fda65301"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[HORARIO]]></text></staticText>
+			<staticText><reportElement x="463" y="4" width="50" height="15" uuid="3c10ef99-2a1d-4ab9-b34f-74c7f24568ef"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[H. INI]]></text></staticText>
+			<staticText><reportElement x="516" y="4" width="50" height="15" uuid="7d949c2f-54cc-40e6-9115-66eced61f143"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[H. FIN]]></text></staticText>
+			<staticText><reportElement x="569" y="4" width="45" height="15" uuid="5ec4e710-293c-4ddb-a840-6565af5fa8ed"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[H. TRAB.]]></text></staticText>
+			<staticText><reportElement x="617" y="4" width="63" height="15" uuid="89ac7253-f16a-4fa3-a123-a2816ff827a1"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[MIN. TARDE]]></text></staticText>
+			<staticText><reportElement x="683" y="4" width="118" height="15" uuid="93b189d1-34fc-48da-9fd5-064eeaaf217c"/><textElement><font size="8" isBold="true"/></textElement><text><![CDATA[DETALLE]]></text></staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -306,12 +309,12 @@
 			<textField pattern="dd/MM/yyyy"><reportElement x="47" y="0" width="70" height="12" uuid="ab56237a-e55f-4f84-ac32-d3adad6ee543"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
 			<textField><reportElement x="120" y="0" width="65" height="12" uuid="2de568df-b6f0-4725-b7cc-744523f4de5f"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{DIA_SEMANA}]]></textFieldExpression></textField>
 			<textField><reportElement x="188" y="0" width="190" height="12" uuid="b12f4234-f657-49ee-8cb5-a9e12ad3a3c0"/><textElement><font size="7"/></textElement><textFieldExpression><![CDATA[$F{NOMBRE_C}]]></textFieldExpression></textField>
-			<textField><reportElement x="382" y="0" width="75" height="12" uuid="4f46083f-b2e0-4eb7-a7db-df21f610ec04"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_TRABAJO}]]></textFieldExpression></textField>
-			<textField><reportElement x="460" y="0" width="54" height="12" uuid="773b9681-74ef-4243-a487-d1193c7243ec"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{HORA_INICIO}]]></textFieldExpression></textField>
-			<textField><reportElement x="517" y="0" width="50" height="12" uuid="b21f16fd-f435-41bd-8053-e0a0be03f94a"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{HORA_FIN}]]></textFieldExpression></textField>
-			<textField pattern="#,##0.00"><reportElement x="570" y="0" width="45" height="12" uuid="be503c84-b787-4e8d-96da-1669e5d2a2ff"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{HORAS_TRABAJADAS}]]></textFieldExpression></textField>
-			<textField><reportElement x="618" y="0" width="62" height="12" uuid="314a98b8-83b0-4f1b-87bb-d94717598df0"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{MINUTOS_TARDE}]]></textFieldExpression></textField>
-			<textField isStretchWithOverflow="true"><reportElement x="683" y="0" width="118" height="26" uuid="9a68f3eb-c05d-441e-8512-9159a7adee3a"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DETALLE_TIMBRES} + " / " + $F{DETALLE_PERMISOS}]]></textFieldExpression></textField>
+			<textField><reportElement x="382" y="0" width="78" height="12" uuid="4f46083f-b2e0-4eb7-a7db-df21f610ec04"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_TRABAJO}]]></textFieldExpression></textField>
+			<textField><reportElement x="463" y="0" width="50" height="12" uuid="773b9681-74ef-4243-a487-d1193c7243ec"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{HORA_INICIO}]]></textFieldExpression></textField>
+			<textField><reportElement x="516" y="0" width="50" height="12" uuid="b21f16fd-f435-41bd-8053-e0a0be03f94a"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{HORA_FIN}]]></textFieldExpression></textField>
+			<textField pattern="#,##0.00"><reportElement x="569" y="0" width="45" height="12" uuid="be503c84-b787-4e8d-96da-1669e5d2a2ff"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{HORAS_TRABAJADAS}]]></textFieldExpression></textField>
+			<textField><reportElement x="617" y="0" width="63" height="12" uuid="314a98b8-83b0-4f1b-87bb-d94717598df0"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{MINUTOS_TARDE}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="683" y="0" width="118" height="26" uuid="9a68f3eb-c05d-441e-8512-9159a7adee3a"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA["Timbres: " + $F{DETALLE_TIMBRES} + "\nPermisos: " + $F{DETALLE_PERMISOS}]]></textFieldExpression></textField>
 		</band>
 	</detail>
 </jasperReport>

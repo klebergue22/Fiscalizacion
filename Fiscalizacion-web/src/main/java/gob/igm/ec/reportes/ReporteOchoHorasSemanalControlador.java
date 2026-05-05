@@ -24,6 +24,7 @@ public class ReporteOchoHorasSemanalControlador extends FacesUtil implements Ser
     private boolean renderBarra;
     private String path;
     private Date fechaDesde;
+    private Date fechaHasta;
 
     @EJB
     private ReporteOchoHorasSemanalServicio reporteOchoHorasSemanalServicio;
@@ -37,13 +38,19 @@ public class ReporteOchoHorasSemanalControlador extends FacesUtil implements Ser
         try {
             this.renderBarra = true;
 
-            if (fechaDesde == null) {
+            if (fechaDesde == null || fechaHasta == null) {
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA"));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA INICIO Y FECHA FIN"));
                 return;
             }
 
-            outputStream = reporteOchoHorasSemanalServicio.generar(fechaDesde);
+            if (fechaHasta.before(fechaDesde)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "LA FECHA FIN NO PUEDE SER MENOR A LA FECHA INICIO"));
+                return;
+            }
+
+            outputStream = reporteOchoHorasSemanalServicio.generar(fechaDesde, fechaHasta);
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
         } catch (Exception e) {
             //log.error(e.getMessage(), e);
@@ -102,5 +109,13 @@ public class ReporteOchoHorasSemanalControlador extends FacesUtil implements Ser
 
     public void setFechaDesde(Date fechaDesde) {
         this.fechaDesde = fechaDesde;
+    }
+
+    public Date getFechaHasta() {
+        return fechaHasta;
+    }
+
+    public void setFechaHasta(Date fechaHasta) {
+        this.fechaHasta = fechaHasta;
     }
 }

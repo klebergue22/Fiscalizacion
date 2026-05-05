@@ -43,15 +43,19 @@
             <p:growl id="msgs" showDetail="true"  />
 
             <div class="form-group col-md-12">
-                <p:outputLabel value="Fecha: " class=" col-lg-1 col-md-1 control-label"/>
-                <div class="col-lg-3 col-md-3">
-                    <p:calendar id="cldFecha" value="#{reporteOchoHorasSemanalControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="c-20:c+5"/>
+                <p:outputLabel value="Fecha Inicio: " class=" col-lg-1 col-md-1 control-label"/>
+                <div class="col-lg-2 col-md-2">
+                    <p:calendar id="cldFechaInicio" value="#{reporteOchoHorasSemanalControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="c-20:c+5"/>
+                </div>
+                <p:outputLabel value="Fecha Fin: " class=" col-lg-1 col-md-1 control-label"/>
+                <div class="col-lg-2 col-md-2">
+                    <p:calendar id="cldFechaFin" value="#{reporteOchoHorasSemanalControlador.fechaHasta}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="c-20:c+5"/>
                 </div>
             </div>
 
             <div class="form-group col-md-12">
-                <div class="col-lg-3 col-md-3">
-                    <p:commandButton value="Personal que no ha cumplido con las ocho horas de trabajo, (semanal)" class="btn-xs btn btn-warning"
+                <div class="col-lg-5 col-md-5">
+                    <p:commandButton value="Generar reporte de incumplimiento de ocho horas" class="btn-xs btn btn-warning"
                                      update="frmRepOchoHoras" process="@all"
                                      actionListener="#{reporteOchoHorasSemanalControlador.generarReporteOchoHorasSemanal()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1" />
                 </div>
