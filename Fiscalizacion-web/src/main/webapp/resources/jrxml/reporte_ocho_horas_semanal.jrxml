@@ -245,9 +245,8 @@
            AND (ha.fecha_desde IS NULL OR cal.fecha >= ha.fecha_desde)
            AND (ha.fecha_hasta IS NULL OR cal.fecha <= ha.fecha_hasta)
        ) q
- WHERE q.horas_trabajadas < 8
-    OR q.hora_inicio IS NULL
-    OR q.hora_fin IS NULL
+ WHERE q.horas_trabajadas > 0
+   AND q.horas_trabajadas < 8
  ORDER BY q.nombre_c, q.fecha]]>
 	</queryString>
 	<field name="NO_PERSONA" class="java.math.BigDecimal"/>
