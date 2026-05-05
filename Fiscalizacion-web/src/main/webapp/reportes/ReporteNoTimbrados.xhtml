@@ -4,7 +4,8 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
    <h:head>
      
         <link href="#{facesContext.externalContext.context.contextPath}/css/default.css" rel="stylesheet" type="text/css" />
@@ -64,7 +65,7 @@
                     <p:commandButton value="No Timbrados LOSEP" class="btn-xs btn btn-info" 
                                      update="frmRepNoTimbrado" process="@all"
                                      actionListener="#{reporteNoTimbradoControlador.generarReporteNoTimbradoLosep()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1"  />
-                </div>
+                </div>               
             </div>  
             
             <br /><br />

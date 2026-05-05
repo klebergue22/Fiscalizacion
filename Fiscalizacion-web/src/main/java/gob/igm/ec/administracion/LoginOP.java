@@ -51,19 +51,12 @@ public class LoginOP extends FacesUtil {
     }
     
     public String ingresar() {
-        String regla = "#";
+        String regla = "faces/inicial.xhtml";
         //String regla="faces/welcomePrimefaces";
         //String regla = "/inicial.xhtml";
         try {
-            if (this.aliasBase == null || this.aliasBase.trim().isEmpty()
-                    || this.clave == null || this.clave.trim().isEmpty()) {
-                this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
-                this.setRenderMensaje(true);
-                return regla;
-            }
-
-            String cifrado = this.encriptUtil.getMD5(this.clave.trim());
-            TUsuarios usuario = this.tUsuarioFacade.buscarUsuarioClave(this.aliasBase.trim(), cifrado);
+            String cifrado = this.encriptUtil.getMD5(this.clave);
+            TUsuarios usuario = this.tUsuarioFacade.buscarUsuarioClave(this.aliasBase, cifrado);           
             
             if (usuario != null) {
                 this.usuarioManager.setUsuario(usuario.getUsuario());
@@ -78,13 +71,10 @@ public class LoginOP extends FacesUtil {
                 menuOP.cargarMenus();
                 this.setMensaje("");
                 this.setRenderMensaje(false);
-                regla = "faces/inicial.xhtml";
-            } else {
-                this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
-                this.setRenderMensaje(true);
                
             }
         } catch (Exception ex) {
+            regla = "#";
             //Logger.getLogger(BodegaOP.class.getName()).log(Level.SEVERE, null, ex);
             FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
             this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));

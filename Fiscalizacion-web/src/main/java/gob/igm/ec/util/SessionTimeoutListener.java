@@ -6,7 +6,6 @@
 /*package gob.igm.ec.util;
 
 import java.io.IOException;
-import java.io.Serializable;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
@@ -15,12 +14,10 @@ import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 
 
-public class SessionTimeoutListener implements PhaseListener, Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SessionTimeoutListener implements PhaseListener {
 
     private String getLoginPath() {
-        return "/inicial.xhtml";
+        return "faces/inicial.xhtml";
     }
 
     @Override
@@ -62,23 +59,21 @@ public class SessionTimeoutListener implements PhaseListener, Serializable {
 package gob.igm.ec.util;
 
 import java.io.IOException;
-import java.io.Serializable;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
+import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 
 /**
  *
  * @author VERA_MAYRA
  */
-public class SessionTimeoutListener implements PhaseListener, Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SessionTimeoutListener implements PhaseListener {
 
     private String getLoginPath() {
-        return "/inicial.xhtml";
+        return "faces/inicial.xhtml";
     }
 
     @Override
@@ -90,8 +85,8 @@ public class SessionTimeoutListener implements PhaseListener, Serializable {
 
         final HttpServletRequest request = HttpServletRequest.class.cast(facesContext.getExternalContext().getRequest());
        //if (request.getDispatcherType() == DispatcherType.FORWARD && getLoginPath().equals(request.getServletPath())) { // isLoginRedirection()
-        if (getLoginPath().equals(request.getPathInfo())){     
-       final String redirect = facesContext.getExternalContext().getRequestContextPath() + "/faces" + request.getPathInfo();
+        if (getLoginPath().equals(request.getServletPath())){     
+       final String redirect = facesContext.getExternalContext().getRequestContextPath() + request.getServletPath();
             try {
                 facesContext.getExternalContext().redirect(redirect);
             } catch (final IOException e) {
@@ -111,4 +106,3 @@ public class SessionTimeoutListener implements PhaseListener, Serializable {
     }
 
 }
-

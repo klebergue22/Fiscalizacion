@@ -6,10 +6,8 @@
 package gob.igm.ec.servicios;
 
 import gob.igm.ec.dao.CrudDAO;
-import gob.igm.ec.modelo.TPerfil;
 import gob.igm.ec.modelo.TUsuarios;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -58,55 +56,17 @@ public class TUsuarioFacade extends CrudDAO {
       */
      public TUsuarios buscarUsuarioClave(final String usuario, final String clave) throws Exception {
         try {
-            final boolean tieneEstado = this.tieneColumnaEstado();
-            final String sql = tieneEstado
-                    ? "SELECT ID_USUARIO, USUARIO, PASSWORD, NOMBRE_COMPLETO, PERFIL, DIGNIDAD, ID_DIGNIDAD, BODEGA, ID_PERFIL, ESTADO "
-                    + "FROM FISCALIZACION.T_USUARIOS WHERE USUARIO = ? AND PASSWORD = ?"
-                    : "SELECT ID_USUARIO, USUARIO, PASSWORD, NOMBRE_COMPLETO, PERFIL, DIGNIDAD, ID_DIGNIDAD, BODEGA, ID_PERFIL "
-                    + "FROM FISCALIZACION.T_USUARIOS WHERE USUARIO = ? AND PASSWORD = ?";
-
-            Query query = super.em.createNativeQuery(sql);
+            Query query = super.em.createQuery("select o from TUsuarios as o "
+                    + "where o.usuario = ?1 and o.password = ?2");
             query.setParameter(1, usuario);
             query.setParameter(2, clave);
-            Object[] row = (Object[]) query.getSingleResult();
-
-            TUsuarios tu = new TUsuarios();
-            tu.setIdUsuario((BigDecimal) row[0]);
-            tu.setUsuario((String) row[1]);
-            tu.setPassword((String) row[2]);
-            tu.setNombreCompleto((String) row[3]);
-            tu.setPerfil((String) row[4]);
-            tu.setDignidad((String) row[5]);
-            tu.setIdDignidad(this.toBigInteger(row[6]));
-            tu.setBodega(this.toBigInteger(row[7]));
-            tu.setIdPerfil(row[8] != null ? new TPerfil((BigDecimal) row[8]) : null);
-            tu.setEstado(tieneEstado ? this.toBigInteger(row[9]) : null);
-            return tu;
+            return (TUsuarios) query.getSingleResult();
         } catch (NoResultException e) {
-            return null;
+            throw new Exception(e.getMessage(), e);
         } catch (NonUniqueResultException e) {
             throw new Exception(e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception(e.getMessage(), e);
         }
-    }
-
-    private BigInteger toBigInteger(Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (value instanceof BigInteger) {
-            return (BigInteger) value;
-        }
-        if (value instanceof Number) {
-            return BigInteger.valueOf(((Number) value).longValue());
-        }
-        return new BigInteger(value.toString());
-    }
-
-    private boolean tieneColumnaEstado() {
-        Query query = super.em.createNativeQuery("SELECT COUNT(1) FROM ALL_TAB_COLUMNS WHERE OWNER = 'FISCALIZACION' AND TABLE_NAME = 'T_USUARIOS' AND COLUMN_NAME = 'ESTADO'");
-        Number total = (Number) query.getSingleResult();
-        return total != null && total.intValue() > 0;
-    }
+    }   
 }
