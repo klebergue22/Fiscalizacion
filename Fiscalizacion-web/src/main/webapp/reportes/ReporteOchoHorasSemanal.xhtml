@@ -45,11 +45,27 @@
             <div class="form-group col-md-12">
                 <p:outputLabel value="Fecha Inicio: " class=" col-lg-1 col-md-1 control-label"/>
                 <div class="col-lg-2 col-md-2">
-                    <p:calendar id="cldFechaInicio" value="#{reporteOchoHorasSemanalControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="c-20:c+5"/>
+                    <p:calendar id="cldFechaInicio"
+                                value="#{reporteOchoHorasSemanalControlador.fechaDesde}"
+                                pattern="#{formato.formatoFecha}"
+                                placeholder="dd/mm/yyyy"
+                                navigator="true"
+                                yearRange="1928:2035"
+                                mask="true"
+                                readonlyInput="true"
+                                showButtonPanel="true"/>
                 </div>
                 <p:outputLabel value="Fecha Fin: " class=" col-lg-1 col-md-1 control-label"/>
                 <div class="col-lg-2 col-md-2">
-                    <p:calendar id="cldFechaFin" value="#{reporteOchoHorasSemanalControlador.fechaHasta}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="c-20:c+5"/>
+                    <p:calendar id="cldFechaFin"
+                                value="#{reporteOchoHorasSemanalControlador.fechaHasta}"
+                                pattern="#{formato.formatoFecha}"
+                                placeholder="dd/mm/yyyy"
+                                navigator="true"
+                                yearRange="1928:2035"
+                                mask="true"
+                                readonlyInput="true"
+                                showButtonPanel="true"/>
                 </div>
             </div>
 
