@@ -4,7 +4,7 @@ import gob.igm.ec.reportes.servicio.ReporteOchoHorasSemanalServicio;
 import gob.igm.ec.util.FacesUtil;
 import gob.igm.ec.util.JasperReportUtil;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.Date;
 import javax.enterprise.context.SessionScoped;
@@ -12,7 +12,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.ejb.EJB;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletResponse;
 import org.primefaces.model.StreamedContent;
 
 @Named
@@ -51,9 +50,18 @@ public class ReporteOchoHorasSemanalControlador extends FacesUtil implements Ser
             }
 
             outputStream = reporteOchoHorasSemanalServicio.generar(fechaDesde, fechaHasta);
+            if (outputStream == null || outputStream.size() == 0) {
+                media = null;
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
+                return;
+            }
+
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            media = null;
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
         }
     }
 
@@ -61,42 +69,35 @@ public class ReporteOchoHorasSemanalControlador extends FacesUtil implements Ser
         return "reporteOchoHorasSemanal";
     }
 
-    public void downloadFile() {
+    public StreamedContent getArchivoDescarga() {
         try {
             if (fechaDesde == null || fechaHasta == null) {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE GENERAR EL REPORTE CON FECHA INICIO Y FECHA FIN"));
-                return;
+                return null;
             }
 
             if (fechaHasta.before(fechaDesde)) {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "LA FECHA FIN NO PUEDE SER MENOR A LA FECHA INICIO"));
-                return;
+                return null;
             }
 
             outputStream = reporteOchoHorasSemanalServicio.generar(fechaDesde, fechaHasta);
             if (outputStream == null || outputStream.size() == 0) {
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF"));
-                return;
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
+                return null;
             }
 
-            FacesContext facesContext = FacesContext.getCurrentInstance();
-            HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-            response.reset();
-            response.setContentType("application/pdf");
-            response.setHeader("Content-disposition", "attachment; filename=" + getNameFilePdf() + ".pdf");
-            response.setContentLength(outputStream.size());
-
-            OutputStream output = response.getOutputStream();
-            output.write(outputStream.toByteArray());
-            output.flush();
-            output.close();
-
-            facesContext.responseComplete();
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new ByteArrayInputStream(outputStream.toByteArray()),
+                    "application/pdf",
+                    getNameFilePdf() + ".pdf");
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
         }
     }
 

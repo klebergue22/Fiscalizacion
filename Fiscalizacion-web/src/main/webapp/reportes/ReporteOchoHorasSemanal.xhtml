@@ -82,8 +82,9 @@
             <p:commandButton value="Descargar PDF"
                              class="btn-xs btn btn-primary"
                              ajax="false"
-                             rendered="#{reporteOchoHorasSemanalControlador.media ne null}"
-                             action="#{reporteOchoHorasSemanalControlador.downloadFile}"/>
+                             rendered="#{reporteOchoHorasSemanalControlador.media ne null}">
+                <p:fileDownload value="#{reporteOchoHorasSemanalControlador.archivoDescarga}"/>
+            </p:commandButton>
             <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteOchoHorasSemanalControlador.media ne null}" width="1400" height="800" value="#{reporteOchoHorasSemanalControlador.media}" player="pdf"/>
         </h:form>
       </p:panel>

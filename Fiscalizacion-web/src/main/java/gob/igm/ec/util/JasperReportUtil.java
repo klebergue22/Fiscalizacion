@@ -161,6 +161,7 @@ public class JasperReportUtil {
             }
         }catch(ClassNotFoundException | JRException | IOException ex){
             localLogger.error(ex);
+            throw new RuntimeException("Error generando reporte: " + ex.getMessage(), ex);
         }
           
         return os;
