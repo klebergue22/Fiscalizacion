@@ -29,11 +29,9 @@ public class LoginOP extends FacesUtil implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(LoginOP.class.getName());
     
-    private transient EncriptUtil encriptUtil;
     private String clave;
     private String aliasBase;
     private String mensaje;
-    private String prueba;
     @EJB
     private TUsuarioFacade tUsuarioFacade;
     private Boolean renderMensaje;
@@ -46,7 +44,6 @@ public class LoginOP extends FacesUtil implements Serializable {
      * Creates a new instance of LoginOP
      */
     public LoginOP() {
-        this.encriptUtil=new EncriptUtil(); 
          this.setRenderMensaje(false);
          //usuarioManager = new DataManagerUsuario();
     }
