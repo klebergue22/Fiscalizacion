@@ -11,11 +11,12 @@ import gob.igm.ec.servicios.TUsuarioFacade;
 import gob.igm.ec.util.DataManagerUsuario;
 import gob.igm.ec.util.EncriptUtil;
 import gob.igm.ec.util.FacesUtil;
-import java.io.Serializable;
+import gob.igm.ec.util.SessionUtils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.inject.Named;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -25,11 +26,9 @@ import javax.faces.bean.ViewScoped;
 @Named(value = "loginOP")
 @ViewScoped
 //@RequestScoped
-public class LoginOP extends FacesUtil implements Serializable {
+public class LoginOP extends FacesUtil {
     
-    private static final long serialVersionUID = 1L;
-    
-    private transient EncriptUtil encriptUtil;
+    private EncriptUtil encriptUtil;
     private String clave;
     private String aliasBase;
     private String mensaje;
@@ -52,11 +51,11 @@ public class LoginOP extends FacesUtil implements Serializable {
     }
     
     public String ingresar() {
-        String regla = "/inicial.xhtml?faces-redirect=true";
+        String regla = "faces/inicial.xhtml";
         //String regla="faces/welcomePrimefaces";
         //String regla = "/inicial.xhtml";
         try {
-            String cifrado = EncriptUtil.getMD5(this.clave);
+            String cifrado = this.encriptUtil.getMD5(this.clave);
             TUsuarios usuario = this.tUsuarioFacade.buscarUsuarioClave(this.aliasBase, cifrado);           
             
             if (usuario != null) {
@@ -72,14 +71,11 @@ public class LoginOP extends FacesUtil implements Serializable {
                 menuOP.cargarMenus();
                 this.setMensaje("");
                 this.setRenderMensaje(false);
-            } else {
-                regla = null;
-                this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
-                this.setRenderMensaje(true);
+               
             }
         } catch (Exception ex) {
-            regla = null;
-            Logger.getLogger(BodegaOP.class.getName()).log(Level.SEVERE, null, ex);
+            regla = "#";
+            //Logger.getLogger(BodegaOP.class.getName()).log(Level.SEVERE, null, ex);
             FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
             this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
             this.setRenderMensaje(true);
@@ -99,7 +95,7 @@ public class LoginOP extends FacesUtil implements Serializable {
     
    public String cerrarSession1() {
     //public void cerrarSession() {
-         String regla = "/index.xhtml?faces-redirect=true";
+         String regla = "faces/index.xhtml";
         super.getRequest().getSession(true).invalidate();
          this.setRenderMensaje(false);
         return regla;
