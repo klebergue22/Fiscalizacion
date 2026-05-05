@@ -187,6 +187,11 @@
                 <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <archive>
+                        <manifestEntries>
+                            <Class-Path>Fiscalizacion-ejb-1.0.jar rrhh-1.0.jar inventario-ejb-1.0.jar</Class-Path>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>
