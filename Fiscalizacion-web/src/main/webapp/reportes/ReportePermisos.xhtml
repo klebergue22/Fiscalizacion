@@ -63,14 +63,14 @@ and open the template in the editor.
             <div class="form-group col-md-12">
                 <p:outputLabel value="Fecha Desde: " class=" col-lg-1 col-md-1 control-label"/>      
                 <div class="col-lg-3 col-md-3">
-                    <p:calendar id="cldFecha" value="#{reportePermisoControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                    <p:calendar id="cldFecha" value="#{reportePermisoControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="1928:2035" mask="true" showButtonPanel="true"/>
                 </div>               
             </div>     
             
             <div class="form-group col-md-12">
                 <p:outputLabel value="Fecha Hasta: " class=" col-lg-1 col-md-1 control-label"/>      
                 <div class="col-lg-3 col-md-3">
-                    <p:calendar id="cldFecha2" value="#{reportePermisoControlador.fechaHasta}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                    <p:calendar id="cldFecha2" value="#{reportePermisoControlador.fechaHasta}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="1928:2035" mask="true" showButtonPanel="true"/>
                 </div>               
             </div>     
 

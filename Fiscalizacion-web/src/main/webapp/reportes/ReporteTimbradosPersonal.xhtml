@@ -53,7 +53,7 @@
             <div class="form-group col-md-12">
                 <p:outputLabel value="Fecha Desde: " class=" col-lg-1 col-md-1 control-label"/>      
                 <div class="col-lg-3 col-md-3">
-                    <p:calendar id="cldFecha" value="#{reporteTimbradoPersonal.fechaDesde2}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                    <p:calendar id="cldFecha" value="#{reporteTimbradoPersonal.fechaDesde2}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="1928:2035" mask="true" showButtonPanel="true"/>
                 </div>  
                 
             </div>     
@@ -61,7 +61,7 @@
             <div class="form-group col-md-12">
                 <p:outputLabel value="Fecha Hasta: " class=" col-lg-1 col-md-1 control-label"/>      
                 <div class="col-lg-3 col-md-3">
-                    <p:calendar id="cldFecha2" value="#{reporteTimbradoPersonal.fechaHasta2}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                    <p:calendar id="cldFecha2" value="#{reporteTimbradoPersonal.fechaHasta2}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="1928:2035" mask="true" showButtonPanel="true"/>
                 </div>               
             </div>     
 

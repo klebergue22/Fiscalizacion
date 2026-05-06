@@ -51,7 +51,7 @@
             <div class="form-group col-md-12">
                 <p:outputLabel value="Fecha: " class=" col-lg-1 col-md-1 control-label"/>      
                 <div class="col-lg-3 col-md-3">
-                    <p:calendar id="cldFecha" value="#{reporteNoTimbradoControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>
+                    <p:calendar id="cldFecha" value="#{reporteNoTimbradoControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy" navigator="true" yearRange="1928:2035" mask="true" showButtonPanel="true"/>
                 </div>               
             </div>     
             
