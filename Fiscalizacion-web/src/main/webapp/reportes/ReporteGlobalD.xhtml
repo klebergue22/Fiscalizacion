@@ -87,7 +87,12 @@ and open the template in the editor.
             <br /><br />
             
              <p:progressBar id="progressBarClient" widgetVar="pbClient1" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
-             <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteGlobalD.media ne null}" width="1400" height="800" value="#{reporteGlobalD.media}" player="pdf"/>
+             <p:commandButton value="Descargar PDF"
+                             class="btn-xs btn btn-primary"
+                             ajax="false"
+                             rendered="#{reporteGlobalD.media ne null}">
+                <p:fileDownload value="#{reporteGlobalD.archivoDescarga}"/>
+            </p:commandButton>            <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteGlobalD.media ne null}" width="1400" height="800" value="#{reporteGlobalD.media}" player="pdf"/>
             
             
         </h:form>

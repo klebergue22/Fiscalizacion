@@ -194,6 +194,23 @@ public class ReporteAccionPerControlador extends FacesUtil implements Serializab
         }
     }
     
+
+    public StreamedContent getArchivoDescarga() {
+        try {
+            if (outputStream == null || outputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new java.io.ByteArrayInputStream(outputStream.toByteArray()),
+                    "application/pdf",
+                    getNameFilePdf() + ".pdf");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
+        }
+    }
  public StreamedContent getMedia() {
         return media;
     }

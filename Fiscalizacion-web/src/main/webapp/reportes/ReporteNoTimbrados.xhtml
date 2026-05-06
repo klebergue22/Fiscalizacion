@@ -71,7 +71,12 @@
             
             <br /><br />
             <p:progressBar id="progressBarClient" widgetVar="pbClient" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
-            <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteNoTimbradoControlador.media ne null}" width="1400" height="800" value="#{reporteNoTimbradoControlador.media}" player="pdf"/>
+            <p:commandButton value="Descargar PDF"
+                             class="btn-xs btn btn-primary"
+                             ajax="false"
+                             rendered="#{reporteNoTimbradoControlador.media ne null}">
+                <p:fileDownload value="#{reporteNoTimbradoControlador.archivoDescarga}"/>
+            </p:commandButton>            <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteNoTimbradoControlador.media ne null}" width="1400" height="800" value="#{reporteNoTimbradoControlador.media}" player="pdf"/>
   
         </h:form>
       </p:panel>
