@@ -1,46 +1,52 @@
 /* Growl de reportes: evita que las notificaciones queden cortadas o se monten
    sobre la barra superior cuando los reportes se cargan dentro de la plantilla. */
+.ui-growl,
 .report-growl.ui-growl,
 .ui-growl.report-growl {
+    left: auto !important;
     position: fixed !important;
-    top: 75px !important;
-    right: 24px !important;
-    width: 360px !important;
-    max-width: calc(100vw - 48px);
+    right: 30px !important;
+    top: 95px !important;
+    width: 390px !important;
+    max-width: calc(100vw - 60px);
     z-index: 99999 !important;
 }
 
+.ui-growl .ui-growl-item-container,
 .report-growl .ui-growl-item-container {
-    border: 0;
+    border: 0 !important;
     border-radius: 4px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
     margin: 0 0 12px 0;
     opacity: 0.98;
+    overflow: visible !important;
 }
 
+.ui-growl .ui-growl-item,
 .report-growl .ui-growl-item {
-    align-items: center;
-    display: flex;
-    min-height: 68px;
-    padding: 14px 42px 14px 16px;
+    min-height: 72px;
+    overflow: visible !important;
+    padding: 16px 44px 16px 18px !important;
 }
 
+.ui-growl .ui-growl-image,
 .report-growl .ui-growl-image {
     background-position: center center;
-    background-size: 28px 28px;
-    flex: 0 0 34px;
+    background-size: 30px 30px;
     height: 34px;
-    margin: 0 12px 0 0;
+    margin: 2px 12px 0 0;
     width: 34px;
 }
 
+.ui-growl .ui-growl-message,
 .report-growl .ui-growl-message {
-    float: none;
-    margin: 0;
-    padding: 0;
-    width: auto;
+    float: none !important;
+    margin: 0 0 0 48px !important;
+    padding: 0 !important;
+    width: auto !important;
 }
 
+.ui-growl .ui-growl-message p,
 .report-growl .ui-growl-message p {
     font-size: 15px;
     font-weight: 600;
@@ -50,37 +56,44 @@
     text-transform: uppercase;
 }
 
+.ui-growl .ui-growl-title,
 .report-growl .ui-growl-title {
-    display: none;
+    display: none !important;
 }
 
+.ui-growl .ui-growl-icon-close,
 .report-growl .ui-growl-icon-close {
-    right: 12px;
-    top: 12px;
+    right: 12px !important;
+    top: 12px !important;
 }
 
+.ui-growl .ui-growl-error,
+.ui-growl .ui-growl-fatal,
 .report-growl .ui-growl-error,
 .report-growl .ui-growl-fatal {
-    background: #c0392b;
-    color: #ffffff;
+    background: #c0392b !important;
+    color: #ffffff !important;
 }
 
+.ui-growl .ui-growl-warn,
 .report-growl .ui-growl-warn {
-    background: #f39c12;
-    color: #ffffff;
+    background: #f39c12 !important;
+    color: #ffffff !important;
 }
 
+.ui-growl .ui-growl-info,
 .report-growl .ui-growl-info {
-    background: #0073b7;
-    color: #ffffff;
+    background: #0073b7 !important;
+    color: #ffffff !important;
 }
 
 @media (max-width: 767px) {
+    .ui-growl,
     .report-growl.ui-growl,
     .ui-growl.report-growl {
         left: 12px !important;
         right: 12px !important;
-        top: 62px !important;
+        top: 70px !important;
         width: auto !important;
         max-width: none;
     }
