@@ -17,8 +17,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -85,6 +87,27 @@ public class ReporteAccionPerControlador extends FacesUtil implements Serializab
             FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null);
             FacesContext.getCurrentInstance().addMessage(null, fm);
         }
+    }
+
+    public List<VDatoEmp> completarEmpleados(String query) {
+        List<VDatoEmp> empleadosFiltrados = new ArrayList<>();
+
+        if (listaEmpleados == null) {
+            return empleadosFiltrados;
+        }
+
+        String filtro = query == null ? "" : query.trim().toUpperCase(Locale.ROOT);
+
+        for (VDatoEmp empleado : listaEmpleados) {
+            String nombre = empleado.getNombreC() == null ? "" : empleado.getNombreC().toUpperCase(Locale.ROOT);
+            String codigoEmpleado = String.valueOf(empleado.getNoPersona());
+
+            if (filtro.isEmpty() || nombre.contains(filtro) || codigoEmpleado.contains(filtro)) {
+                empleadosFiltrados.add(empleado);
+            }
+        }
+
+        return empleadosFiltrados;
     }
     
     public void generateReport() {

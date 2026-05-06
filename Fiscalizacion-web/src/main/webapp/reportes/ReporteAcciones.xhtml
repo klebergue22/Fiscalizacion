@@ -54,15 +54,24 @@
              <div class="form-group col-md-12">
                  <h:panelGrid id="panelMenu" columns="2">  
 
-                     <p:outputLabel value="Empleado:" />
-                     <p:selectOneMenu  id="empleado" value="#{reporteAccionPerControlador.idEmpleado}"                                                 
-                                       required="false" >
-                         <f:selectItem itemLabel="-- Seleccione Empleado --" noSelectionOption="true"/>
-                         <f:selectItems value="#{reporteAccionPerControlador.listaEmpleados}" var="itemEmp"
-                                        itemLabel="#{itemEmp.nombreC}"
-                                        itemValue="#{itemEmp.noPersona}" />  
-                         <p:ajax listener="#{reporteAccionPerControlador.handleFacturaChange()}" process="@all" update=":repAcciones"/> 
-                     </p:selectOneMenu>
+                     <p:outputLabel value="Empleado:" for="empleado" />
+                     <p:autoComplete id="empleado"
+                                     value="#{reporteAccionPerControlador.idEmpleado}"
+                                     completeMethod="#{reporteAccionPerControlador.completarEmpleados}"
+                                     var="itemEmp"
+                                     itemLabel="#{itemEmp.nombreC}"
+                                     itemValue="#{itemEmp.noPersona}"
+                                     dropdown="true"
+                                     forceSelection="true"
+                                     minQueryLength="2"
+                                     maxResults="20"
+                                     scrollHeight="250"
+                                     placeholder="Buscar empleado"
+                                     emptyMessage="No se encontraron empleados"
+                                     style="width: 506px"
+                                     inputStyle="width: 470px">
+                         <p:ajax event="itemSelect" listener="#{reporteAccionPerControlador.handleFacturaChange()}" process="@this" update=":repAcciones:dtMenu"/>
+                     </p:autoComplete>
                  </h:panelGrid>
             </div>    
              
