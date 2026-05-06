@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_jornada_laboral_mensual" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5f7e1a8b-9c4d-47ab-a1b2-0c0e71a0a901">
+	<parameter name="pathImagen" class="java.lang.String"/>
+	<parameter name="FechaDesde" class="java.lang.String"/>
+	<parameter name="FechaHasta" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT TO_CHAR(em.codigo) AS codigo,
+       em.nombre_c AS servidor,
+       em.email_institucional AS correo_institucional,
+       NVL(ar.descrip, 'SIN AREA') AS area,
+       NVL(resp.pie_firma, resp.nombre_c) AS responsable_area,
+       cal.fecha AS fecha,
+       cal.dia_semana AS dia,
+       CASE
+         WHEN t.codigo IS NOT NULL THEN 'ASIGNADA'
+         WHEN ha.no_cd IS NOT NULL THEN 'ASIGNADA'
+         ELSE 'PENDIENTE'
+       END AS estado_jornada,
+       CASE
+         WHEN t.codigo IS NOT NULL THEN
+           CASE WHEN t.h_desde >= 18 OR t.h_hasta < 6 THEN 'TURNO NOCTURNO' ELSE 'TURNO DIURNO' END
+         WHEN ha.no_cd IS NOT NULL THEN 'HORARIO GENERAL'
+         ELSE 'SIN JORNADA'
+       END AS tipo_jornada,
+       CASE
+         WHEN t.codigo IS NOT NULL THEN
+           LPAD(t.h_desde, 2, '0') || ':' || LPAD(t.mi_desde, 2, '0') || ' - ' ||
+           LPAD(t.h_hasta, 2, '0') || ':' || LPAD(t.mi_hasta, 2, '0')
+         WHEN ha.no_cd IS NOT NULL THEN
+           LPAD(TRUNC(ha.hora_inicio / 60), 2, '0') || ':' || LPAD(MOD(ha.hora_inicio, 60), 2, '0') || ' - ' ||
+           LPAD(TRUNC(ha.hora_fin / 60), 2, '0') || ':' || LPAD(MOD(ha.hora_fin, 60), 2, '0')
+         ELSE 'NO DEFINIDO'
+       END AS horario_jornada,
+       CASE
+         WHEN t.codigo IS NOT NULL THEN
+           CASE WHEN t.h_desde >= 18 OR t.h_hasta < 6 THEN '01:00 - 02:00' ELSE '13:00 - 14:00' END
+         WHEN ha.inicio_almuerzo IS NOT NULL AND ha.fin_almuerzo IS NOT NULL THEN
+           LPAD(TRUNC(ha.inicio_almuerzo / 60), 2, '0') || ':' || LPAD(MOD(ha.inicio_almuerzo, 60), 2, '0') || ' - ' ||
+           LPAD(TRUNC(ha.fin_almuerzo / 60), 2, '0') || ':' || LPAD(MOD(ha.fin_almuerzo, 60), 2, '0')
+         ELSE 'NO DEFINIDO'
+       END AS horario_almuerzo,
+       CASE
+         WHEN t.codigo IS NOT NULL THEN 60
+         WHEN ha.no_cd IS NOT NULL THEN NVL(ha.duracion_almuerzo, 60)
+         ELSE NULL
+       END AS minutos_almuerzo,
+       CASE
+         WHEN t.codigo IS NOT NULL THEN TO_CHAR(t.f_desde, 'DD/MM/YYYY') || ' - ' || TO_CHAR(t.f_hasta, 'DD/MM/YYYY')
+         WHEN ha.no_cd IS NOT NULL THEN TO_CHAR(NVL(ha.fecha_desde, TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY'))), 'DD/MM/YYYY') || ' - ' ||
+                                      TO_CHAR(NVL(ha.fecha_hasta, TRUNC(TO_DATE($P{FechaHasta}, 'DD/MM/YYYY'))), 'DD/MM/YYYY')
+         ELSE '-'
+       END AS vigencia_jornada,
+       CASE
+         WHEN t.codigo IS NULL AND ha.no_cd IS NULL THEN 'Sin turno ni horario general activo para el area y dia'
+         WHEN t.codigo IS NOT NULL THEN 'Asignado por turno'
+         ELSE 'Asignado por horario general del area'
+       END AS observacion
+  FROM (
+        SELECT e.no_persona,
+               e.nombre_c,
+               e.codigo,
+               e.email_institucional,
+               c.no_cd
+          FROM rh.t_dat_empleado e
+          JOIN rh.t_contrataciones c ON e.no_persona = c.no_persona
+         WHERE c.estado = 'V'
+           AND INSTR(e.email_institucional, '@geograficomilitar.gob.ec') > 0
+       ) em
+  LEFT JOIN inventarios.t_areas ar ON ar.no_cd = em.no_cd
+  LEFT JOIN rh.t_dat_empleado resp ON resp.no_persona = ar.responsable_no_persona
+  CROSS JOIN (
+        SELECT TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1 AS fecha,
+               TRIM(TO_CHAR(TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH')) AS dia_semana
+          FROM dual
+       CONNECT BY LEVEL <= TRUNC(TO_DATE($P{FechaHasta}, 'DD/MM/YYYY')) - TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + 1
+       ) cal
+  LEFT JOIN rh.turnos t
+    ON t.codigo = em.codigo
+   AND cal.fecha BETWEEN t.f_desde AND t.f_hasta
+  LEFT JOIN rh.horario_almuerzo ha
+    ON ha.no_cd = em.no_cd
+   AND (ha.dia_semana IS NULL OR UPPER(TRIM(ha.dia_semana)) = UPPER(TRIM(cal.dia_semana)))
+   AND ha.activo = 'S'
+   AND (ha.fecha_desde IS NULL OR cal.fecha >= ha.fecha_desde)
+   AND (ha.fecha_hasta IS NULL OR cal.fecha <= ha.fecha_hasta)
+ ORDER BY estado_jornada DESC, area, servidor, cal.fecha]]>
+	</queryString>
+	<field name="CODIGO" class="java.lang.String"/>
+	<field name="SERVIDOR" class="java.lang.String"/>
+	<field name="CORREO_INSTITUCIONAL" class="java.lang.String"/>
+	<field name="AREA" class="java.lang.String"/>
+	<field name="RESPONSABLE_AREA" class="java.lang.String"/>
+	<field name="FECHA" class="java.sql.Timestamp"/>
+	<field name="DIA" class="java.lang.String"/>
+	<field name="ESTADO_JORNADA" class="java.lang.String"/>
+	<field name="TIPO_JORNADA" class="java.lang.String"/>
+	<field name="HORARIO_JORNADA" class="java.lang.String"/>
+	<field name="HORARIO_ALMUERZO" class="java.lang.String"/>
+	<field name="MINUTOS_ALMUERZO" class="java.math.BigDecimal"/>
+	<field name="VIGENCIA_JORNADA" class="java.lang.String"/>
+	<field name="OBSERVACION" class="java.lang.String"/>
+	<title>
+		<band height="94">
+			<staticText>
+				<reportElement x="70" y="0" width="650" height="25" uuid="1b12a93f-5b6f-4a69-a21c-43b3df4d5f11"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="18" isBold="true"/></textElement>
+				<text><![CDATA[INSTITUTO GEOGRAFICO MILITAR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="25" width="650" height="24" uuid="f5d1ed18-b8c7-4de7-8791-d3f5ec39f5d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="13" isBold="true"/></textElement>
+				<text><![CDATA[VERIFICACION MENSUAL DE JORNADA LABORAL ASIGNADA]]></text>
+			</staticText>
+			<staticText><reportElement x="30" y="60" width="80" height="20" uuid="0c22c414-bd53-4a6c-ae78-3ea507c99d38"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha inicio:]]></text></staticText>
+			<textField><reportElement x="112" y="60" width="80" height="20" uuid="5b7e71af-d061-44f4-b60a-9862baf90b7c"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[$P{FechaDesde}]]></textFieldExpression></textField>
+			<staticText><reportElement x="205" y="60" width="70" height="20" uuid="d78f438b-7561-44a8-8015-2633cf233839"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha fin:]]></text></staticText>
+			<textField><reportElement x="272" y="60" width="80" height="20" uuid="a54b2932-6235-4e71-af43-622ae42f2212"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[$P{FechaHasta}]]></textFieldExpression></textField>
+			<staticText><reportElement x="600" y="60" width="82" height="20" uuid="8f5562c4-d9b7-4e5d-9a34-ce6b7e63c15a"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha reporte:]]></text></staticText>
+			<textField evaluationTime="Report" pattern="dd/MM/yyyy"><reportElement x="684" y="60" width="70" height="20" uuid="cc2f8d3b-f0de-4c80-9630-2d298c97d8a5"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression></textField>
+			<image><reportElement x="0" y="0" width="60" height="47" uuid="e0debc6a-9870-4697-8abf-00f15fa9cd41"/><imageExpression><![CDATA[$P{pathImagen}]]></imageExpression></image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="25">
+			<line><reportElement x="-10" y="1" width="815" height="1" forecolor="#4A17E3" uuid="92c52a90-7d66-4e10-9b21-62e66d9999b7"/></line>
+			<line><reportElement x="-9" y="23" width="815" height="1" forecolor="#1828B8" uuid="1e846992-f9f2-4284-983e-49ad1f5f3937"/></line>
+			<staticText><reportElement x="0" y="4" width="36" height="16" uuid="9ce9b884-0f37-43ca-8341-3f111d8ab047"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[CODIGO]]></text></staticText>
+			<staticText><reportElement x="38" y="4" width="120" height="16" uuid="76114294-c38e-4fb3-96a9-3ed66052c515"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[SERVIDOR]]></text></staticText>
+			<staticText><reportElement x="160" y="4" width="118" height="16" uuid="93434098-a565-4acd-bdf6-c2518f2d7bc1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[AREA]]></text></staticText>
+			<staticText><reportElement x="280" y="4" width="48" height="16" uuid="520e703d-559d-4de6-83a5-0b4f0897e2d8"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
+			<staticText><reportElement x="330" y="4" width="45" height="16" uuid="fa81fa5b-aa93-4664-9c5e-8c16bff8bc2c"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
+			<staticText><reportElement x="377" y="4" width="62" height="16" uuid="0ac62de7-2f30-4bcf-b17c-a51b3ecf55c1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ESTADO]]></text></staticText>
+			<staticText><reportElement x="441" y="4" width="74" height="16" uuid="1f836b3a-440c-4bc4-9171-0cfcf5a99b24"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[TIPO]]></text></staticText>
+			<staticText><reportElement x="517" y="4" width="70" height="16" uuid="cfb48cf7-f5f3-4b2f-8ff1-90ef129384fa"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[JORNADA]]></text></staticText>
+			<staticText><reportElement x="589" y="4" width="70" height="16" uuid="fa6f721d-e2b4-4f68-9b5b-6d1cf2c93712"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ALMUERZO]]></text></staticText>
+			<staticText><reportElement x="661" y="4" width="58" height="16" uuid="fdd7c189-d814-4865-8f41-3e5515af2aaa"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[VIGENCIA]]></text></staticText>
+			<staticText><reportElement x="721" y="4" width="81" height="16" uuid="f1ec716b-13d7-457e-871f-9062ec965a18"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[OBSERVACION]]></text></staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="34">
+			<textField><reportElement x="0" y="0" width="36" height="14" uuid="7e8f1ef1-2be4-48df-87cb-7812620b7464"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{CODIGO}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="38" y="0" width="120" height="30" uuid="d19c15ce-1916-46dc-9596-b364503c2fb5"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{SERVIDOR}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="160" y="0" width="118" height="30" uuid="f0f11daa-84a1-4b58-99cc-5435e338f32d"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{AREA}]]></textFieldExpression></textField>
+			<textField pattern="dd/MM/yyyy"><reportElement x="280" y="0" width="48" height="14" uuid="0d14fa1f-383b-444d-b2c4-5c37ec320cd4"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
+			<textField><reportElement x="330" y="0" width="45" height="14" uuid="20490d25-27cf-4f4f-a047-db0db5f0a515"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DIA}]]></textFieldExpression></textField>
+			<textField><reportElement x="377" y="0" width="62" height="14" uuid="a839dfb3-a2b9-42a8-a348-0ce36168be67"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{ESTADO_JORNADA}]]></textFieldExpression></textField>
+			<textField><reportElement x="441" y="0" width="74" height="14" uuid="4852d38e-75f5-4a7c-9e72-9213591c9800"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{TIPO_JORNADA}]]></textFieldExpression></textField>
+			<textField><reportElement x="517" y="0" width="70" height="14" uuid="37f77b1a-6b91-4200-a5a3-d3a5d73792d8"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_JORNADA}]]></textFieldExpression></textField>
+			<textField><reportElement x="589" y="0" width="70" height="14" uuid="20c23d98-cd8f-49c3-9d6c-08f189f129cb"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_ALMUERZO}]]></textFieldExpression></textField>
+			<textField><reportElement x="661" y="0" width="58" height="20" uuid="830e7a3d-d0d9-48fc-bba9-348fd7f38d6e"/><textElement textAlignment="Center"><font size="5"/></textElement><textFieldExpression><![CDATA[$F{VIGENCIA_JORNADA}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="721" y="0" width="81" height="30" uuid="f5a52d6e-259a-4b46-843d-0d8b2aab5df3"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{OBSERVACION}]]></textFieldExpression></textField>
+		</band>
+	</detail>
+</jasperReport>

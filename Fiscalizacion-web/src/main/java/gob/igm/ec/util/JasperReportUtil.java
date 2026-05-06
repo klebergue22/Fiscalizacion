@@ -65,6 +65,7 @@ public class JasperReportUtil {
     public final static String PATH_REPORTE_NO_TIMBRADOS_LOSEP;     
     public final static String PATH_REPORTE_OCHO_HORAS_SEMANAL;
     public final static String PATH_REPORTE_ALMUERZO_SIN_TIMBRAR_SEMANAL;
+    public final static String PATH_REPORTE_JORNADA_LABORAL_MENSUAL;
     
     
     public final static String PATH_IMAGES;
@@ -106,6 +107,7 @@ public class JasperReportUtil {
         PATH_REPORTE_NO_TIMBRADOS_LOSEP = PATH + "//reporte_no_timbrados_losep.jasper/";
         PATH_REPORTE_OCHO_HORAS_SEMANAL = PATH + "//reporte_ocho_horas_semanal.jrxml";
         PATH_REPORTE_ALMUERZO_SIN_TIMBRAR_SEMANAL = PATH + "//reporte_almuerzo_sin_timbrar_semanal.jrxml";
+        PATH_REPORTE_JORNADA_LABORAL_MENSUAL = PATH + "//reporte_jornada_laboral_mensual.jrxml";
         PATH_REPORTE_ACCIONES_MINISTERIO = PATH + "//AccionPersonal_V4.jasper/";
         
         PATH_IMAGES = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/LOGO1.png/";
