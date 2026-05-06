@@ -1,6 +1,5 @@
 -- Configuracion de menu para exponer el reporte:
--- "Reporte para la verificacion que no se encuentre duplicados los codigos de
--- identificacion asignados a los servidores y trabajadores publicos del IGM".
+-- "Personal que no timbra 4 veces".
 -- Siguiente menu luego de ID_PAGINA=30 e ID_MENU=37.
 
 -- Si ya se ejecuto el script anterior con ID 904, primero corregir los IDs.
@@ -13,26 +12,26 @@ UPDATE FISCALIZACION.T_MENU
        ID_PAGINA = 31,
        ORDEN = 14,
        VERSION = '1         ',
-       NOMBRE = 'Codigos identificacion duplicados'
+       NOMBRE = 'Personal que no timbra 4 veces'
  WHERE ID_MENU = 904
     OR ID_PAGINA = 904;
 
 UPDATE FISCALIZACION.T_PAGINA
    SET ID_PAGINA = 31,
-       NOMBRE = 'Codigos identificacion duplicados',
-       URL = 'faces/reportes/ReporteCodigosIdentificacionDuplicados.xhtml',
+       NOMBRE = 'Personal que no timbra 4 veces',
+       URL = 'faces/reportes/ReportePersonalNoTimbraCuatroVeces.xhtml',
        VERSION = 1
  WHERE ID_PAGINA = 904;
 
 -- Correccion para ambiente donde ya exista la pagina/menu con ID 31/38.
 UPDATE FISCALIZACION.T_PAGINA
-   SET NOMBRE = 'Codigos identificacion duplicados',
-       URL = 'faces/reportes/ReporteCodigosIdentificacionDuplicados.xhtml',
+   SET NOMBRE = 'Personal que no timbra 4 veces',
+       URL = 'faces/reportes/ReportePersonalNoTimbraCuatroVeces.xhtml',
        VERSION = 1
  WHERE ID_PAGINA = 31;
 
 UPDATE FISCALIZACION.T_MENU
-   SET NOMBRE = 'Codigos identificacion duplicados',
+   SET NOMBRE = 'Personal que no timbra 4 veces',
        ID_MENU_PADRE = 17,
        ORDEN = 14,
        VERSION = '1         ',
@@ -56,7 +55,7 @@ SELECT 31, pp.ID_PERFIL, 1
 -- Crear pagina
 INSERT INTO FISCALIZACION.T_PAGINA
 (ID_PAGINA, NOMBRE, URL, VERSION, FECHA_MODIFICACION)
-SELECT 31, 'Codigos identificacion duplicados', 'faces/reportes/ReporteCodigosIdentificacionDuplicados.xhtml', 1, NULL
+SELECT 31, 'Personal que no timbra 4 veces', 'faces/reportes/ReportePersonalNoTimbraCuatroVeces.xhtml', 1, NULL
   FROM DUAL
  WHERE NOT EXISTS (
        SELECT 1
@@ -67,7 +66,7 @@ SELECT 31, 'Codigos identificacion duplicados', 'faces/reportes/ReporteCodigosId
 -- Crear opcion de menu dentro de "Reportes Talento Humano" (ID_MENU_PADRE=17)
 INSERT INTO FISCALIZACION.T_MENU
 (ID_MENU, ID_MENU_PADRE, ORDEN, VERSION, ID_PAGINA, NOMBRE)
-SELECT 38, 17, 14, '1         ', 31, 'Codigos identificacion duplicados'
+SELECT 38, 17, 14, '1         ', 31, 'Personal que no timbra 4 veces'
   FROM DUAL
  WHERE NOT EXISTS (
        SELECT 1

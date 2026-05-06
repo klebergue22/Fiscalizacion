@@ -1,11 +1,12 @@
 package gob.igm.ec.reportes;
 
-import gob.igm.ec.reportes.servicio.ReporteCodigosIdentificacionDuplicadosServicio;
+import gob.igm.ec.reportes.servicio.ReportePersonalNoTimbraCuatroVecesServicio;
 import gob.igm.ec.util.FacesUtil;
 import gob.igm.ec.util.JasperReportUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.util.Date;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -16,26 +17,32 @@ import org.primefaces.model.StreamedContent;
 
 @Named
 @SessionScoped
-public class ReporteCodigosIdentificacionDuplicadosControlador extends FacesUtil implements Serializable {
+public class ReportePersonalNoTimbraCuatroVecesControlador extends FacesUtil implements Serializable {
 
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
     private boolean renderBarra;
     private String path;
+    private Date fechaDesde;
+    private Date fechaHasta;
 
     @EJB
-    private ReporteCodigosIdentificacionDuplicadosServicio reporteCodigosIdentificacionDuplicadosServicio;
+    private ReportePersonalNoTimbraCuatroVecesServicio reportePersonalNoTimbraCuatroVecesServicio;
 
-    public ReporteCodigosIdentificacionDuplicadosControlador() {
+    public ReportePersonalNoTimbraCuatroVecesControlador() {
         this.renderBarra = false;
-        this.path = JasperReportUtil.PATH_REPORTE_CODIGOS_IDENTIFICACION_DUPLICADOS;
+        this.path = JasperReportUtil.PATH_REPORTE_PERSONAL_NO_TIMBRA_CUATRO_VECES;
     }
 
-    public void generarReporteCodigosIdentificacionDuplicados() {
+    public void generarReportePersonalNoTimbraCuatroVeces() {
         try {
             this.renderBarra = true;
 
-            outputStream = reporteCodigosIdentificacionDuplicadosServicio.generar();
+            if (!validarFechas()) {
+                return;
+            }
+
+            outputStream = reportePersonalNoTimbraCuatroVecesServicio.generar(fechaDesde, fechaHasta);
             if (outputStream == null || outputStream.size() == 0) {
                 media = null;
                 FacesContext.getCurrentInstance().addMessage(null,
@@ -52,12 +59,16 @@ public class ReporteCodigosIdentificacionDuplicadosControlador extends FacesUtil
     }
 
     public String getNameFilePdf() {
-        return "reporteCodigosIdentificacionDuplicados";
+        return "reportePersonalNoTimbraCuatroVeces";
     }
 
     public StreamedContent getArchivoDescarga() {
         try {
-            outputStream = reporteCodigosIdentificacionDuplicadosServicio.generar();
+            if (!validarFechas()) {
+                return null;
+            }
+
+            outputStream = reportePersonalNoTimbraCuatroVecesServicio.generar(fechaDesde, fechaHasta);
             if (outputStream == null || outputStream.size() == 0) {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
@@ -73,6 +84,22 @@ public class ReporteCodigosIdentificacionDuplicadosControlador extends FacesUtil
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
             return null;
         }
+    }
+
+    private boolean validarFechas() {
+        if (fechaDesde == null || fechaHasta == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA INICIO Y FECHA FIN"));
+            return false;
+        }
+
+        if (fechaHasta.before(fechaDesde)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "LA FECHA FIN NO PUEDE SER MENOR A LA FECHA INICIO"));
+            return false;
+        }
+
+        return true;
     }
 
     public StreamedContent getMedia() {
@@ -97,5 +124,21 @@ public class ReporteCodigosIdentificacionDuplicadosControlador extends FacesUtil
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public Date getFechaDesde() {
+        return fechaDesde;
+    }
+
+    public void setFechaDesde(Date fechaDesde) {
+        this.fechaDesde = fechaDesde;
+    }
+
+    public Date getFechaHasta() {
+        return fechaHasta;
+    }
+
+    public void setFechaHasta(Date fechaHasta) {
+        this.fechaHasta = fechaHasta;
     }
 }

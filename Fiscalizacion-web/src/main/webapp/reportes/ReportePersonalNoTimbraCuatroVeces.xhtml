@@ -40,14 +40,39 @@
     </script>
 
    <p:panel style="font-size: larger;font-weight: bold; color: #004085" class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <h:form id="frmRepCodigosIdentificacionDuplicados">
+        <h:form id="frmRepPersonalNoTimbraCuatroVeces">
             <p:growl id="msgs" styleClass="report-growl" style="position: fixed; top: 95px; right: 30px; width: 390px; z-index: 99999;" showSummary="false" showDetail="true" life="6000" />
 
             <div class="form-group col-md-12">
+                <p:outputLabel value="Fecha Inicio: " class=" col-lg-1 col-md-1 control-label"/>
+                <div class="col-lg-2 col-md-2">
+                    <p:calendar id="cldFechaInicio"
+                                value="#{reportePersonalNoTimbraCuatroVecesControlador.fechaDesde}"
+                                pattern="#{formato.formatoFecha}"
+                                placeholder="dd/mm/yyyy"
+                                navigator="true"
+                                yearRange="1928:2035"
+                                mask="true"
+                                showButtonPanel="true"/>
+                </div>
+                <p:outputLabel value="Fecha Fin: " class=" col-lg-1 col-md-1 control-label"/>
+                <div class="col-lg-2 col-md-2">
+                    <p:calendar id="cldFechaFin"
+                                value="#{reportePersonalNoTimbraCuatroVecesControlador.fechaHasta}"
+                                pattern="#{formato.formatoFecha}"
+                                placeholder="dd/mm/yyyy"
+                                navigator="true"
+                                yearRange="1928:2035"
+                                mask="true"
+                                showButtonPanel="true"/>
+                </div>
+            </div>
+
+            <div class="form-group col-md-12">
                 <div class="col-lg-6 col-md-6">
-                    <p:commandButton value="Generar reporte de codigos duplicados" class="btn-xs btn btn-warning"
-                                     update="frmRepCodigosIdentificacionDuplicados" process="@all"
-                                     actionListener="#{reporteCodigosIdentificacionDuplicadosControlador.generarReporteCodigosIdentificacionDuplicados()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1" />
+                    <p:commandButton value="Generar reporte personal que no timbra 4 veces" class="btn-xs btn btn-warning"
+                                     update="frmRepPersonalNoTimbraCuatroVeces" process="@all"
+                                     actionListener="#{reportePersonalNoTimbraCuatroVecesControlador.generarReportePersonalNoTimbraCuatroVeces()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1" />
                 </div>
             </div>
 
@@ -56,10 +81,10 @@
             <p:commandButton value="Descargar PDF"
                              class="btn-xs btn btn-primary"
                              ajax="false"
-                             rendered="#{reporteCodigosIdentificacionDuplicadosControlador.media ne null}">
-                <p:fileDownload value="#{reporteCodigosIdentificacionDuplicadosControlador.archivoDescarga}"/>
+                             rendered="#{reportePersonalNoTimbraCuatroVecesControlador.media ne null}">
+                <p:fileDownload value="#{reportePersonalNoTimbraCuatroVecesControlador.archivoDescarga}"/>
             </p:commandButton>
-            <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteCodigosIdentificacionDuplicadosControlador.media ne null}" width="1400" height="800" value="#{reporteCodigosIdentificacionDuplicadosControlador.media}" player="pdf"/>
+            <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reportePersonalNoTimbraCuatroVecesControlador.media ne null}" width="1400" height="800" value="#{reportePersonalNoTimbraCuatroVecesControlador.media}" player="pdf"/>
         </h:form>
       </p:panel>
 

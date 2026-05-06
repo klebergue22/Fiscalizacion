@@ -1,14 +1,14 @@
--- Correccion para que se despliegue el menu "Codigos identificacion duplicados".
+-- Correccion para que se despliegue el menu "Personal que no timbra 4 veces".
 -- El menu se filtra por T_PAGINAPERFIL, no solo por T_MENU.
 
 UPDATE FISCALIZACION.T_PAGINA
-   SET NOMBRE = 'Codigos identificacion duplicados',
-       URL = 'faces/reportes/ReporteCodigosIdentificacionDuplicados.xhtml',
+   SET NOMBRE = 'Personal que no timbra 4 veces',
+       URL = 'faces/reportes/ReportePersonalNoTimbraCuatroVeces.xhtml',
        VERSION = 1
  WHERE ID_PAGINA = 31;
 
 UPDATE FISCALIZACION.T_MENU
-   SET NOMBRE = 'Codigos identificacion duplicados',
+   SET NOMBRE = 'Personal que no timbra 4 veces',
        ID_MENU_PADRE = 17,
        ORDEN = 14,
        VERSION = '1         ',

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_personal_no_timbra_cuatro_veces" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="66ee74c0-a05d-4beb-b055-1f4974b36552">
+	<parameter name="pathImagen" class="java.lang.String"/>
+	<parameter name="FechaDesde" class="java.lang.String"/>
+	<parameter name="FechaHasta" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT q.codigo,
+       q.no_persona,
+       q.no_cedula,
+       q.nombre_c,
+       q.area_descrip,
+       q.fecha,
+       q.dia_semana,
+       q.total_timbres,
+       q.detalle_timbres
+  FROM (
+        SELECT e.codigo,
+               e.no_persona,
+               e.no_cedula,
+               e.nombre_c,
+               ar.descrip AS area_descrip,
+               cal.fecha,
+               cal.dia_semana,
+               NVL((
+                 SELECT COUNT(*)
+                   FROM rh.reloj r
+                  WHERE r.codigo = e.codigo
+                    AND r.fecha = cal.fecha
+               ), 0) AS total_timbres,
+               NVL((
+                 SELECT LISTAGG(
+                          LPAD(r.hora, 2, '0') || ':' || LPAD(r.minuto, 2, '0') || '-' ||
+                          CASE
+                            WHEN UPPER(r.archivo) LIKE '%TELETIMBRADO%' THEN 'T'
+                            WHEN UPPER(r.archivo) LIKE '%VIRTUAL%' THEN 'G'
+                            ELSE 'B'
+                          END,
+                          ' | '
+                        ) WITHIN GROUP (ORDER BY r.fecha, r.hora, r.minuto)
+                   FROM rh.reloj r
+                  WHERE r.codigo = e.codigo
+                    AND r.fecha = cal.fecha
+               ), 'SIN TIMBRE') AS detalle_timbres
+          FROM rh.t_dat_empleado e
+          JOIN rh.t_contrataciones c
+            ON c.no_persona = e.no_persona
+           AND c.estado = 'V'
+          LEFT JOIN inventarios.t_areas ar
+            ON ar.no_cd = c.no_cd
+          CROSS JOIN (
+                SELECT TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1 AS fecha,
+                       TRIM(TO_CHAR(TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH')) AS dia_semana
+                  FROM dual
+               CONNECT BY LEVEL <= TRUNC(TO_DATE($P{FechaHasta}, 'DD/MM/YYYY')) - TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + 1
+               ) cal
+         WHERE e.codigo IS NOT NULL
+           AND INSTR(e.email_institucional, '@geograficomilitar.gob.ec') > 0
+       ) q
+ WHERE q.total_timbres < 4
+ ORDER BY q.area_descrip, q.nombre_c, q.fecha]]>
+	</queryString>
+	<field name="CODIGO" class="java.lang.String"/>
+	<field name="NO_PERSONA" class="java.math.BigDecimal"/>
+	<field name="NO_CEDULA" class="java.lang.String"/>
+	<field name="NOMBRE_C" class="java.lang.String"/>
+	<field name="AREA_DESCRIP" class="java.lang.String"/>
+	<field name="FECHA" class="java.sql.Timestamp"/>
+	<field name="DIA_SEMANA" class="java.lang.String"/>
+	<field name="TOTAL_TIMBRES" class="java.math.BigDecimal"/>
+	<field name="DETALLE_TIMBRES" class="java.lang.String"/>
+	<title>
+		<band height="90">
+			<staticText>
+				<reportElement x="70" y="0" width="650" height="25" uuid="61c2ef9a-afc8-44c1-b2f7-e37b9cf3fef9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="18" isBold="true"/></textElement>
+				<text><![CDATA[INSTITUTO GEOGRAFICO MILITAR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="25" width="650" height="34" uuid="664e64be-4f71-4574-a6d1-b80a122c742d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="13" isBold="true"/></textElement>
+				<text><![CDATA[PERSONAL QUE NO TIMBRA 4 VECES]]></text>
+			</staticText>
+			<staticText><reportElement x="30" y="62" width="80" height="20" uuid="02b6fd69-6621-4b29-a9a5-6f7278cbf68a"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha desde:]]></text></staticText>
+			<textField><reportElement x="112" y="62" width="80" height="20" uuid="9d8123ed-8519-4cd2-926e-43147df7ca78"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[$P{FechaDesde}]]></textFieldExpression></textField>
+			<staticText><reportElement x="205" y="62" width="75" height="20" uuid="47f3b11c-802f-403b-b91b-7790d485e137"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha hasta:]]></text></staticText>
+			<textField><reportElement x="282" y="62" width="80" height="20" uuid="a0b13b2a-8bbb-4c3a-89bc-d9968f39cb2a"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[$P{FechaHasta}]]></textFieldExpression></textField>
+			<staticText>
+				<reportElement x="600" y="62" width="82" height="20" uuid="ff935ea3-21da-4667-a604-5969c28118f9"/>
+				<textElement><font size="9" isBold="true"/></textElement>
+				<text><![CDATA[Fecha reporte:]]></text>
+			</staticText>
+			<textField evaluationTime="Report" pattern="dd/MM/yyyy">
+				<reportElement x="684" y="62" width="70" height="20" uuid="61ad1d08-4ff2-4f95-83f8-122121f92588"/>
+				<textElement><font size="9"/></textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="60" height="47" uuid="0b12706a-f4f6-41c8-819a-7a76d37fb584"/>
+				<imageExpression><![CDATA[$P{pathImagen}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="24">
+			<line><reportElement x="-10" y="1" width="815" height="1" forecolor="#4A17E3" uuid="aa1031b7-98f3-4972-8847-3d665cde5d8d"/></line>
+			<line><reportElement x="-9" y="22" width="815" height="1" forecolor="#1828B8" uuid="79f24366-d610-4b73-bc3c-398dc9b9343b"/></line>
+			<staticText><reportElement x="0" y="4" width="48" height="15" uuid="a6ab8b8e-f61f-4435-a809-9e1334870822"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[CODIGO]]></text></staticText>
+			<staticText><reportElement x="50" y="4" width="145" height="15" uuid="8f1f4673-c613-4559-8d89-bc49749fa45c"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[NOMBRE]]></text></staticText>
+			<staticText><reportElement x="198" y="4" width="150" height="15" uuid="42e65021-b735-4883-9821-ed02591ef6f1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[AREA]]></text></staticText>
+			<staticText><reportElement x="351" y="4" width="55" height="15" uuid="272ff0c9-7843-4740-b02e-9f80fa526b17"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
+			<staticText><reportElement x="409" y="4" width="65" height="15" uuid="454293b4-5432-46a1-a26a-36763c908b1d"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
+			<staticText><reportElement x="477" y="4" width="55" height="15" uuid="ecdc0790-a93b-444c-b8f0-721be18368f1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[TIMBRES]]></text></staticText>
+			<staticText><reportElement x="535" y="4" width="265" height="15" uuid="0fb4c782-dc15-4dc0-852f-8f46d9027c84"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[DETALLE TIMBRES]]></text></staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="28">
+			<textField><reportElement x="0" y="2" width="48" height="14" uuid="e042e0fd-66da-4ca5-b07e-7951d87ac70f"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{CODIGO}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="50" y="2" width="145" height="24" uuid="9ecb6652-009e-45e3-8cbf-3a1ab1af7d7b"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{NOMBRE_C}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="198" y="2" width="150" height="24" uuid="c9a2d966-8744-4a55-b7f8-06a80e8c8e2b"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{AREA_DESCRIP}]]></textFieldExpression></textField>
+			<textField pattern="dd/MM/yyyy"><reportElement x="351" y="2" width="55" height="14" uuid="b88f8f5d-fe1a-4629-a905-b4efd2bc1970"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
+			<textField><reportElement x="409" y="2" width="65" height="14" uuid="5a12635d-e8a9-4a40-8110-c6d24c171261"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DIA_SEMANA}]]></textFieldExpression></textField>
+			<textField><reportElement x="477" y="2" width="55" height="14" uuid="f20579dc-7412-49d5-b8e4-1888bdca7c96"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{TOTAL_TIMBRES}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="535" y="2" width="265" height="24" uuid="3a927bc9-1aa2-463f-9a81-0065da230823"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DETALLE_TIMBRES}]]></textFieldExpression></textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20">
+			<textField><reportElement x="680" y="0" width="80" height="20" uuid="cb75d93b-cf32-4be6-a3bb-b5ee41f74c82"/><textElement textAlignment="Right"><font size="8"/></textElement><textFieldExpression><![CDATA["Pagina " + $V{PAGE_NUMBER} + " de"]]></textFieldExpression></textField>
+			<textField evaluationTime="Report"><reportElement x="760" y="0" width="40" height="20" uuid="630cb080-6b5c-40c8-a035-c849fc28d68b"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+		</band>
+	</pageFooter>
+</jasperReport>
