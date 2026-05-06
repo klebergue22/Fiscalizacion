@@ -100,12 +100,20 @@
                     AND (r.hora * 60 + r.minuto) <= CASE WHEN t.codigo IS NOT NULL AND t.h_hasta < 12 THEN (t.h_hasta * 60 + t.mi_hasta) + 120 ELSE 1440 END
                ) AS hora_fin,
                (
-                 SELECT LPAD(r.hora, 2, '0') || ':' || LPAD(r.minuto, 2, '0')
+                 SELECT MIN(LPAD(r.hora, 2, '0') || ':' || LPAD(r.minuto, 2, '0'))
                    FROM rh.reloj r
                   WHERE r.codigo = em.codigo
                     AND (r.fecha = cal.fecha OR (t.codigo IS NOT NULL AND t.h_hasta < 12 AND r.fecha = cal.fecha + 1))
-                  ORDER BY r.fecha, r.hora, r.minuto
-                  OFFSET 2 ROWS FETCH NEXT 1 ROW ONLY
+                    AND (
+                          SELECT COUNT(*)
+                            FROM rh.reloj r_ant
+                           WHERE r_ant.codigo = r.codigo
+                             AND (r_ant.fecha = cal.fecha OR (t.codigo IS NOT NULL AND t.h_hasta < 12 AND r_ant.fecha = cal.fecha + 1))
+                             AND (
+                                  r_ant.fecha < r.fecha
+                                  OR (r_ant.fecha = r.fecha AND (r_ant.hora * 60 + r_ant.minuto) <= (r.hora * 60 + r.minuto))
+                             )
+                        ) >= 3
                ) AS retorno_almuerzo,
                CASE
                  WHEN t.codigo IS NOT NULL THEN
