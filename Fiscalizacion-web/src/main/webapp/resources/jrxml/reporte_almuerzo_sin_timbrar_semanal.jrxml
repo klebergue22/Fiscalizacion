@@ -12,6 +12,7 @@
        q.dia_semana,
        q.horario_trabajo,
        q.horario_almuerzo,
+       q.minutos_almuerzo,
        q.hora_inicio,
        q.hora_fin,
        q.hora_fin AS ultimo_timbre,
@@ -51,6 +52,10 @@
                    LPAD(TRUNC(ha.fin_almuerzo / 60), 2, '0') || ':' || LPAD(MOD(ha.fin_almuerzo, 60), 2, '0')
                  ELSE 'NO DEFINIDO'
                END AS horario_almuerzo,
+               CASE
+                 WHEN t.codigo IS NOT NULL THEN 60
+                 ELSE NVL(ha.duracion_almuerzo, 60)
+               END AS minutos_almuerzo,
                NVL((
                  SELECT LISTAGG(
                           CASE
@@ -271,8 +276,8 @@
                  OR TO_CHAR(cal.fecha, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') NOT IN ('SAT', 'SUN')
                )
        ) q
- WHERE REGEXP_LIKE(q.minutos_almuerzo_exceso, '^[0-9]+$')
-   AND TO_NUMBER(q.minutos_almuerzo_exceso) > 0
+ WHERE q.minutos_almuerzo_exceso <> '0'
+   AND q.minutos_almuerzo_exceso NOT IN ('SIN TIMBRES', 'SIN HORARIO')
  ORDER BY q.nombre_c, q.fecha]]>
 	</queryString>
 	<field name="NO_PERSONA" class="java.math.BigDecimal"/>
@@ -283,6 +288,7 @@
 	<field name="DIA_SEMANA" class="java.lang.String"/>
 	<field name="HORARIO_TRABAJO" class="java.lang.String"/>
 	<field name="HORARIO_ALMUERZO" class="java.lang.String"/>
+	<field name="MINUTOS_ALMUERZO" class="java.math.BigDecimal"/>
 	<field name="HORA_INICIO" class="java.lang.String"/>
 	<field name="HORA_FIN" class="java.lang.String"/>
 	<field name="ULTIMO_TIMBRE" class="java.lang.String"/>
@@ -323,11 +329,11 @@
 			<staticText><reportElement x="167" y="4" width="140" height="15" uuid="1e3c3201-d9f3-4d5c-b873-f560fda65301"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[AREA]]></text></staticText>
 			<staticText><reportElement x="309" y="4" width="50" height="15" uuid="baac8eb2-9138-4ab8-aaf7-5f4cb0b71ebb"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
 			<staticText><reportElement x="361" y="4" width="45" height="15" uuid="fc6b8a7d-c3cf-4f8d-a6f8-3c8074d31a16"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
-			<staticText><reportElement x="408" y="4" width="62" height="15" uuid="88a10d60-f4ab-4aa3-b73b-02629be06ec1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ALMUERZO]]></text></staticText>
-			<staticText><reportElement x="472" y="4" width="55" height="15" uuid="74c5605d-9b11-48ce-865d-8a0f09167b1c"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[RETORNO ALM.]]></text></staticText>
-			<staticText><reportElement x="529" y="4" width="50" height="15" uuid="229a6bea-f812-4341-a017-b157a2fd7665"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ULTIMO]]></text></staticText>
-			<staticText><reportElement x="581" y="4" width="130" height="15" uuid="89ac7253-f16a-4fa3-a123-a2816ff827a1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[PERMISO/TIMBRES]]></text></staticText>
-			<staticText><reportElement x="713" y="4" width="89" height="15" uuid="7d949c2f-54cc-40e6-9115-66eced61f143"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[MIN. RETRASO]]></text></staticText>
+			<staticText><reportElement x="408" y="4" width="62" height="15" uuid="88a10d60-f4ab-4aa3-b73b-02629be06ec1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[HORARIO TRAB.]]></text></staticText>
+			<staticText><reportElement x="472" y="4" width="62" height="15" uuid="74c5605d-9b11-48ce-865d-8a0f09167b1c"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[HORARIO ALM.]]></text></staticText>
+			<staticText><reportElement x="536" y="4" width="35" height="15" uuid="229a6bea-f812-4341-a017-b157a2fd7665"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[MIN.]]></text></staticText>
+			<staticText><reportElement x="573" y="4" width="135" height="15" uuid="89ac7253-f16a-4fa3-a123-a2816ff827a1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[DETALLE_TIMBRES]]></text></staticText>
+			<staticText><reportElement x="710" y="4" width="92" height="15" uuid="7d949c2f-54cc-40e6-9115-66eced61f143"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[OBSERVACION]]></text></staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -337,11 +343,11 @@
 			<textField isStretchWithOverflow="true"><reportElement x="167" y="0" width="140" height="30" uuid="4f46083f-b2e0-4eb7-a7db-df21f610ec04"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{AREA_DESCRIP}]]></textFieldExpression></textField>
 			<textField pattern="dd/MM/yyyy"><reportElement x="309" y="0" width="50" height="14" uuid="ab56237a-e55f-4f84-ac32-d3adad6ee543"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
 			<textField><reportElement x="361" y="0" width="45" height="14" uuid="2de568df-b6f0-4725-b7cc-744523f4de5f"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DIA_SEMANA}]]></textFieldExpression></textField>
-			<textField><reportElement x="408" y="0" width="62" height="14" uuid="624f633e-278a-4b77-b61a-98c6f3548e0e"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_ALMUERZO}]]></textFieldExpression></textField>
-			<textField><reportElement x="472" y="0" width="55" height="14" uuid="865d54c4-4311-4e85-93ba-c3c05444b749"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{RETORNO_ALMUERZO}]]></textFieldExpression></textField>
-			<textField><reportElement x="529" y="0" width="50" height="14" uuid="813d09ea-d552-4d78-8e05-8f68b977e1d4"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{ULTIMO_TIMBRE}]]></textFieldExpression></textField>
-			<textField isStretchWithOverflow="true"><reportElement x="581" y="0" width="130" height="30" uuid="314a98b8-83b0-4f1b-87bb-d94717598df0"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DETALLE_TIMBRES}]]></textFieldExpression></textField>
-			<textField><reportElement x="713" y="0" width="89" height="14" uuid="b21f16fd-f435-41bd-8053-e0a0be03f94a"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{MINUTOS_ALMUERZO_EXCESO}]]></textFieldExpression></textField>
+			<textField><reportElement x="408" y="0" width="62" height="14" uuid="624f633e-278a-4b77-b61a-98c6f3548e0e"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_TRABAJO}]]></textFieldExpression></textField>
+			<textField><reportElement x="472" y="0" width="62" height="14" uuid="865d54c4-4311-4e85-93ba-c3c05444b749"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_ALMUERZO}]]></textFieldExpression></textField>
+			<textField><reportElement x="536" y="0" width="35" height="14" uuid="813d09ea-d552-4d78-8e05-8f68b977e1d4"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{MINUTOS_ALMUERZO}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="573" y="0" width="135" height="30" uuid="314a98b8-83b0-4f1b-87bb-d94717598df0"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DETALLE_TIMBRES}]]></textFieldExpression></textField>
+			<textField><reportElement x="710" y="0" width="92" height="14" uuid="b21f16fd-f435-41bd-8053-e0a0be03f94a"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{MINUTOS_ALMUERZO_EXCESO}]]></textFieldExpression></textField>
 		</band>
 	</detail>
 </jasperReport>
