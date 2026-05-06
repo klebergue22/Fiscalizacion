@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -37,7 +38,6 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import org.apache.log4j.Logger;
-import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 /**
@@ -237,10 +237,10 @@ public class JasperReportUtil {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public static StreamedContent getStreamContentFromOutputStream(ByteArrayOutputStream os, String contentType, String nameFile) throws Exception {
-        StreamedContent file = null;
-        InputStream is = new ByteArrayInputStream(os.toByteArray());
-        file = new DefaultStreamedContent(is, contentType, nameFile);
-        return file;
+        if (os == null) {
+            return null;
+        }
+        return new ByteArrayStreamedContent(os.toByteArray(), contentType, nameFile);
     }
 
     public static StreamedContent getStreamContentReport(List list, Map map, String pathJasper, String nameFilePdf) {
@@ -252,8 +252,7 @@ public class JasperReportUtil {
         JasperExportManager.exportReportToPdfStream(jp, os);
         os.flush();
         os.close();
-        InputStream is = new ByteArrayInputStream(os.toByteArray());
-        pdf = new DefaultStreamedContent(is, "application/pdf", nameFilePdf);
+        pdf = new ByteArrayStreamedContent(os.toByteArray(), "application/pdf", nameFilePdf);
         } catch (Exception ex) {
             localLogger.error(ex);
         }
@@ -308,5 +307,45 @@ public class JasperReportUtil {
 
         }
         fcontext.responseComplete();
-    }     
+    }
+
+    private static class ByteArrayStreamedContent implements StreamedContent, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final byte[] data;
+        private final String contentType;
+        private final String name;
+
+        ByteArrayStreamedContent(byte[] data, String contentType, String name) {
+            this.data = data;
+            this.contentType = contentType;
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public InputStream getStream() {
+            return new ByteArrayInputStream(data);
+        }
+
+        @Override
+        public String getContentType() {
+            return contentType;
+        }
+
+        @Override
+        public String getContentEncoding() {
+            return null;
+        }
+
+        @Override
+        public Integer getContentLength() {
+            return data.length;
+        }
+    }
 }
