@@ -59,7 +59,7 @@ public class ReporteJornadaLaboralMensualControlador extends FacesUtil implement
     }
 
     public String getNameFilePdf() {
-        return "reporteJornadaLaboralMensual";
+        return "reporteNoTimbraSalida";
     }
 
     public StreamedContent getArchivoDescarga() {

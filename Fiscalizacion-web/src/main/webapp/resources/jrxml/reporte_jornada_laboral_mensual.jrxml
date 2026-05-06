@@ -4,88 +4,126 @@
 	<parameter name="FechaDesde" class="java.lang.String"/>
 	<parameter name="FechaHasta" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT TO_CHAR(em.codigo) AS codigo,
-       em.nombre_c AS servidor,
-       em.email_institucional AS correo_institucional,
-       NVL(ar.descrip, 'SIN AREA') AS area,
-       NVL(resp.pie_firma, resp.nombre_c) AS responsable_area,
-       cal.fecha AS fecha,
-       cal.dia_semana AS dia,
+		<![CDATA[SELECT q.codigo,
+       q.servidor,
+       q.correo_institucional,
+       q.area,
+       q.responsable_area,
+       q.fecha,
+       q.dia,
+       'NO TIMBRA SALIDA' AS estado_jornada,
+       q.tipo_jornada,
+       q.horario_jornada,
+       q.ultimo_timbre AS horario_almuerzo,
+       NULL AS minutos_almuerzo,
        CASE
-         WHEN t.codigo IS NOT NULL THEN 'ASIGNADA'
-         WHEN ha.no_cd IS NOT NULL THEN 'ASIGNADA'
-         ELSE 'NO ASIGNADA'
-       END AS estado_jornada,
-       CASE
-         WHEN t.codigo IS NOT NULL THEN
-           CASE WHEN t.h_desde >= 18 OR t.h_hasta < 6 THEN 'TURNO NOCTURNO' ELSE 'TURNO DIURNO' END
-         WHEN ha.no_cd IS NOT NULL THEN 'HORARIO GENERAL'
-         ELSE 'SIN JORNADA'
-       END AS tipo_jornada,
-       CASE
-         WHEN t.codigo IS NOT NULL THEN
-           LPAD(t.h_desde, 2, '0') || ':' || LPAD(t.mi_desde, 2, '0') || ' - ' ||
-           LPAD(t.h_hasta, 2, '0') || ':' || LPAD(t.mi_hasta, 2, '0')
-         WHEN ha.no_cd IS NOT NULL THEN
-           LPAD(TRUNC(ha.hora_inicio / 60), 2, '0') || ':' || LPAD(MOD(ha.hora_inicio, 60), 2, '0') || ' - ' ||
-           LPAD(TRUNC(ha.hora_fin / 60), 2, '0') || ':' || LPAD(MOD(ha.hora_fin, 60), 2, '0')
-         ELSE 'NO DEFINIDO'
-       END AS horario_jornada,
-       CASE
-         WHEN t.codigo IS NOT NULL THEN
-           CASE WHEN t.h_desde >= 18 OR t.h_hasta < 6 THEN '01:00 - 02:00' ELSE '13:00 - 14:00' END
-         WHEN ha.inicio_almuerzo IS NOT NULL AND ha.fin_almuerzo IS NOT NULL THEN
-           LPAD(TRUNC(ha.inicio_almuerzo / 60), 2, '0') || ':' || LPAD(MOD(ha.inicio_almuerzo, 60), 2, '0') || ' - ' ||
-           LPAD(TRUNC(ha.fin_almuerzo / 60), 2, '0') || ':' || LPAD(MOD(ha.fin_almuerzo, 60), 2, '0')
-         ELSE 'NO DEFINIDO'
-       END AS horario_almuerzo,
-       CASE
-         WHEN t.codigo IS NOT NULL THEN 60
-         WHEN ha.no_cd IS NOT NULL THEN NVL(ha.duracion_almuerzo, 60)
-         ELSE NULL
-       END AS minutos_almuerzo,
-       CASE
-         WHEN t.codigo IS NOT NULL THEN TO_CHAR(t.f_desde, 'DD/MM/YYYY') || ' - ' || TO_CHAR(t.f_hasta, 'DD/MM/YYYY')
-         WHEN ha.no_cd IS NOT NULL THEN TO_CHAR(NVL(ha.fecha_desde, TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY'))), 'DD/MM/YYYY') || ' - ' ||
-                                      TO_CHAR(NVL(ha.fecha_hasta, TRUNC(TO_DATE($P{FechaHasta}, 'DD/MM/YYYY'))), 'DD/MM/YYYY')
-         ELSE '-'
+         WHEN q.min_ultimo_timbre_hasta_salida IS NULL THEN 'SIN TIMBRE'
+         ELSE TO_CHAR(q.min_ultimo_timbre_hasta_salida)
        END AS vigencia_jornada,
-       CASE
-         WHEN t.codigo IS NULL AND ha.no_cd IS NULL THEN 'Sin turno ni horario general activo para el area y dia'
-         WHEN t.codigo IS NOT NULL THEN 'Asignado por turno'
-         ELSE 'Asignado por horario general del area'
-       END AS observacion
+       q.detalle_timbres AS observacion
   FROM (
-        SELECT e.no_persona,
-               e.nombre_c,
-               e.codigo,
-               e.email_institucional,
-               c.no_cd
-          FROM rh.t_dat_empleado e
-          JOIN rh.t_contrataciones c ON e.no_persona = c.no_persona
-         WHERE c.estado = 'V'
-           AND INSTR(e.email_institucional, '@geograficomilitar.gob.ec') > 0
-       ) em
-  LEFT JOIN inventarios.t_areas ar ON ar.no_cd = em.no_cd
-  LEFT JOIN rh.t_dat_empleado resp ON resp.no_persona = ar.responsable_no_persona
-  CROSS JOIN (
-        SELECT TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1 AS fecha,
-               TRIM(TO_CHAR(TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH')) AS dia_semana
-          FROM dual
-       CONNECT BY LEVEL <= TRUNC(TO_DATE($P{FechaHasta}, 'DD/MM/YYYY')) - TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + 1
-       ) cal
-  LEFT JOIN rh.turnos t
-    ON t.codigo = em.codigo
-   AND cal.fecha BETWEEN t.f_desde AND t.f_hasta
-  LEFT JOIN rh.horario_almuerzo ha
-    ON ha.no_cd = em.no_cd
-   AND (ha.dia_semana IS NULL OR UPPER(TRIM(ha.dia_semana)) = UPPER(TRIM(cal.dia_semana)))
-   AND ha.activo = 'S'
-   AND (ha.fecha_desde IS NULL OR cal.fecha >= ha.fecha_desde)
-   AND (ha.fecha_hasta IS NULL OR cal.fecha <= ha.fecha_hasta)
- WHERE t.codigo IS NULL
-   AND ha.no_cd IS NULL
- ORDER BY estado_jornada DESC, area, servidor, cal.fecha]]>
+        SELECT TO_CHAR(em.codigo) AS codigo,
+               em.nombre_c AS servidor,
+               em.email_institucional AS correo_institucional,
+               NVL(ar.descrip, 'SIN AREA') AS area,
+               NVL(resp.pie_firma, resp.nombre_c) AS responsable_area,
+               cal.fecha AS fecha,
+               cal.dia_semana AS dia,
+               CASE
+                 WHEN t.codigo IS NOT NULL THEN
+                   CASE WHEN t.h_desde >= 18 OR t.h_hasta < 6 THEN 'TURNO NOCTURNO' ELSE 'TURNO DIURNO' END
+                 WHEN ha.no_cd IS NOT NULL THEN 'HORARIO GENERAL'
+                 ELSE 'HORARIO DEFAULT'
+               END AS tipo_jornada,
+               CASE
+                 WHEN t.codigo IS NOT NULL THEN
+                   LPAD(t.h_desde, 2, '0') || ':' || LPAD(t.mi_desde, 2, '0') || ' - ' ||
+                   LPAD(t.h_hasta, 2, '0') || ':' || LPAD(t.mi_hasta, 2, '0')
+                 ELSE
+                   LPAD(TRUNC(NVL(ha.hora_inicio, 450) / 60), 2, '0') || ':' || LPAD(MOD(NVL(ha.hora_inicio, 450), 60), 2, '0') || ' - ' ||
+                   LPAD(TRUNC(NVL(ha.hora_fin, 990) / 60), 2, '0') || ':' || LPAD(MOD(NVL(ha.hora_fin, 990), 60), 2, '0')
+               END AS horario_jornada,
+               NVL(
+                 (
+                   SELECT LISTAGG(LPAD(r.hora, 2, '0') || ':' || LPAD(r.minuto, 2, '0'), ' | ')
+                          WITHIN GROUP (ORDER BY r.fecha, r.hora, r.minuto)
+                     FROM rh.reloj r
+                    WHERE r.codigo = em.codigo
+                      AND (
+                           r.fecha = cal.fecha
+                           OR (t.codigo IS NOT NULL AND t.h_hasta < 12 AND r.fecha = cal.fecha + 1)
+                          )
+                 ),
+                 'SIN TIMBRE'
+               ) AS detalle_timbres,
+               (
+                 SELECT MAX(LPAD(r2.hora, 2, '0') || ':' || LPAD(r2.minuto, 2, '0'))
+                   FROM rh.reloj r2
+                  WHERE r2.codigo = em.codigo
+                    AND r2.fecha =
+                        CASE
+                          WHEN t.codigo IS NOT NULL AND t.h_hasta < 12 THEN cal.fecha + 1
+                          ELSE cal.fecha
+                        END
+               ) AS ultimo_timbre,
+               (
+                 SELECT CASE
+                          WHEN MAX(r3.hora * 60 + r3.minuto) IS NULL THEN NULL
+                          WHEN MAX(r3.hora * 60 + r3.minuto) < 
+                               CASE
+                                 WHEN t.codigo IS NOT NULL THEN (t.h_hasta * 60 + t.mi_hasta)
+                                 ELSE NVL(ha.hora_fin, 990)
+                               END
+                            THEN CASE
+                                   WHEN t.codigo IS NOT NULL THEN (t.h_hasta * 60 + t.mi_hasta)
+                                   ELSE NVL(ha.hora_fin, 990)
+                                 END - MAX(r3.hora * 60 + r3.minuto)
+                          ELSE 0
+                        END
+                   FROM rh.reloj r3
+                  WHERE r3.codigo = em.codigo
+                    AND r3.fecha =
+                        CASE
+                          WHEN t.codigo IS NOT NULL AND t.h_hasta < 12 THEN cal.fecha + 1
+                          ELSE cal.fecha
+                        END
+               ) AS min_ultimo_timbre_hasta_salida
+          FROM (
+                SELECT e.no_persona,
+                       e.nombre_c,
+                       e.codigo,
+                       e.email_institucional,
+                       c.no_cd
+                  FROM rh.t_dat_empleado e
+                  JOIN rh.t_contrataciones c ON e.no_persona = c.no_persona
+                 WHERE c.estado = 'V'
+                   AND INSTR(e.email_institucional, '@geograficomilitar.gob.ec') > 0
+               ) em
+          LEFT JOIN inventarios.t_areas ar ON ar.no_cd = em.no_cd
+          LEFT JOIN rh.t_dat_empleado resp ON resp.no_persona = ar.responsable_no_persona
+          CROSS JOIN (
+                SELECT TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1 AS fecha,
+                       TRIM(TO_CHAR(TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH')) AS dia_semana
+                  FROM dual
+               CONNECT BY LEVEL <= TRUNC(TO_DATE($P{FechaHasta}, 'DD/MM/YYYY')) - TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + 1
+               ) cal
+          LEFT JOIN rh.turnos t
+            ON t.codigo = em.codigo
+           AND cal.fecha BETWEEN t.f_desde AND t.f_hasta
+          LEFT JOIN rh.horario_almuerzo ha
+            ON ha.no_cd = em.no_cd
+           AND (ha.dia_semana IS NULL OR UPPER(TRIM(ha.dia_semana)) = UPPER(TRIM(cal.dia_semana)))
+           AND ha.activo = 'S'
+           AND (ha.fecha_desde IS NULL OR cal.fecha >= ha.fecha_desde)
+           AND (ha.fecha_hasta IS NULL OR cal.fecha <= ha.fecha_hasta)
+         WHERE (
+                 t.codigo IS NOT NULL
+                 OR TO_CHAR(cal.fecha, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') NOT IN ('SAT', 'SUN')
+               )
+       ) q
+ WHERE q.min_ultimo_timbre_hasta_salida IS NULL
+    OR q.min_ultimo_timbre_hasta_salida > 0
+ ORDER BY q.area, q.servidor, q.fecha]]>
 	</queryString>
 	<field name="CODIGO" class="java.lang.String"/>
 	<field name="SERVIDOR" class="java.lang.String"/>
@@ -111,7 +149,7 @@
 			<staticText>
 				<reportElement x="70" y="25" width="650" height="24" uuid="f5d1ed18-b8c7-4de7-8791-d3f5ec39f5d2"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="13" isBold="true"/></textElement>
-				<text><![CDATA[VERIFICACION MENSUAL DE JORNADA LABORAL ASIGNADA]]></text>
+				<text><![CDATA[PERSONAL QUE NO TIMBRA A LA SALIDA]]></text>
 			</staticText>
 			<staticText><reportElement x="30" y="60" width="80" height="20" uuid="0c22c414-bd53-4a6c-ae78-3ea507c99d38"/><textElement><font size="9" isBold="true"/></textElement><text><![CDATA[Fecha inicio:]]></text></staticText>
 			<textField><reportElement x="112" y="60" width="80" height="20" uuid="5b7e71af-d061-44f4-b60a-9862baf90b7c"/><textElement><font size="9"/></textElement><textFieldExpression><![CDATA[$P{FechaDesde}]]></textFieldExpression></textField>
@@ -131,12 +169,12 @@
 			<staticText><reportElement x="160" y="4" width="118" height="16" uuid="93434098-a565-4acd-bdf6-c2518f2d7bc1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[AREA]]></text></staticText>
 			<staticText><reportElement x="280" y="4" width="48" height="16" uuid="520e703d-559d-4de6-83a5-0b4f0897e2d8"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
 			<staticText><reportElement x="330" y="4" width="45" height="16" uuid="fa81fa5b-aa93-4664-9c5e-8c16bff8bc2c"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
-			<staticText><reportElement x="377" y="4" width="62" height="16" uuid="0ac62de7-2f30-4bcf-b17c-a51b3ecf55c1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ESTADO]]></text></staticText>
+			<staticText><reportElement x="377" y="4" width="62" height="16" uuid="0ac62de7-2f30-4bcf-b17c-a51b3ecf55c1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[SITUACION]]></text></staticText>
 			<staticText><reportElement x="441" y="4" width="74" height="16" uuid="1f836b3a-440c-4bc4-9171-0cfcf5a99b24"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[TIPO]]></text></staticText>
-			<staticText><reportElement x="517" y="4" width="70" height="16" uuid="cfb48cf7-f5f3-4b2f-8ff1-90ef129384fa"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[JORNADA]]></text></staticText>
-			<staticText><reportElement x="589" y="4" width="70" height="16" uuid="fa6f721d-e2b4-4f68-9b5b-6d1cf2c93712"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ALMUERZO]]></text></staticText>
-			<staticText><reportElement x="661" y="4" width="58" height="16" uuid="fdd7c189-d814-4865-8f41-3e5515af2aaa"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[VIGENCIA]]></text></staticText>
-			<staticText><reportElement x="721" y="4" width="81" height="16" uuid="f1ec716b-13d7-457e-871f-9062ec965a18"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[OBSERVACION]]></text></staticText>
+			<staticText><reportElement x="517" y="4" width="70" height="16" uuid="cfb48cf7-f5f3-4b2f-8ff1-90ef129384fa"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[HORARIO]]></text></staticText>
+			<staticText><reportElement x="589" y="4" width="70" height="16" uuid="fa6f721d-e2b4-4f68-9b5b-6d1cf2c93712"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ULTIMO]]></text></staticText>
+			<staticText><reportElement x="661" y="4" width="58" height="16" uuid="fdd7c189-d814-4865-8f41-3e5515af2aaa"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[MIN. FALTAN]]></text></staticText>
+			<staticText><reportElement x="721" y="4" width="81" height="16" uuid="f1ec716b-13d7-457e-871f-9062ec965a18"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[TIMBRES]]></text></staticText>
 		</band>
 	</columnHeader>
 	<detail>

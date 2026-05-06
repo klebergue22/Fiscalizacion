@@ -1,16 +1,16 @@
 -- Configuracion de menu para exponer el reporte:
--- "Verificacion mensual de jornada laboral asignada".
+-- "Personal que no timbra a la salida".
 -- Ajuste los ID si en el ambiente ya se encuentran ocupados.
 
 INSERT INTO FISCALIZACION.T_PAGINA
 (ID_PAGINA, NOMBRE, URL, VERSION, FECHA_MODIFICACION)
 VALUES
-(30, 'Verificacion mensual de jornada laboral asignada', 'faces/reportes/ReporteJornadaLaboralMensual.xhtml', 1, NULL);
+(30, 'Personal que no timbra a la salida', 'faces/reportes/ReporteJornadaLaboralMensual.xhtml', 1, NULL);
 
 INSERT INTO FISCALIZACION.T_MENU
 (ID_MENU, ID_MENU_PADRE, ORDEN, VERSION, ID_PAGINA, NOMBRE)
 VALUES
-(37, 17, 13, '1         ', 30, 'Verificacion mensual de jornada laboral');
+(37, 17, 13, '1         ', 30, 'Personal que no timbra a la salida');
 
 INSERT INTO FISCALIZACION.T_PAGINAPERFIL
 (ID_PAGINA, ID_PERFIL, VERSION)

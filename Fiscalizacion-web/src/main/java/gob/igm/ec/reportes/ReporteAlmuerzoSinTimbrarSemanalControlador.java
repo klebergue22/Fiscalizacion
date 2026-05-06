@@ -66,7 +66,7 @@ public class ReporteAlmuerzoSinTimbrarSemanalControlador extends FacesUtil imple
     }
 
     public String getNameFilePdf() {
-        return "reporteAlmuerzoSinTimbrarSemanal";
+        return "reporteRetrasoAlmuerzo";
     }
 
     public StreamedContent getArchivoDescarga() {
