@@ -1,13 +1,11 @@
 package gob.igm.ec.reportes;
 
-import gob.igm.ec.administracion.MenuOP;
 import gob.igm.ec.util.FacesUtil;
 import gob.igm.ec.util.JasperReportUtil;
 import gob.igm.rh.modelo.VGestionesVigentes;
 import gob.igm.rh.servicio.DatosEmpleadoServicio;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import javax.inject.Named;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,14 +18,11 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletResponse;
-import net.sf.jasperreports.engine.JRExporter;
+import javax.inject.Named;
 import org.primefaces.model.StreamedContent;
+import javax.enterprise.context.SessionScoped;
 
-@ManagedBean
 @SessionScoped
 @Named
 public class ReporteAtrasoControlador extends FacesUtil implements Serializable {
@@ -37,11 +32,10 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
     //private String number;
     private boolean renderBarra;
     private String uno;
-    MenuOP menuOP = super.getBean(MenuOP.NOMBRE_BEAN);
-    
     private String path;
     private Date fechaDesde;
     private Date fechaHasta;
+    private Short noGestion;
     
     DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
     
@@ -61,7 +55,7 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
 //            }
         this.setRenderBarra(false);
         this.setUno(JasperReportUtil.PATH_IMAGES);
-       // this.setPath(JasperReportUtil.PATH_REPORTE_ACCIONES);
+        this.setPath(JasperReportUtil.PATH_REPORTE_ATRASOS);
  
     }
     
@@ -70,28 +64,46 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
             this.setRenderBarra(true);
      
             if (fechaDesde == null || fechaHasta == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE INGRESAR UN CODIGO DE TIMBRADO"));
-            } else {
-                Map<String, Object> map = new HashMap<>();
-
-                Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1", "PERMISOS", "PERMIGM2012");
-                //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
-                map.put("pathImagen", JasperReportUtil.PATH_IMAGES);
-
-                String fecha = formatoFecha.format(fechaDesde);
-                String fecha2 = formatoFecha.format(fechaHasta);
-                map.put("FechaDesde", fecha);
-                map.put("FechaHasta", fecha2);
-
-                JasperReportUtil jasper = new JasperReportUtil();
-                JRExporter exporter = null;
-                outputStream = JasperReportUtil.getOutputStreamFromReport(conexion, map, JasperReportUtil.PATH_REPORTE_TIPO_PERMISO);
-                media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
-                conexion.close();
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA DESDE Y FECHA HASTA"));
+                return;
             }
+
+            if (fechaHasta.before(fechaDesde)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "LA FECHA HASTA NO PUEDE SER MENOR A LA FECHA DESDE"));
+                return;
+            }
+
+            if (noGestion == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR LA GESTION"));
+                return;
+            }
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("pathImagen", JasperReportUtil.PATH_IMAGES);
+            map.put("FechaDesde", formatoFecha.format(fechaDesde));
+            map.put("FechaHasta", formatoFecha.format(fechaHasta));
+            map.put("NoGestion", noGestion);
+
+            try (Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1", "PERMISOS", "PERMIGM2012")) {
+                outputStream = JasperReportUtil.getOutputStreamFromReport(conexion, map, JasperReportUtil.PATH_REPORTE_ATRASOS);
+            }
+
+            if (outputStream == null || outputStream.size() == 0) {
+                media = null;
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
+                return;
+            }
+
+            media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
             
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            media = null;
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
         }
     }
 
@@ -100,22 +112,20 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
         return "ReporteDeAtrasos";
     }
 
-    public void downloadFile() {
+    public StreamedContent getArchivoDescarga() {
         try {
-            FacesContext facesContext = FacesContext.getCurrentInstance();
-            
-            HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-            response.reset();
-            response.setContentType("application/pdf");
-            response.setHeader("Content-disposition", "attachment; filename=" + getNameFilePdf());
-            
-            OutputStream output = response.getOutputStream();
-            output.write(outputStream.toByteArray());
-            output.close();
-            
-            facesContext.responseComplete();
+            if (outputStream == null || outputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new ByteArrayInputStream(outputStream.toByteArray()),
+                    "application/pdf",
+                    getNameFilePdf() + ".pdf");
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
         }
     }
     
@@ -191,6 +201,14 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
 
     public void setListadoGestiones(List<VGestionesVigentes> listadoGestiones) {
         this.listadoGestiones = listadoGestiones;
+    }
+
+    public Short getNoGestion() {
+        return noGestion;
+    }
+
+    public void setNoGestion(Short noGestion) {
+        this.noGestion = noGestion;
     }
     
     

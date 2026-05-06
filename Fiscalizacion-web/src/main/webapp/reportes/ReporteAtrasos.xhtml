@@ -51,8 +51,10 @@
             <div class="form-group col-md-12">
                 <p:outputLabel value="Gestiones:" class=" col-lg-1 col-md-1 control-label" />
                 <div class="col-lg-3 col-md-3">
-                    <p:selectOneMenu  id="idGestion"                                                  
-                                      required="false" >
+                    <p:selectOneMenu  id="idGestion"
+                                      value="#{reporteAtrasoControlador.noGestion}"
+                                      required="true"
+                                      requiredMessage="DEBE SELECCIONAR LA GESTION" >
                         <f:selectItem itemLabel="-- Seleccione la Gestión --" noSelectionOption="true"/>
                         <f:selectItems value="#{reporteAtrasoControlador.listadoGestiones}" var="itemGestion"
                                        itemLabel="#{itemGestion.descrip}"
@@ -74,7 +76,7 @@
 
             <p:commandButton value="Generar Reporte" class="btn-xs btn btn-info" 
                              update=":frmAtrasos" process="@all"
-                             actionListener="#{reporteAtrasoControlador.generarReporteAtrasos}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1"  />
+                             actionListener="#{reporteAtrasoControlador.generarReporteAtrasos()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1"  />
 
             <br /><br />
             <p:progressBar id="progressBarClient" widgetVar="pbClient" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
