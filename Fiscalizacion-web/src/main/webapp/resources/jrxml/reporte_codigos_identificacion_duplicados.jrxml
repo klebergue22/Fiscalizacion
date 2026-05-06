@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_codigos_identificacion_duplicados" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="66ee74c0-a05d-4beb-b055-1f4974b36552">
+	<parameter name="pathImagen" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT e.codigo,
+       e.no_persona,
+       e.no_cedula,
+       e.nombre_c,
+       ar.descrip AS area_descrip,
+       COUNT(*) OVER (PARTITION BY e.codigo) AS total_duplicados
+  FROM rh.t_dat_empleado e
+  JOIN rh.t_contrataciones c
+    ON c.no_persona = e.no_persona
+   AND c.estado = 'V'
+  LEFT JOIN inventarios.t_areas ar
+    ON ar.no_cd = c.no_cd
+ WHERE e.codigo IS NOT NULL
+   AND TRIM(e.codigo) IN (
+       SELECT TRIM(e2.codigo)
+         FROM rh.t_dat_empleado e2
+         JOIN rh.t_contrataciones c2
+           ON c2.no_persona = e2.no_persona
+          AND c2.estado = 'V'
+        WHERE e2.codigo IS NOT NULL
+        GROUP BY TRIM(e2.codigo)
+       HAVING COUNT(DISTINCT e2.no_persona) > 1
+   )
+ ORDER BY e.codigo, e.nombre_c]]>
+	</queryString>
+	<field name="CODIGO" class="java.lang.String"/>
+	<field name="NO_PERSONA" class="java.math.BigDecimal"/>
+	<field name="NO_CEDULA" class="java.lang.String"/>
+	<field name="NOMBRE_C" class="java.lang.String"/>
+	<field name="AREA_DESCRIP" class="java.lang.String"/>
+	<field name="TOTAL_DUPLICADOS" class="java.math.BigDecimal"/>
+	<title>
+		<band height="90">
+			<staticText>
+				<reportElement x="70" y="0" width="650" height="25" uuid="61c2ef9a-afc8-44c1-b2f7-e37b9cf3fef9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="18" isBold="true"/></textElement>
+				<text><![CDATA[INSTITUTO GEOGRAFICO MILITAR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="25" width="650" height="34" uuid="664e64be-4f71-4574-a6d1-b80a122c742d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"><font size="13" isBold="true"/></textElement>
+				<text><![CDATA[REPORTE DE CODIGOS DE IDENTIFICACION DUPLICADOS ASIGNADOS A SERVIDORES Y TRABAJADORES PUBLICOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="600" y="62" width="82" height="20" uuid="ff935ea3-21da-4667-a604-5969c28118f9"/>
+				<textElement><font size="9" isBold="true"/></textElement>
+				<text><![CDATA[Fecha reporte:]]></text>
+			</staticText>
+			<textField evaluationTime="Report" pattern="dd/MM/yyyy">
+				<reportElement x="684" y="62" width="70" height="20" uuid="61ad1d08-4ff2-4f95-83f8-122121f92588"/>
+				<textElement><font size="9"/></textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="60" height="47" uuid="0b12706a-f4f6-41c8-819a-7a76d37fb584"/>
+				<imageExpression><![CDATA[$P{pathImagen}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="24">
+			<line><reportElement x="-10" y="1" width="815" height="1" forecolor="#4A17E3" uuid="aa1031b7-98f3-4972-8847-3d665cde5d8d"/></line>
+			<line><reportElement x="-9" y="22" width="815" height="1" forecolor="#1828B8" uuid="79f24366-d610-4b73-bc3c-398dc9b9343b"/></line>
+			<staticText><reportElement x="0" y="4" width="70" height="15" uuid="a6ab8b8e-f61f-4435-a809-9e1334870822"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[CODIGO]]></text></staticText>
+			<staticText><reportElement x="75" y="4" width="75" height="15" uuid="454293b4-5432-46a1-a26a-36763c908b1d"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[NO_PERSONA]]></text></staticText>
+			<staticText><reportElement x="155" y="4" width="85" height="15" uuid="272ff0c9-7843-4740-b02e-9f80fa526b17"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[CEDULA]]></text></staticText>
+			<staticText><reportElement x="245" y="4" width="240" height="15" uuid="8f1f4673-c613-4559-8d89-bc49749fa45c"/><textElement><font size="8" isBold="true"/></textElement><text><![CDATA[NOMBRE]]></text></staticText>
+			<staticText><reportElement x="490" y="4" width="230" height="15" uuid="42e65021-b735-4883-9821-ed02591ef6f1"/><textElement><font size="8" isBold="true"/></textElement><text><![CDATA[AREA]]></text></staticText>
+			<staticText><reportElement x="725" y="4" width="75" height="15" uuid="ecdc0790-a93b-444c-b8f0-721be18368f1"/><textElement textAlignment="Center"><font size="8" isBold="true"/></textElement><text><![CDATA[DUPLICADOS]]></text></staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22">
+			<textField><reportElement x="0" y="2" width="70" height="16" uuid="e042e0fd-66da-4ca5-b07e-7951d87ac70f"/><textElement textAlignment="Center"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{CODIGO}]]></textFieldExpression></textField>
+			<textField><reportElement x="75" y="2" width="75" height="16" uuid="5a12635d-e8a9-4a40-8110-c6d24c171261"/><textElement textAlignment="Center"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{NO_PERSONA}]]></textFieldExpression></textField>
+			<textField><reportElement x="155" y="2" width="85" height="16" uuid="b88f8f5d-fe1a-4629-a905-b4efd2bc1970"/><textElement textAlignment="Center"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{NO_CEDULA}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="245" y="2" width="240" height="16" uuid="9ecb6652-009e-45e3-8cbf-3a1ab1af7d7b"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{NOMBRE_C}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="490" y="2" width="230" height="16" uuid="c9a2d966-8744-4a55-b7f8-06a80e8c8e2b"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{AREA_DESCRIP}]]></textFieldExpression></textField>
+			<textField><reportElement x="725" y="2" width="75" height="16" uuid="f20579dc-7412-49d5-b8e4-1888bdca7c96"/><textElement textAlignment="Center"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{TOTAL_DUPLICADOS}]]></textFieldExpression></textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20">
+			<textField><reportElement x="680" y="0" width="80" height="20" uuid="cb75d93b-cf32-4be6-a3bb-b5ee41f74c82"/><textElement textAlignment="Right"><font size="8"/></textElement><textFieldExpression><![CDATA["Pagina " + $V{PAGE_NUMBER} + " de"]]></textFieldExpression></textField>
+			<textField evaluationTime="Report"><reportElement x="760" y="0" width="40" height="20" uuid="630cb080-6b5c-40c8-a035-c849fc28d68b"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+		</band>
+	</pageFooter>
+</jasperReport>
