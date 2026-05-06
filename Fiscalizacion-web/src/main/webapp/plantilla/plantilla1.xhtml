@@ -388,6 +388,7 @@
         <!-- AdminLTE App -->
         <script src="${request.contextPath}/resources/dist/js/app.min.js"></script>
         <script>
+            //<![CDATA[
                                                 function normalizarUrlMenu(forma) {
                                                     var ruta = (forma || '').replace(/^\/+/, '');
                                                     while (ruta.indexOf('faces/') === 0) {
@@ -447,6 +448,7 @@
                                                 $(document).ready(function () {
 
                                                 });
+            //]]>
         </script>
         <!-- Optionally, you can add Slimscroll and FastClick plugins.
              Both of these plugins are recommended to enhance the
