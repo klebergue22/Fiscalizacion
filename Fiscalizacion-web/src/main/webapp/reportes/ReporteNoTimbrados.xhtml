@@ -17,6 +17,28 @@
         <link href="#{facesContext.externalContext.context.contextPath}/css/ace.min.css" rel="stylesheet" type="text/css" />
         <link href="#{facesContext.externalContext.context.contextPath}/css/ace-rtl.min.css" rel="stylesheet" type="text/css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style type="text/css">
+            .ui-growl {
+                top: 60px !important;
+                right: 20px !important;
+                z-index: 99999 !important;
+            }
+
+            .ui-growl-item {
+                padding: 12px 16px !important;
+                min-height: 56px;
+                overflow: visible;
+            }
+
+            .ui-growl-image {
+                margin-top: 4px;
+            }
+
+            .ui-growl-message {
+                padding-top: 0;
+                line-height: 1.5;
+            }
+        </style>
      
     </h:head>
 <script type="text/javascript">
