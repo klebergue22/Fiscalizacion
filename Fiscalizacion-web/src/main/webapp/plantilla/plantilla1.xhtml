@@ -35,6 +35,22 @@
                 margin: -25px 0 0 -25px;
             }
 
+            .main-sidebar .sidebar {
+                max-height: calc(100vh - 50px);
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding-bottom: 35px;
+            }
+
+            .main-sidebar .sidebar::-webkit-scrollbar {
+                width: 7px;
+            }
+
+            .main-sidebar .sidebar::-webkit-scrollbar-thumb {
+                background-color: rgba(255, 255, 255, 0.35);
+                border-radius: 4px;
+            }
+
         </style>
 
     </h:head>
