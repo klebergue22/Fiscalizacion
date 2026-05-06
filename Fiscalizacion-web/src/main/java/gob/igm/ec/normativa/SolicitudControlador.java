@@ -42,7 +42,7 @@ public class SolicitudControlador implements Serializable{
     private List<Archivo> listaArchivos;
     private List<Archivo> listaArchivosRecuperados;
     private UploadedFile file;
-    @EJB
+    @EJB(beanName = "TSolicitudServicio")
     private TSolicitudServicio solicitudFacade;
     @EJB
     private ArchivoServicio archivoFacade;
