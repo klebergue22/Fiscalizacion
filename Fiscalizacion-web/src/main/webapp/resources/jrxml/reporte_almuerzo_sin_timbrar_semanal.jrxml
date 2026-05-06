@@ -99,26 +99,17 @@
                     AND r.fecha = CASE WHEN t.codigo IS NOT NULL AND t.h_hasta < 12 THEN cal.fecha + 1 ELSE cal.fecha END
                     AND (r.hora * 60 + r.minuto) <= CASE WHEN t.codigo IS NOT NULL AND t.h_hasta < 12 THEN (t.h_hasta * 60 + t.mi_hasta) + 120 ELSE 1440 END
                ) AS hora_fin,
-               CASE
-                 WHEN t.codigo IS NOT NULL THEN
-                   (
-                     SELECT MAX(LPAD(r.hora, 2, '0') || ':' || LPAD(r.minuto, 2, '0'))
-                       FROM rh.reloj r
-                      WHERE r.codigo = em.codigo
-                        AND r.fecha = cal.fecha
-                        AND (r.hora * 60 + r.minuto) BETWEEN CASE WHEN t.h_desde >= 18 OR t.h_hasta < 6 THEN 60 ELSE 780 END
-                                                        AND CASE WHEN t.h_desde >= 18 OR t.h_hasta < 6 THEN 120 ELSE 840 END
-                   )
-                 WHEN ha.inicio_almuerzo IS NULL OR ha.fin_almuerzo IS NULL THEN NULL
-                 ELSE
-                   (
-                     SELECT MAX(LPAD(r.hora, 2, '0') || ':' || LPAD(r.minuto, 2, '0'))
-                       FROM rh.reloj r
-                      WHERE r.codigo = em.codigo
-                        AND r.fecha = cal.fecha
-                        AND (r.hora * 60 + r.minuto) BETWEEN ha.inicio_almuerzo AND ha.fin_almuerzo
-                   )
-               END AS retorno_almuerzo,
+               (
+                 SELECT x.timbre
+                   FROM (
+                         SELECT LPAD(r.hora, 2, '0') || ':' || LPAD(r.minuto, 2, '0') AS timbre,
+                                ROW_NUMBER() OVER (ORDER BY r.fecha, r.hora, r.minuto) AS rn
+                           FROM rh.reloj r
+                          WHERE r.codigo = em.codigo
+                            AND (r.fecha = cal.fecha OR (t.codigo IS NOT NULL AND t.h_hasta < 12 AND r.fecha = cal.fecha + 1))
+                        ) x
+                  WHERE x.rn = 3
+               ) AS retorno_almuerzo,
                CASE
                  WHEN t.codigo IS NOT NULL THEN
                    (
@@ -319,8 +310,8 @@
 			<staticText><reportElement x="309" y="4" width="50" height="15" uuid="baac8eb2-9138-4ab8-aaf7-5f4cb0b71ebb"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
 			<staticText><reportElement x="361" y="4" width="45" height="15" uuid="fc6b8a7d-c3cf-4f8d-a6f8-3c8074d31a16"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
 			<staticText><reportElement x="408" y="4" width="62" height="15" uuid="88a10d60-f4ab-4aa3-b73b-02629be06ec1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ALMUERZO]]></text></staticText>
-			<staticText><reportElement x="472" y="4" width="50" height="15" uuid="229a6bea-f812-4341-a017-b157a2fd7665"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ULTIMO]]></text></staticText>
-			<staticText><reportElement x="524" y="4" width="55" height="15" uuid="74c5605d-9b11-48ce-865d-8a0f09167b1c"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[RETORNO ALM.]]></text></staticText>
+			<staticText><reportElement x="472" y="4" width="55" height="15" uuid="74c5605d-9b11-48ce-865d-8a0f09167b1c"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[RETORNO ALM.]]></text></staticText>
+			<staticText><reportElement x="529" y="4" width="50" height="15" uuid="229a6bea-f812-4341-a017-b157a2fd7665"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ULTIMO]]></text></staticText>
 			<staticText><reportElement x="581" y="4" width="130" height="15" uuid="89ac7253-f16a-4fa3-a123-a2816ff827a1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[DETALLE_TIMBRES]]></text></staticText>
 			<staticText><reportElement x="713" y="4" width="89" height="15" uuid="7d949c2f-54cc-40e6-9115-66eced61f143"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[OBSERVACION]]></text></staticText>
 		</band>
@@ -333,8 +324,8 @@
 			<textField pattern="dd/MM/yyyy"><reportElement x="309" y="0" width="50" height="14" uuid="ab56237a-e55f-4f84-ac32-d3adad6ee543"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
 			<textField><reportElement x="361" y="0" width="45" height="14" uuid="2de568df-b6f0-4725-b7cc-744523f4de5f"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DIA_SEMANA}]]></textFieldExpression></textField>
 			<textField><reportElement x="408" y="0" width="62" height="14" uuid="624f633e-278a-4b77-b61a-98c6f3548e0e"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_ALMUERZO}]]></textFieldExpression></textField>
-			<textField><reportElement x="472" y="0" width="50" height="14" uuid="813d09ea-d552-4d78-8e05-8f68b977e1d4"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{ULTIMO_TIMBRE}]]></textFieldExpression></textField>
-			<textField><reportElement x="524" y="0" width="55" height="14" uuid="865d54c4-4311-4e85-93ba-c3c05444b749"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{RETORNO_ALMUERZO}]]></textFieldExpression></textField>
+			<textField><reportElement x="472" y="0" width="55" height="14" uuid="865d54c4-4311-4e85-93ba-c3c05444b749"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{RETORNO_ALMUERZO}]]></textFieldExpression></textField>
+			<textField><reportElement x="529" y="0" width="50" height="14" uuid="813d09ea-d552-4d78-8e05-8f68b977e1d4"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{ULTIMO_TIMBRE}]]></textFieldExpression></textField>
 			<textField isStretchWithOverflow="true"><reportElement x="581" y="0" width="130" height="30" uuid="314a98b8-83b0-4f1b-87bb-d94717598df0"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DETALLE_TIMBRES}]]></textFieldExpression></textField>
 			<textField><reportElement x="713" y="0" width="89" height="14" uuid="b21f16fd-f435-41bd-8053-e0a0be03f94a"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{MINUTOS_ALMUERZO_EXCESO}]]></textFieldExpression></textField>
 		</band>
