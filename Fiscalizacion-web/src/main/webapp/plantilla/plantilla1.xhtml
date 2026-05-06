@@ -7,7 +7,7 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <c:set var="context" value="${request.contextPath}" /> 
-   
+
     <h:head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -25,7 +25,7 @@
         <link href="../css/palette.css" rel="stylesheet" type="text/css"/>
         <link href="../resources/dist/css/materialdesignicons.min.css" rel="stylesheet" type="text/css"/>
         <style>
-            
+
             #dvLoading	{
                 display: none;
                 position: fixed;
@@ -57,7 +57,7 @@
 
     <h:body class="hold-transition skin-green sidebar-mini  ">
         <div id="dvLoading" class="col-md-3">
-           
+
             <!-- /.box -->
         </div>
         <div class="wrapper">
@@ -74,9 +74,9 @@
                 </a>
 
                 <!-- Header Navbar -->
-                
+
                 <nav class="navbar navbar-static-top" role="navigation">
-              
+
                     <!-- Sidebar toggle button-->
                     <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                         <span class="sr-only">Toggle navigation</span>
@@ -172,16 +172,16 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- The user image in the menu -->
-                                    
+
                                     <!-- Menu Body -->
-                                    
+
                                     <!-- Menu Footer-->
                                     <li class="user-footer">
                                         <div class="pull-right">
-                                           
+
                                             <h:form> 
                                                 <h:commandLink class="btn btn-default btn-flat fa fa-power-off fa-lg"  value=" Salir" action="#{loginOP.cerrarSession1}"/>
-                                                    
+
                                             </h:form>
                                         </div>
                                     </li>
@@ -203,7 +203,7 @@
 
                     <!-- Sidebar user panel (optional) -->
                     <div class="user-panel">
-                       <div class="pull-left image">
+                        <div class="pull-left image">
                             <img src="${request.contextPath}/resources/dist/img/silueta.jpg" class="img-circle" alt="User Image"/>
                         </div>
                         <div class="pull-left info">
@@ -213,70 +213,70 @@
                         </div>
                     </div>
 
-                    
+
                     <!-- /.search form -->
                     <!-- Sidebar Menu -->
                     <ul id="menu_lateral" class="sidebar-menu">
                         <li class="header"><i class="fa fa-home"></i> INICIO</li>
                         <!-- Optionally, you can add icons to the links -->
                         <li class="treeview">
-                             <a href="#"><i class="fa fa-users fa-lg"></i> <span>Administracion</span> <i class="fa fa-angle-left pull-right"></i></a>
-                             <ul class="treeview-menu">
-                                 <c:forEach items="#{menuOP.menuAdministracion}" var="menua" step="1">
-                                     <li>
-                                      <a href="#" onclick="MenuForma('#{menua.idPagina.url}','#{menua.idPagina.nombre}', '');"> <i class="fa fa-angle-right"></i><span>#{menua.nombre} </span></a>                         
-                                                                        </li>
-                                     
-                                     
-                                      <!--<li><a href="#" onclick="MenuForma('faces/MantenimientoBodegas.xhtml', 'AJAX jQuery ServLet ', 'LLamada a un Servlet desde un ajax jQuery');"  ><i class="fa fa-link"></i> <span>Ejemplo AJAX</span></a></li>-->
-                                        </c:forEach>
-                             </ul>
+                            <a href="#"><i class="fa fa-users fa-lg"></i> <span>Administracion</span> <i class="fa fa-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                                <c:forEach items="#{menuOP.menuAdministracion}" var="menua" step="1">
+                                    <li>
+                                        <a href="#" onclick="MenuForma('#{menua.idPagina.url}', '#{menua.idPagina.nombre}', '');"> <i class="fa fa-angle-right"></i><span>#{menua.nombre} </span></a>                         
+                                    </li>
+
+
+                                    <!--<li><a href="#" onclick="MenuForma('faces/MantenimientoBodegas.xhtml', 'AJAX jQuery ServLet ', 'LLamada a un Servlet desde un ajax jQuery');"  ><i class="fa fa-link"></i> <span>Ejemplo AJAX</span></a></li>-->
+                                </c:forEach>
+                            </ul>
                         </li>
                         <li class="treeview">
                             <a href="#"><i class="fa fa-gears fa-lg"></i> <span> Administrativo - Financiero</span> <i class="fa fa-angle-left pull-right"></i></a>
                             <ul class="treeview-menu">
-                               <li class="treeview">
+                                <li class="treeview">
                                     <a href="#"><i class="fa fa-file"></i> <span>Financiero</span> <i class="fa fa-angle-left pull-right"></i></a>
                                     <ul class="treeview-menu"> 
-                                       
+
                                         <c:forEach items="#{menuOP.menuPapeletas}" var="menu">
-                                           <li>
-                                                <a href="#" onclick="MenuForma('#{menu.idPagina.url}','#{menu.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menu.nombre}    </a>
+                                            <li>
+                                                <a href="#" onclick="MenuForma('#{menu.idPagina.url}', '#{menu.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menu.nombre}    </a>
                                             </li>
                                         </c:forEach>
-                                           
+
                                     </ul>
-                               
-                               </li>
-                               <li class="treeview">
+
+                                </li>
+                                <li class="treeview">
                                     <a href="#"><i class="fa fa-book fa-lg"></i> <span>Bodegas</span> <i class="fa fa-angle-left pull-right"></i></a>
                                     <ul class="treeview-menu"> 
                                         <c:forEach items="#{menuOP.menuDocumentos}" var="menud">
-                                            <li><a href="#" onclick="MenuForma('#{menud.idPagina.url}','#{menud.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menud.nombre} </a></li>
+                                            <li><a href="#" onclick="MenuForma('#{menud.idPagina.url}', '#{menud.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menud.nombre} </a></li>
                                         </c:forEach>
                                     </ul>
-                               
-                               </li>
+
+                                </li>
                                 <li class="treeview">
                                     <a href="#"><i class="fa fa-clipboard fa-lg"></i> <span>Reportes Personal</span> <i class="fa fa-angle-left pull-right"></i></a>
                                     <ul class="treeview-menu"> 
                                         <c:forEach items="#{menuOP.menuPreimpresos}" var="menui">
-                                            <li><a href="#" onclick="MenuForma('#{menui.idPagina.url}','#{menui.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menui.nombre} </a></li>
+                                            <li><a href="#" onclick="MenuForma('#{menui.idPagina.url}', '#{menui.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menui.nombre} </a></li>
                                         </c:forEach>
                                     </ul>
-                               
-                               </li>
-                                
-                                 <li class="treeview">
+
+                                </li>
+
+                                <li class="treeview">
                                     <a href="#"><i class="fa fa-bar-chart fa-lg"></i> <span>Reportes Talento Humano</span> <i class="fa fa-angle-left pull-right"></i></a>
                                     <ul class="treeview-menu"> 
                                         <c:forEach items="#{menuOP.menuReportes}" var="menur">
-                                            <li><a href="#" onclick="MenuForma('#{menur.idPagina.url}','#{menur.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menur.nombre} </a></li>
+                                            <li><a href="#" onclick="MenuForma('#{menur.idPagina.url}', '#{menur.idPagina.nombre}', '');"><i class="fa fa-angle-right"></i>#{menur.nombre} </a></li>
                                         </c:forEach>
                                     </ul>
-                               
-                               </li>
-                                
+
+                                </li>
+
                             </ul>
                         </li>
                     </ul>
@@ -284,9 +284,9 @@
                 </section>
                 <!-- /.sidebar -->
             </aside>
-           
 
-               
+
+
             <!-- Content Wrapper. Contains page content -->
             <div class="content-wrapper">
                 <section class="content-header">
@@ -310,7 +310,7 @@
             </footer>
 
             <!-- Control Sidebar -->
-           
+
             <!-- /.control-sidebar -->
             <!-- Add the sidebar's background. This div must be placed
                  immediately after the control sidebar -->
@@ -322,32 +322,32 @@
 
         <!-- jQuery 2.1.4 -->
         <!--<script src="${request.contextPath}/resources/plugins/jQuery/jQuery-2.1.4.min.js"></script>-->
-        
+
         <!-- Bootstrap 3.3.5 -->
         <script src="${request.contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>
         <!-- AdminLTE App -->
         <script src="${request.contextPath}/resources/dist/js/app.min.js"></script>
         <script>
-            function normalizarUrlMenu(forma) {
-                var ruta = (forma || '').replace(/^\/+/, '');
-                while (ruta.indexOf('faces/') === 0) {
-                    ruta = ruta.substring('faces/'.length);
-                }
-                return '#{facesContext.externalContext.requestContextPath}/faces/' + ruta;
-            }
+                                                function normalizarUrlMenu(forma) {
+                                                    var ruta = (forma || '').replace(/^\/+/, '');
+                                                    while (ruta.indexOf('faces/') === 0) {
+                                                        ruta = ruta.substring('faces/'.length);
+                                                    }
+                                                    return '#{facesContext.externalContext.requestContextPath}/faces/' + ruta;
+                                                }
 
-            function MenuForma(forma, header_str, optional_str) {
+                                                function MenuForma(forma, header_str, optional_str) {
 
-                $('#dvLoading').css("display", "inline");
-                $("#header_page_descript").empty();
-                $("#contenido").html("").load(normalizarUrlMenu(forma), function (responseText, textStatus, jqXHR) {
-                    $("#header_page_descript").html(header_str + "<small>" + optional_str + "</small>");
-                    $('#dvLoading').css("display", "none");
-                });
-            }
-            $(document).ready(function () {
+                                                    $('#dvLoading').css("display", "inline");
+                                                    $("#header_page_descript").empty();
+                                                    $("#contenido").html("").load(normalizarUrlMenu(forma), function (responseText, textStatus, jqXHR) {
+                                                        $("#header_page_descript").html(header_str + "<small>" + optional_str + "</small>");
+                                                        $('#dvLoading').css("display", "none");
+                                                    });
+                                                }
+                                                $(document).ready(function () {
 
-            });
+                                                });
         </script>
         <!-- Optionally, you can add Slimscroll and FastClick plugins.
              Both of these plugins are recommended to enhance the
