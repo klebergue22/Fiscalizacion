@@ -16,7 +16,10 @@
        q.hora_fin,
        q.hora_fin AS ultimo_timbre,
        q.retorno_almuerzo,
-       q.detalle_timbres,
+       CASE
+         WHEN q.detalle_permisos <> '-' THEN 'PERMISO: ' || q.detalle_permisos || ' | TIMBRES: ' || q.detalle_timbres
+         ELSE q.detalle_timbres
+       END AS detalle_timbres,
        q.detalle_permisos,
        q.minutos_tarde,
        q.minutos_almuerzo_exceso,
@@ -83,7 +86,7 @@
                         ) WITHIN GROUP (ORDER BY r.fecha, r.hora, r.minuto)
                    FROM rh.reloj r
                   WHERE r.codigo = em.codigo
-                    AND (r.fecha = cal.fecha OR (t.h_hasta < 12 AND r.fecha = cal.fecha + 1))
+                    AND r.fecha = cal.fecha
                ), 'SIN TIMBRE') AS detalle_timbres,
                (
                  SELECT MIN(LPAD(r.hora, 2, '0') || ':' || LPAD(r.minuto, 2, '0'))
@@ -247,6 +250,7 @@
                    AND INSTR(e.email_institucional, '@geograficomilitar.gob.ec') > 0
                ) em
           LEFT JOIN inventarios.t_areas ar ON ar.no_cd = em.no_cd
+          LEFT JOIN rh.t_dat_empleado resp ON resp.no_persona = ar.responsable_no_persona
           CROSS JOIN (
                 SELECT TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1 AS fecha,
                        TRIM(TO_CHAR(TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + LEVEL - 1, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH')) AS dia_semana
@@ -262,6 +266,10 @@
            AND ha.activo = 'S'
            AND (ha.fecha_desde IS NULL OR cal.fecha >= ha.fecha_desde)
            AND (ha.fecha_hasta IS NULL OR cal.fecha <= ha.fecha_hasta)
+         WHERE (
+                 t.codigo IS NOT NULL
+                 OR TO_CHAR(cal.fecha, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') NOT IN ('SAT', 'SUN')
+               )
        ) q
  WHERE REGEXP_LIKE(q.minutos_almuerzo_exceso, '^[0-9]+$')
    AND TO_NUMBER(q.minutos_almuerzo_exceso) > 0
@@ -318,7 +326,7 @@
 			<staticText><reportElement x="408" y="4" width="62" height="15" uuid="88a10d60-f4ab-4aa3-b73b-02629be06ec1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ALMUERZO]]></text></staticText>
 			<staticText><reportElement x="472" y="4" width="55" height="15" uuid="74c5605d-9b11-48ce-865d-8a0f09167b1c"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[RETORNO ALM.]]></text></staticText>
 			<staticText><reportElement x="529" y="4" width="50" height="15" uuid="229a6bea-f812-4341-a017-b157a2fd7665"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ULTIMO]]></text></staticText>
-			<staticText><reportElement x="581" y="4" width="130" height="15" uuid="89ac7253-f16a-4fa3-a123-a2816ff827a1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[DETALLE_TIMBRES]]></text></staticText>
+			<staticText><reportElement x="581" y="4" width="130" height="15" uuid="89ac7253-f16a-4fa3-a123-a2816ff827a1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[PERMISO/TIMBRES]]></text></staticText>
 			<staticText><reportElement x="713" y="4" width="89" height="15" uuid="7d949c2f-54cc-40e6-9115-66eced61f143"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[MIN. RETRASO]]></text></staticText>
 		</band>
 	</columnHeader>
