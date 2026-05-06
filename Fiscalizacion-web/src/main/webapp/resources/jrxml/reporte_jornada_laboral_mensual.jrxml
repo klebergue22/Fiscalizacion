@@ -14,7 +14,7 @@
        CASE
          WHEN t.codigo IS NOT NULL THEN 'ASIGNADA'
          WHEN ha.no_cd IS NOT NULL THEN 'ASIGNADA'
-         ELSE 'PENDIENTE'
+         ELSE 'NO ASIGNADA'
        END AS estado_jornada,
        CASE
          WHEN t.codigo IS NOT NULL THEN
@@ -83,6 +83,8 @@
    AND ha.activo = 'S'
    AND (ha.fecha_desde IS NULL OR cal.fecha >= ha.fecha_desde)
    AND (ha.fecha_hasta IS NULL OR cal.fecha <= ha.fecha_hasta)
+ WHERE t.codigo IS NULL
+   AND ha.no_cd IS NULL
  ORDER BY estado_jornada DESC, area, servidor, cal.fecha]]>
 	</queryString>
 	<field name="CODIGO" class="java.lang.String"/>
