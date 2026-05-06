@@ -16,11 +16,11 @@
        q.horario_jornada,
        q.ultimo_timbre AS horario_almuerzo,
        NULL AS minutos_almuerzo,
+       TO_CHAR(q.min_ultimo_timbre_hasta_salida) AS vigencia_jornada,
        CASE
-         WHEN q.min_ultimo_timbre_hasta_salida IS NULL THEN 'SIN TIMBRE'
-         ELSE TO_CHAR(q.min_ultimo_timbre_hasta_salida)
-       END AS vigencia_jornada,
-       q.detalle_timbres AS observacion
+         WHEN q.detalle_permisos <> '-' THEN 'PERMISO: ' || q.detalle_permisos || ' | TIMBRES: ' || q.detalle_timbres
+         ELSE 'TIMBRES: ' || q.detalle_timbres
+       END AS observacion
   FROM (
         SELECT TO_CHAR(em.codigo) AS codigo,
                em.nombre_c AS servidor,
@@ -54,8 +54,25 @@
                            OR (t.codigo IS NOT NULL AND t.h_hasta < 12 AND r.fecha = cal.fecha + 1)
                           )
                  ),
-                 'SIN TIMBRE'
+                 '-'
                ) AS detalle_timbres,
+               NVL(
+                 (
+                   SELECT LISTAGG(
+                            v.descrip ||
+                            CASE
+                              WHEN TRUNC(v.f_inico) = TRUNC(NVL(v.f_finalizacion, v.f_inico))
+                                THEN ' [' || TO_CHAR(v.f_inico, 'HH24:MI') || ' - ' || TO_CHAR(NVL(v.f_finalizacion, v.f_inico), 'HH24:MI') || ']'
+                              ELSE ' [' || TO_CHAR(v.f_inico, 'DD/MM/YYYY HH24:MI') || ' - ' || TO_CHAR(NVL(v.f_finalizacion, v.f_inico), 'DD/MM/YYYY HH24:MI') || ']'
+                            END,
+                            ' | '
+                          ) WITHIN GROUP (ORDER BY v.f_inico)
+                     FROM permisos.v_permisos_empleado v
+                    WHERE v.no_persona = em.no_persona
+                      AND cal.fecha BETWEEN TRUNC(v.f_inico) AND TRUNC(NVL(v.f_finalizacion, v.f_inico))
+                 ),
+                 '-'
+               ) AS detalle_permisos,
                (
                  SELECT MAX(LPAD(r2.hora, 2, '0') || ':' || LPAD(r2.minuto, 2, '0'))
                    FROM rh.reloj r2
@@ -121,8 +138,7 @@
                  OR TO_CHAR(cal.fecha, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') NOT IN ('SAT', 'SUN')
                )
        ) q
- WHERE q.min_ultimo_timbre_hasta_salida IS NULL
-    OR q.min_ultimo_timbre_hasta_salida > 0
+ WHERE q.min_ultimo_timbre_hasta_salida > 0
  ORDER BY q.area, q.servidor, q.fecha]]>
 	</queryString>
 	<field name="CODIGO" class="java.lang.String"/>
@@ -174,7 +190,7 @@
 			<staticText><reportElement x="517" y="4" width="70" height="16" uuid="cfb48cf7-f5f3-4b2f-8ff1-90ef129384fa"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[HORARIO]]></text></staticText>
 			<staticText><reportElement x="589" y="4" width="70" height="16" uuid="fa6f721d-e2b4-4f68-9b5b-6d1cf2c93712"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[ULTIMO]]></text></staticText>
 			<staticText><reportElement x="661" y="4" width="58" height="16" uuid="fdd7c189-d814-4865-8f41-3e5515af2aaa"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[MIN. FALTAN]]></text></staticText>
-			<staticText><reportElement x="721" y="4" width="81" height="16" uuid="f1ec716b-13d7-457e-871f-9062ec965a18"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[TIMBRES]]></text></staticText>
+			<staticText><reportElement x="721" y="4" width="81" height="16" uuid="f1ec716b-13d7-457e-871f-9062ec965a18"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[PERMISO/TIMBRES]]></text></staticText>
 		</band>
 	</columnHeader>
 	<detail>
