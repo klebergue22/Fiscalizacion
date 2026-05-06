@@ -54,7 +54,9 @@
                     <p:selectOneMenu  id="idGestion"
                                       value="#{reporteAtrasoControlador.noGestion}"
                                       required="true"
-                                      requiredMessage="DEBE SELECCIONAR LA GESTION" >
+                                      requiredMessage="DEBE SELECCIONAR LA GESTION"
+                                      filter="true"
+                                      filterMatchMode="contains" >
                         <f:selectItem itemLabel="-- Seleccione la Gestión --" noSelectionOption="true"/>
                         <f:selectItems value="#{reporteAtrasoControlador.listadoGestiones}" var="itemGestion"
                                        itemLabel="#{itemGestion.descrip}"

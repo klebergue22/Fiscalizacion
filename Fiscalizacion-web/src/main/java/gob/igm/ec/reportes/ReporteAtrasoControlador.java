@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +50,14 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
     public void init(){
         
         listadoGestiones = servicioListadoGestiones.obtenerTodasGestiones();
+        Collections.sort(listadoGestiones, new Comparator<VGestionesVigentes>() {
+            @Override
+            public int compare(VGestionesVigentes gestion1, VGestionesVigentes gestion2) {
+                String descripcion1 = gestion1.getDescrip() == null ? "" : gestion1.getDescrip();
+                String descripcion2 = gestion2.getDescrip() == null ? "" : gestion2.getDescrip();
+                return descripcion1.compareToIgnoreCase(descripcion2);
+            }
+        });
 //        for (VGestionesVigentes tmp : listadoGestiones) {
 //                System.out.println("ID >>>>" + tmp.getNoCd());
 //                System.out.println("GESTION.  >>>>" + tmp.getDescrip());
