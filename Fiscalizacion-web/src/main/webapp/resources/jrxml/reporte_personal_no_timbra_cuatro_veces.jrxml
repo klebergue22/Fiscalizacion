@@ -11,6 +11,7 @@
        q.area_descrip,
        q.fecha,
        q.dia_semana,
+       q.horario_trabajo,
        q.total_timbres,
        q.detalle_timbres
   FROM (
@@ -21,11 +22,22 @@
                ar.descrip AS area_descrip,
                cal.fecha,
                cal.dia_semana,
+               CASE
+                 WHEN t.codigo IS NOT NULL THEN
+                   LPAD(t.h_desde, 2, '0') || ':' || LPAD(t.mi_desde, 2, '0') || ' - ' ||
+                   LPAD(t.h_hasta, 2, '0') || ':' || LPAD(t.mi_hasta, 2, '0')
+                 ELSE
+                   LPAD(TRUNC(NVL(ha.hora_inicio, 450) / 60), 2, '0') || ':' || LPAD(MOD(NVL(ha.hora_inicio, 450), 60), 2, '0') || ' - ' ||
+                   LPAD(TRUNC(NVL(ha.hora_fin, 990) / 60), 2, '0') || ':' || LPAD(MOD(NVL(ha.hora_fin, 990), 60), 2, '0')
+               END AS horario_trabajo,
                NVL((
                  SELECT COUNT(*)
                    FROM rh.reloj r
                   WHERE r.codigo = e.codigo
-                    AND r.fecha = cal.fecha
+                    AND (
+                         r.fecha = cal.fecha
+                         OR (t.codigo IS NOT NULL AND t.h_hasta < 12 AND r.fecha = cal.fecha + 1)
+                    )
                ), 0) AS total_timbres,
                NVL((
                  SELECT LISTAGG(
@@ -39,7 +51,10 @@
                         ) WITHIN GROUP (ORDER BY r.fecha, r.hora, r.minuto)
                    FROM rh.reloj r
                   WHERE r.codigo = e.codigo
-                    AND r.fecha = cal.fecha
+                    AND (
+                         r.fecha = cal.fecha
+                         OR (t.codigo IS NOT NULL AND t.h_hasta < 12 AND r.fecha = cal.fecha + 1)
+                    )
                ), 'SIN TIMBRE') AS detalle_timbres
           FROM rh.t_dat_empleado e
           JOIN rh.t_contrataciones c
@@ -53,8 +68,21 @@
                   FROM dual
                CONNECT BY LEVEL <= TRUNC(TO_DATE($P{FechaHasta}, 'DD/MM/YYYY')) - TRUNC(TO_DATE($P{FechaDesde}, 'DD/MM/YYYY')) + 1
                ) cal
+          LEFT JOIN rh.turnos t
+            ON t.codigo = e.codigo
+           AND cal.fecha BETWEEN t.f_desde AND t.f_hasta
+          LEFT JOIN rh.horario_almuerzo ha
+            ON ha.no_cd = c.no_cd
+           AND (ha.dia_semana IS NULL OR UPPER(TRIM(ha.dia_semana)) = UPPER(TRIM(cal.dia_semana)))
+           AND ha.activo = 'S'
+           AND (ha.fecha_desde IS NULL OR cal.fecha >= ha.fecha_desde)
+           AND (ha.fecha_hasta IS NULL OR cal.fecha <= ha.fecha_hasta)
          WHERE e.codigo IS NOT NULL
            AND INSTR(e.email_institucional, '@geograficomilitar.gob.ec') > 0
+           AND (
+                t.codigo IS NOT NULL
+                OR TO_CHAR(cal.fecha, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') NOT IN ('SAT', 'SUN')
+           )
        ) q
  WHERE q.total_timbres < 4
  ORDER BY q.area_descrip, q.nombre_c, q.fecha]]>
@@ -66,6 +94,7 @@
 	<field name="AREA_DESCRIP" class="java.lang.String"/>
 	<field name="FECHA" class="java.sql.Timestamp"/>
 	<field name="DIA_SEMANA" class="java.lang.String"/>
+	<field name="HORARIO_TRABAJO" class="java.lang.String"/>
 	<field name="TOTAL_TIMBRES" class="java.math.BigDecimal"/>
 	<field name="DETALLE_TIMBRES" class="java.lang.String"/>
 	<title>
@@ -106,22 +135,24 @@
 			<line><reportElement x="-9" y="22" width="815" height="1" forecolor="#1828B8" uuid="79f24366-d610-4b73-bc3c-398dc9b9343b"/></line>
 			<staticText><reportElement x="0" y="4" width="48" height="15" uuid="a6ab8b8e-f61f-4435-a809-9e1334870822"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[CODIGO]]></text></staticText>
 			<staticText><reportElement x="50" y="4" width="145" height="15" uuid="8f1f4673-c613-4559-8d89-bc49749fa45c"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[NOMBRE]]></text></staticText>
-			<staticText><reportElement x="198" y="4" width="150" height="15" uuid="42e65021-b735-4883-9821-ed02591ef6f1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[AREA]]></text></staticText>
-			<staticText><reportElement x="351" y="4" width="55" height="15" uuid="272ff0c9-7843-4740-b02e-9f80fa526b17"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
-			<staticText><reportElement x="409" y="4" width="65" height="15" uuid="454293b4-5432-46a1-a26a-36763c908b1d"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
-			<staticText><reportElement x="477" y="4" width="55" height="15" uuid="ecdc0790-a93b-444c-b8f0-721be18368f1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[TIMBRES]]></text></staticText>
-			<staticText><reportElement x="535" y="4" width="265" height="15" uuid="0fb4c782-dc15-4dc0-852f-8f46d9027c84"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[DETALLE TIMBRES]]></text></staticText>
+			<staticText><reportElement x="198" y="4" width="125" height="15" uuid="42e65021-b735-4883-9821-ed02591ef6f1"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[AREA]]></text></staticText>
+			<staticText><reportElement x="326" y="4" width="55" height="15" uuid="272ff0c9-7843-4740-b02e-9f80fa526b17"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[FECHA]]></text></staticText>
+			<staticText><reportElement x="384" y="4" width="60" height="15" uuid="454293b4-5432-46a1-a26a-36763c908b1d"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
+			<staticText><reportElement x="447" y="4" width="70" height="15" uuid="3f61d331-a473-4dcb-a3fd-98a907240ccc"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[HORARIO]]></text></staticText>
+			<staticText><reportElement x="520" y="4" width="45" height="15" uuid="ecdc0790-a93b-444c-b8f0-721be18368f1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[TIMBRES]]></text></staticText>
+			<staticText><reportElement x="568" y="4" width="232" height="15" uuid="0fb4c782-dc15-4dc0-852f-8f46d9027c84"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[DETALLE TIMBRES]]></text></staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="28">
 			<textField><reportElement x="0" y="2" width="48" height="14" uuid="e042e0fd-66da-4ca5-b07e-7951d87ac70f"/><textElement textAlignment="Center"><font size="7"/></textElement><textFieldExpression><![CDATA[$F{CODIGO}]]></textFieldExpression></textField>
 			<textField isStretchWithOverflow="true"><reportElement x="50" y="2" width="145" height="24" uuid="9ecb6652-009e-45e3-8cbf-3a1ab1af7d7b"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{NOMBRE_C}]]></textFieldExpression></textField>
-			<textField isStretchWithOverflow="true"><reportElement x="198" y="2" width="150" height="24" uuid="c9a2d966-8744-4a55-b7f8-06a80e8c8e2b"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{AREA_DESCRIP}]]></textFieldExpression></textField>
-			<textField pattern="dd/MM/yyyy"><reportElement x="351" y="2" width="55" height="14" uuid="b88f8f5d-fe1a-4629-a905-b4efd2bc1970"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
-			<textField><reportElement x="409" y="2" width="65" height="14" uuid="5a12635d-e8a9-4a40-8110-c6d24c171261"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DIA_SEMANA}]]></textFieldExpression></textField>
-			<textField><reportElement x="477" y="2" width="55" height="14" uuid="f20579dc-7412-49d5-b8e4-1888bdca7c96"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{TOTAL_TIMBRES}]]></textFieldExpression></textField>
-			<textField isStretchWithOverflow="true"><reportElement x="535" y="2" width="265" height="24" uuid="3a927bc9-1aa2-463f-9a81-0065da230823"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DETALLE_TIMBRES}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="198" y="2" width="125" height="24" uuid="c9a2d966-8744-4a55-b7f8-06a80e8c8e2b"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{AREA_DESCRIP}]]></textFieldExpression></textField>
+			<textField pattern="dd/MM/yyyy"><reportElement x="326" y="2" width="55" height="14" uuid="b88f8f5d-fe1a-4629-a905-b4efd2bc1970"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{FECHA}]]></textFieldExpression></textField>
+			<textField><reportElement x="384" y="2" width="60" height="14" uuid="5a12635d-e8a9-4a40-8110-c6d24c171261"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DIA_SEMANA}]]></textFieldExpression></textField>
+			<textField><reportElement x="447" y="2" width="70" height="14" uuid="e5427abb-e286-46de-8053-fadbd0f852a5"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_TRABAJO}]]></textFieldExpression></textField>
+			<textField><reportElement x="520" y="2" width="45" height="14" uuid="f20579dc-7412-49d5-b8e4-1888bdca7c96"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{TOTAL_TIMBRES}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="568" y="2" width="232" height="24" uuid="3a927bc9-1aa2-463f-9a81-0065da230823"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DETALLE_TIMBRES}]]></textFieldExpression></textField>
 		</band>
 	</detail>
 	<pageFooter>

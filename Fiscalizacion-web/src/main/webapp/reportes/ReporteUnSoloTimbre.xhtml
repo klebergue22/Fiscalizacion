@@ -20,26 +20,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
      
     </h:head>
+<h:body>
 <script type="text/javascript">
     //<![CDATA[
     function start() {
-        window['progress'] = setInterval(function() {
-    var pbClient = PF('pbClient'),
-    oldValue = pbClient.getValue(),
-    newValue = oldValue + 10;
-
-    pbClient.setValue(pbClient.getValue() + 10);
-
-    if(newValue === 100) {
-        clearInterval(window['progress']);
-    }
-        }, 1000);
+        var pbClient = PF('pbClient');
+        if (pbClient) {
+            pbClient.setValue(0);
+            if (pbClient.jq) {
+                pbClient.jq.show();
+            }
+            window['progress'] = setInterval(function() {
+                var newValue = pbClient.getValue() + 10;
+                pbClient.setValue(newValue >= 100 ? 90 : newValue);
+            }, 1000);
+        }
     }
 
     function cancel() {
         clearInterval(window['progress']);
-        PF('pbClient').setValue(0);
-        PF('startButton1').enable();
+        var pbClient = PF('pbClient');
+        if (pbClient) {
+            pbClient.setValue(0);
+            if (pbClient.jq) {
+                pbClient.jq.hide();
+            }
+        }
+        var startButton = PF('startButton');
+        if (startButton) {
+            startButton.enable();
+        }
     }
     //]]>
     </script>
@@ -65,10 +75,10 @@
 
             <p:commandButton value="Generar Reporte" class="btn-xs btn btn-info" 
                              update="frmUnTimbre" process="@all"
-                             actionListener="#{reportePermisoCodigoTrab.generarReporteCodigoTra}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1"  />
+                             actionListener="#{reportePermisoCodigoTrab.generarReporteCodigoTra}" onclick="start()" oncomplete="cancel()" widgetVar="startButton"  />
 
             <br /><br />
-            <p:progressBar id="progressBarClient" widgetVar="pbClient" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
+            <p:progressBar id="progressBarClient" widgetVar="pbClient" style="display:none; font-size: small" labelTemplate="Cargando........Por favor espere"  />
             <p:commandButton value="Descargar PDF"
                              class="btn-xs btn btn-primary"
                              ajax="false"
@@ -79,4 +89,6 @@
         </h:form>
       </p:panel>
     
+
+</h:body>
 </html>

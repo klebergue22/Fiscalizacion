@@ -400,6 +400,10 @@
 
                                                 var cargaReporteActual = null;
 
+                                                function esReporte(forma) {
+                                                    return (forma || '').toLowerCase().indexOf('reportes/') >= 0;
+                                                }
+
                                                 function limpiarReporteActual() {
                                                     if (window['progress']) {
                                                         clearInterval(window['progress']);
@@ -409,7 +413,7 @@
                                                     try {
                                                         if (window.PrimeFaces && PrimeFaces.widgets) {
                                                             delete PrimeFaces.widgets['pbClient'];
-                                                            delete PrimeFaces.widgets['startButton1'];
+                                                            delete PrimeFaces.widgets['startButton'];
                                                         }
                                                     } catch (e) {
                                                         if (window.console) {
@@ -429,8 +433,27 @@
                                                     $("#header_page_descript").empty();
                                                     $("#contenido").empty();
 
+                                                    var urlMenu = normalizarUrlMenu(forma);
+
+                                                    if (esReporte(forma)) {
+                                                        var frameReporte = $('<iframe>', {
+                                                            id: 'frameContenidoReporte',
+                                                            src: urlMenu
+                                                        }).css({
+                                                            width: '100%',
+                                                            minHeight: '760px',
+                                                            border: '0',
+                                                            overflow: 'auto'
+                                                        }).on('load', function () {
+                                                            $('#dvLoading').css("display", "none");
+                                                        });
+                                                        $("#contenido").empty().append(frameReporte);
+                                                        $("#header_page_descript").html(header_str + "<small>" + optional_str + "</small>");
+                                                        return false;
+                                                    }
+
                                                     cargaReporteActual = $.ajax({
-                                                        url: normalizarUrlMenu(forma),
+                                                        url: urlMenu,
                                                         cache: false,
                                                         type: 'GET'
                                                     }).done(function (responseText) {

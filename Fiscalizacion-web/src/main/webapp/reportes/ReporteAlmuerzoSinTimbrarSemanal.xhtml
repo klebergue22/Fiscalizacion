@@ -16,26 +16,37 @@
         <link href="#{facesContext.externalContext.context.contextPath}/css/ace-rtl.min.css" rel="stylesheet" type="text/css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </h:head>
+<h:body>
     <script type="text/javascript">
         //<![CDATA[
         function start() {
-            window['progress'] = setInterval(function () {
-                var pbClient = PF('pbClient'),
-                        newValue = pbClient.getValue() + 10;
-
-                pbClient.setValue(pbClient.getValue() + 10);
-
-                if (newValue === 100) {
-                    clearInterval(window['progress']);
-                }
+        var pbClient = PF('pbClient');
+        if (pbClient) {
+            pbClient.setValue(0);
+            if (pbClient.jq) {
+                pbClient.jq.show();
+            }
+            window['progress'] = setInterval(function() {
+                var newValue = pbClient.getValue() + 10;
+                pbClient.setValue(newValue >= 100 ? 90 : newValue);
             }, 1000);
         }
+    }
 
-        function cancel() {
-            clearInterval(window['progress']);
-            PF('pbClient').setValue(0);
-            PF('startButton1').enable();
+    function cancel() {
+        clearInterval(window['progress']);
+        var pbClient = PF('pbClient');
+        if (pbClient) {
+            pbClient.setValue(0);
+            if (pbClient.jq) {
+                pbClient.jq.hide();
+            }
         }
+        var startButton = PF('startButton');
+        if (startButton) {
+            startButton.enable();
+        }
+    }
         //]]>
     </script>
 
@@ -72,12 +83,12 @@
                 <div class="col-lg-5 col-md-5">
                     <p:commandButton value="Generar reporte sin timbres de alimentacion" class="btn-xs btn btn-warning"
                                      update="frmRepAlmuerzoSinTimbrar" process="@all"
-                                     actionListener="#{reporteAlmuerzoSinTimbrarSemanalControlador.generarReporteAlmuerzoSinTimbrarSemanal()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton1" />
+                                     actionListener="#{reporteAlmuerzoSinTimbrarSemanalControlador.generarReporteAlmuerzoSinTimbrarSemanal()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton" />
                 </div>
             </div>
 
             <br /><br />
-            <p:progressBar id="progressBarClient" widgetVar="pbClient" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
+            <p:progressBar id="progressBarClient" widgetVar="pbClient" style="display:none; font-size: small" labelTemplate="Cargando........Por favor espere"  />
             <p:commandButton value="Descargar PDF"
                              class="btn-xs btn btn-primary"
                              ajax="false"
@@ -88,4 +99,6 @@
         </h:form>
     </p:panel>
 
+
+</h:body>
 </html>
