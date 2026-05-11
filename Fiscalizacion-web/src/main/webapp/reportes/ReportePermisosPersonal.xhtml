@@ -68,6 +68,20 @@ and open the template in the editor.
             startButton.enable();
         }
     }
+    function iniciarDescargaReporte() {
+        try {
+            PF('statusDialog').show();
+        } catch (e) {}
+    }
+
+    function finalizarDescargaReporte() {
+        try {
+            PF('statusDialog').hide();
+        } catch (e) {}
+        try {
+            cancel();
+        } catch (e) {}
+    }
     //]]>
     </script>
  
@@ -99,12 +113,14 @@ and open the template in the editor.
             <p:progressBar id="progressBarClient" widgetVar="pbClient" style="display:none; font-size: small" labelTemplate="Cargando........Por favor espere"  />
             <p:commandButton value="Descargar PDF"
                              class="btn-xs btn btn-primary"
+                             onclick="PrimeFaces.monitorDownload(iniciarDescargaReporte, finalizarDescargaReporte)"
                              ajax="false"
                              rendered="#{reportePermisoPersonal.media ne null}">
                 <p:fileDownload value="#{reportePermisoPersonal.archivoDescarga}"/>
             </p:commandButton>
             <p:commandButton value="Descargar Excel"
                              class="btn-xs btn btn-success"
+                             onclick="PrimeFaces.monitorDownload(iniciarDescargaReporte, finalizarDescargaReporte)"
                              ajax="false"
                              rendered="#{reportePermisoPersonal.media ne null}">
                 <p:fileDownload value="#{reportePermisoPersonal.archivoDescargaExcel}"/>

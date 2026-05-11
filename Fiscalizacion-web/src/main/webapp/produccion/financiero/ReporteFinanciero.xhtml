@@ -42,6 +42,20 @@
         PF('pbClient').setValue(0);
         PF('startButton1').enable();
     }
+    function iniciarDescargaReporte() {
+        try {
+            PF('statusDialog').show();
+        } catch (e) {}
+    }
+
+    function finalizarDescargaReporte() {
+        try {
+            PF('statusDialog').hide();
+        } catch (e) {}
+        try {
+            cancel();
+        } catch (e) {}
+    }
     //]]>
     </script>
     <p:dialog modal="true" widgetVar="statusDialog"
@@ -87,6 +101,7 @@
             <p:progressBar id="progressBarClient" widgetVar="pbClient" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
             <p:commandButton value="Descargar Excel"
                              class="btn-xs btn btn-success"
+                             onclick="PrimeFaces.monitorDownload(iniciarDescargaReporte, finalizarDescargaReporte)"
                              ajax="false"
                              rendered="#{reporteFinancieroControlador.media ne null}">
                 <p:fileDownload value="#{reporteFinancieroControlador.archivoDescargaExcel}"/>
