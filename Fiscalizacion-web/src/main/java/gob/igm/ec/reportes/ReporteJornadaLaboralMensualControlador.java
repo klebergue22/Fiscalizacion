@@ -21,6 +21,7 @@ public class ReporteJornadaLaboralMensualControlador extends FacesUtil implement
 
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
+    private ByteArrayOutputStream excelOutputStream;
     private boolean renderBarra;
     private String path;
     private Date fechaDesde;
@@ -43,8 +44,10 @@ public class ReporteJornadaLaboralMensualControlador extends FacesUtil implement
             }
 
             outputStream = reporteJornadaLaboralMensualServicio.generar(fechaDesde, fechaHasta);
+            excelOutputStream = reporteJornadaLaboralMensualServicio.generarExcel(fechaDesde, fechaHasta);
             if (outputStream == null || outputStream.size() == 0) {
                 media = null;
+                excelOutputStream = null;
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
                 return;
@@ -53,6 +56,7 @@ public class ReporteJornadaLaboralMensualControlador extends FacesUtil implement
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
         } catch (Exception e) {
             media = null;
+                excelOutputStream = null;
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
         }
@@ -69,6 +73,7 @@ public class ReporteJornadaLaboralMensualControlador extends FacesUtil implement
             }
 
             outputStream = reporteJornadaLaboralMensualServicio.generar(fechaDesde, fechaHasta);
+            excelOutputStream = reporteJornadaLaboralMensualServicio.generarExcel(fechaDesde, fechaHasta);
             if (outputStream == null || outputStream.size() == 0) {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
@@ -127,6 +132,23 @@ public class ReporteJornadaLaboralMensualControlador extends FacesUtil implement
         fecha.set(Calendar.SECOND, 0);
         fecha.set(Calendar.MILLISECOND, 0);
     }
+    public StreamedContent getArchivoDescargaExcel() {
+        try {
+            if (excelOutputStream == null || excelOutputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new java.io.ByteArrayInputStream(excelOutputStream.toByteArray()),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    getNameFilePdf() + ".xlsx");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
+        }
+    }
+
 
     public StreamedContent getMedia() {
         return media;

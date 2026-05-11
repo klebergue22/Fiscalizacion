@@ -34,6 +34,7 @@ public class ReportePermisoCodigoTrab extends FacesUtil implements Serializable 
     
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
+    private ByteArrayOutputStream excelOutputStream;
     private String number;
     private boolean renderBarra;
     private String uno;
@@ -72,7 +73,9 @@ public class ReportePermisoCodigoTrab extends FacesUtil implements Serializable 
             
             JasperReportUtil jasper = new JasperReportUtil();
             JRExporter exporter = null;
-            outputStream = JasperReportUtil.getOutputStreamFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_PERMISOS_CODIGO);
+            JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_PERMISOS_CODIGO);
+                outputStream = reportOutput.getPdfOutputStream();
+                excelOutputStream = reportOutput.getExcelOutputStream();
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
             conexion.close();
             }
@@ -122,6 +125,23 @@ public class ReportePermisoCodigoTrab extends FacesUtil implements Serializable 
             return null;
         }
     }
+    public StreamedContent getArchivoDescargaExcel() {
+        try {
+            if (excelOutputStream == null || excelOutputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new java.io.ByteArrayInputStream(excelOutputStream.toByteArray()),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    getNameFilePdf() + ".xlsx");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
+        }
+    }
+
  public StreamedContent getMedia() {
         return media;
     }

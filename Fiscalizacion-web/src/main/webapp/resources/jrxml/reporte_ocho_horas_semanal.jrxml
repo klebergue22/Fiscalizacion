@@ -248,6 +248,7 @@
        ) q
  WHERE q.horas_trabajadas > 0
    AND q.horas_trabajadas < 8
+   AND q.detalle_permisos = '-'
  ORDER BY q.nombre_c, q.fecha]]>
 	</queryString>
 	<field name="NO_PERSONA" class="java.math.BigDecimal"/>

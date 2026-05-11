@@ -32,4 +32,15 @@ public class ReporteSalidaAntesJornadaSemanalServicio {
             return JasperReportUtil.getOutputStreamFromReport(conexion, parametros, JasperReportUtil.PATH_REPORTE_SALIDA_ANTES_JORNADA_SEMANAL);
         }
     }
+    public ByteArrayOutputStream generarExcel(Date fechaDesde, Date fechaHasta, Short noGestion, String codigo) throws Exception {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        parametros.put("pathImagen", JasperReportUtil.PATH_IMAGES);
+        parametros.put("FechaDesde", formatoFecha.format(fechaDesde));
+        parametros.put("FechaHasta", formatoFecha.format(fechaHasta));
+        parametros.put("NoGestion", noGestion);
+        parametros.put("Codigo", codigo);
+        try (Connection conexion = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            return JasperReportUtil.getExcelOutputStreamFromReport(conexion, parametros, JasperReportUtil.PATH_REPORTE_SALIDA_ANTES_JORNADA_SEMANAL);
+        }
+    }
 }

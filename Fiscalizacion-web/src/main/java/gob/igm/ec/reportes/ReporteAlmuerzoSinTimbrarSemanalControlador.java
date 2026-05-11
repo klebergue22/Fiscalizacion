@@ -20,6 +20,7 @@ public class ReporteAlmuerzoSinTimbrarSemanalControlador extends FacesUtil imple
 
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
+    private ByteArrayOutputStream excelOutputStream;
     private boolean renderBarra;
     private String path;
     private Date fechaDesde;
@@ -50,8 +51,10 @@ public class ReporteAlmuerzoSinTimbrarSemanalControlador extends FacesUtil imple
             }
 
             outputStream = reporteAlmuerzoSinTimbrarSemanalServicio.generar(fechaDesde, fechaHasta);
+            excelOutputStream = reporteAlmuerzoSinTimbrarSemanalServicio.generarExcel(fechaDesde, fechaHasta);
             if (outputStream == null || outputStream.size() == 0) {
                 media = null;
+                excelOutputStream = null;
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
                 return;
@@ -60,6 +63,7 @@ public class ReporteAlmuerzoSinTimbrarSemanalControlador extends FacesUtil imple
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
         } catch (Exception e) {
             media = null;
+                excelOutputStream = null;
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
         }
@@ -84,6 +88,7 @@ public class ReporteAlmuerzoSinTimbrarSemanalControlador extends FacesUtil imple
             }
 
             outputStream = reporteAlmuerzoSinTimbrarSemanalServicio.generar(fechaDesde, fechaHasta);
+            excelOutputStream = reporteAlmuerzoSinTimbrarSemanalServicio.generarExcel(fechaDesde, fechaHasta);
             if (outputStream == null || outputStream.size() == 0) {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
@@ -100,6 +105,23 @@ public class ReporteAlmuerzoSinTimbrarSemanalControlador extends FacesUtil imple
             return null;
         }
     }
+    public StreamedContent getArchivoDescargaExcel() {
+        try {
+            if (excelOutputStream == null || excelOutputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new java.io.ByteArrayInputStream(excelOutputStream.toByteArray()),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    getNameFilePdf() + ".xlsx");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
+        }
+    }
+
 
     public StreamedContent getMedia() {
         return media;

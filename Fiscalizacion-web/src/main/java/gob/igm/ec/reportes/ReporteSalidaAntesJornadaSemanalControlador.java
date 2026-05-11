@@ -26,6 +26,7 @@ public class ReporteSalidaAntesJornadaSemanalControlador extends FacesUtil imple
 
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
+    private ByteArrayOutputStream excelOutputStream;
     private boolean renderBarra;
     private String path;
     private Date fechaDesde;
@@ -72,8 +73,10 @@ public class ReporteSalidaAntesJornadaSemanalControlador extends FacesUtil imple
             }
 
             outputStream = reporteSalidaAntesJornadaSemanalServicio.generar(fechaDesde, fechaHasta, noGestion, normalizarCodigo());
+            excelOutputStream = reporteSalidaAntesJornadaSemanalServicio.generarExcel(fechaDesde, fechaHasta, noGestion, normalizarCodigo());
             if (outputStream == null || outputStream.size() == 0) {
                 media = null;
+                excelOutputStream = null;
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
                 return;
@@ -82,6 +85,7 @@ public class ReporteSalidaAntesJornadaSemanalControlador extends FacesUtil imple
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
         } catch (Exception e) {
             media = null;
+                excelOutputStream = null;
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
         }
@@ -111,6 +115,23 @@ public class ReporteSalidaAntesJornadaSemanalControlador extends FacesUtil imple
     private String normalizarCodigo() {
         return codigo == null || codigo.trim().isEmpty() ? null : codigo.trim();
     }
+    public StreamedContent getArchivoDescargaExcel() {
+        try {
+            if (excelOutputStream == null || excelOutputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new java.io.ByteArrayInputStream(excelOutputStream.toByteArray()),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    getNameFilePdf() + ".xlsx");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
+        }
+    }
+
 
     public StreamedContent getMedia() {
         return media;

@@ -17,6 +17,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </h:head>
 <h:body>
+    <p:dialog modal="true" widgetVar="statusDialog"
+              header="Por favor espere..."
+              draggable="false" closable="false" resizable="false"
+              appendTo="@(body)"
+              styleClass="loading-dialog" width="350">
+        <div style="text-align:center; padding:20px;">
+            <h:graphicImage library="images" name="loading.gif"
+                            alt="Cargando..." style="display:block;margin:0 auto;"/>
+            <h:outputText value="Procesando..." style="font-weight:bold;margin-top:8px;"/>
+            <p>Procesando su solicitud...</p>
+        </div>
+    </p:dialog>
     <script type="text/javascript">
         //<![CDATA[
         function start() {
@@ -83,7 +95,7 @@
                 <div class="col-lg-6 col-md-6">
                                             <p:commandButton value="Generar reporte no timbra a la salida" class="btn-xs btn btn-warning"
                                      update="frmRepJornadaLaboralMensual" process="@all"
-                                     actionListener="#{reporteJornadaLaboralMensualControlador.generarReporteJornadaLaboralMensual()}" onclick="start()" oncomplete="cancel()" widgetVar="startButton" />
+                                     actionListener="#{reporteJornadaLaboralMensualControlador.generarReporteJornadaLaboralMensual()}" onclick="PF('statusDialog').show(); start()" oncomplete="PF('statusDialog').hide(); cancel()" widgetVar="startButton" />
                 </div>
             </div>
 
@@ -95,10 +107,21 @@
                              rendered="#{reporteJornadaLaboralMensualControlador.media ne null}">
                 <p:fileDownload value="#{reporteJornadaLaboralMensualControlador.archivoDescarga}"/>
             </p:commandButton>
+            <p:commandButton value="Descargar Excel"
+                             class="btn-xs btn btn-success"
+                             ajax="false"
+                             rendered="#{reporteJornadaLaboralMensualControlador.media ne null}">
+                <p:fileDownload value="#{reporteJornadaLaboralMensualControlador.archivoDescargaExcel}"/>
+            </p:commandButton>
             <p:media class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" cache="false" rendered="#{reporteJornadaLaboralMensualControlador.media ne null}" width="1400" height="800" value="#{reporteJornadaLaboralMensualControlador.media}" player="pdf"/>
         </h:form>
       </p:panel>
 
 
+
+    <p:ajaxStatus
+        onstart="try{PF('statusDialog').show();}catch(e){}"
+        onsuccess="try{PF('statusDialog').hide();}catch(e){}"
+        onerror="try{PF('statusDialog').hide();}catch(e){}"/>
 </h:body>
 </html>

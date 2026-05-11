@@ -30,4 +30,14 @@ public class ReporteJornadaLaboralMensualServicio {
             return JasperReportUtil.getOutputStreamFromReport(conexion, parametros, JasperReportUtil.PATH_REPORTE_JORNADA_LABORAL_MENSUAL);
         }
     }
+    public ByteArrayOutputStream generarExcel(Date fechaDesde, Date fechaHasta) throws Exception {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        parametros.put("pathImagen", JasperReportUtil.PATH_IMAGES);
+        parametros.put("FechaDesde", formatoFecha.format(fechaDesde));
+        parametros.put("FechaHasta", formatoFecha.format(fechaHasta));
+
+        try (Connection conexion = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            return JasperReportUtil.getExcelOutputStreamFromReport(conexion, parametros, JasperReportUtil.PATH_REPORTE_JORNADA_LABORAL_MENSUAL);
+        }
+    }
 }

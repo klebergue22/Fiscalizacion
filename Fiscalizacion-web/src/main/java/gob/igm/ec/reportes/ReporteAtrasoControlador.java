@@ -31,6 +31,7 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
     
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
+    private ByteArrayOutputStream excelOutputStream;
     //private String number;
     private boolean renderBarra;
     private String uno;
@@ -85,12 +86,6 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
                 return;
             }
 
-            if (noGestion == null) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR LA GESTION"));
-                return;
-            }
-
             Map<String, Object> map = new HashMap<>();
             map.put("pathImagen", JasperReportUtil.PATH_IMAGES);
             map.put("FechaDesde", formatoFecha.format(fechaDesde));
@@ -98,11 +93,14 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
             map.put("NoGestion", noGestion);
 
             try (Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1", "PERMISOS", "PERMIGM2012")) {
-                outputStream = JasperReportUtil.getOutputStreamFromReport(conexion, map, JasperReportUtil.PATH_REPORTE_ATRASOS);
+                JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map, JasperReportUtil.PATH_REPORTE_ATRASOS);
+                outputStream = reportOutput.getPdfOutputStream();
+                excelOutputStream = reportOutput.getExcelOutputStream();
             }
 
             if (outputStream == null || outputStream.size() == 0) {
                 media = null;
+                excelOutputStream = null;
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL PDF. REVISE EL LOG DEL SERVIDOR."));
                 return;
@@ -112,6 +110,7 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
             
         } catch (Exception e) {
             media = null;
+                excelOutputStream = null;
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
         }
@@ -138,6 +137,23 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
             return null;
         }
     }
+    public StreamedContent getArchivoDescargaExcel() {
+        try {
+            if (excelOutputStream == null || excelOutputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new java.io.ByteArrayInputStream(excelOutputStream.toByteArray()),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    getNameFilePdf() + ".xlsx");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
+        }
+    }
+
     
  public StreamedContent getMedia() {
         return media;

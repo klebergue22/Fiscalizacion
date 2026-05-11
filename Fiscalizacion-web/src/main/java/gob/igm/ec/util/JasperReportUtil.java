@@ -126,6 +126,27 @@ public class JasperReportUtil {
     
     public static Logger localLogger = Logger.getLogger(JasperReportUtil.class);
 
+    public static class ReportOutput implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final ByteArrayOutputStream pdfOutputStream;
+        private final ByteArrayOutputStream excelOutputStream;
+
+        public ReportOutput(ByteArrayOutputStream pdfOutputStream, ByteArrayOutputStream excelOutputStream) {
+            this.pdfOutputStream = pdfOutputStream;
+            this.excelOutputStream = excelOutputStream;
+        }
+
+        public ByteArrayOutputStream getPdfOutputStream() {
+            return pdfOutputStream;
+        }
+
+        public ByteArrayOutputStream getExcelOutputStream() {
+            return excelOutputStream;
+        }
+    }
+
     public FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();
     }
@@ -141,38 +162,79 @@ public class JasperReportUtil {
        
     public static ByteArrayOutputStream getOutputStreamFromReport(Connection conn, Map map, String pathJasper) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-    
-        try{
-       
-        InputStream inputStream = new FileInputStream(pathJasper);
-        
 
-            if (inputStream == null) {
-                throw new ClassNotFoundException("Archivo " + pathJasper + " no se encontró");
-            }
-       
-        JasperPrint jp;
-        if (pathJasper != null && pathJasper.replace("\\", "/").replaceAll("/+$", "").toLowerCase().endsWith(".jrxml")) {
-            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-            jp = JasperFillManager.fillReport(jasperReport, map, conn);
-        } else {
-            jp = JasperFillManager.fillReport(pathJasper,map,conn);
-        }
-        JasperExportManager.exportReportToPdfStream(jp, os);
-       
-        os.flush();
-        os.close();
+        try {
+            JasperPrint jp = fillReport(conn, map, pathJasper);
+            JasperExportManager.exportReportToPdfStream(jp, os);
+
+            os.flush();
+            os.close();
             try {
                 conn.close();
             } catch (SQLException ex) {
                 java.util.logging.Logger.getLogger(JasperReportUtil.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }catch(ClassNotFoundException | JRException | IOException ex){
+        } catch (ClassNotFoundException | JRException | IOException ex) {
             localLogger.error(ex);
             throw new RuntimeException("Error generando reporte: " + ex.getMessage(), ex);
         }
-          
+
         return os;
+    }
+
+    public static ByteArrayOutputStream getExcelOutputStreamFromReport(Connection conn, Map map, String pathJasper) {
+        return getOutputStreamsFromReport(conn, map, pathJasper).getExcelOutputStream();
+    }
+
+    public static ReportOutput getOutputStreamsFromReport(Connection conn, Map map, String pathJasper) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ByteArrayOutputStream excelOs = new ByteArrayOutputStream();
+
+        try {
+            JasperPrint jp = fillReport(conn, map, pathJasper);
+            JasperExportManager.exportReportToPdfStream(jp, os);
+            exportReportToExcelStream(jp, excelOs);
+
+            os.flush();
+            os.close();
+            excelOs.flush();
+            excelOs.close();
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                java.util.logging.Logger.getLogger(JasperReportUtil.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (ClassNotFoundException | JRException | IOException ex) {
+            localLogger.error(ex);
+            throw new RuntimeException("Error generando reporte: " + ex.getMessage(), ex);
+        }
+
+        return new ReportOutput(os, excelOs);
+    }
+
+    private static JasperPrint fillReport(Connection conn, Map map, String pathJasper) throws ClassNotFoundException, JRException, FileNotFoundException {
+        if (pathJasper == null) {
+            throw new ClassNotFoundException("Archivo de reporte no definido");
+        }
+
+        if (pathJasper.replace("\\", "/").replaceAll("/+$", "").toLowerCase().endsWith(".jrxml")) {
+            InputStream inputStream = new FileInputStream(pathJasper);
+            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+            return JasperFillManager.fillReport(jasperReport, map, conn);
+        }
+
+        return JasperFillManager.fillReport(pathJasper, map, conn);
+    }
+
+    private static void exportReportToExcelStream(JasperPrint jp, ByteArrayOutputStream os) throws JRException {
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jp);
+        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
+        exporter.setParameter(JRXlsAbstractExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
+        exporter.setParameter(JRXlsAbstractExporterParameter.IS_DETECT_CELL_TYPE, Boolean.TRUE);
+        exporter.setParameter(JRXlsAbstractExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
+        exporter.setParameter(JRXlsAbstractExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+        exporter.exportReport();
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -30,6 +30,7 @@ public class ReporteFinancieroControlador extends FacesUtil implements Serializa
     
 private StreamedContent media;
     private ByteArrayOutputStream outputStream;
+    private ByteArrayOutputStream excelOutputStream;
     private String number;
     private boolean renderBarra;
     private String uno;
@@ -78,7 +79,9 @@ private StreamedContent media;
              map.put("FechaCorte",fecha3);
             JasperReportUtil jasper = new JasperReportUtil();
             JRExporter exporter = null;
-            outputStream = JasperReportUtil.getOutputStreamFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_ASISTENCIAS);
+            JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_ASISTENCIAS);
+                outputStream = reportOutput.getPdfOutputStream();
+                excelOutputStream = reportOutput.getExcelOutputStream();
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
             conexion.close();
             }
@@ -111,6 +114,23 @@ private StreamedContent media;
             //log.error(e.getMessage(), e);
         }
     }
+    public StreamedContent getArchivoDescargaExcel() {
+        try {
+            if (excelOutputStream == null || excelOutputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new java.io.ByteArrayInputStream(excelOutputStream.toByteArray()),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    getNameFilePdf() + ".xlsx");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
+        }
+    }
+
     
  public StreamedContent getMedia() {
         return media;

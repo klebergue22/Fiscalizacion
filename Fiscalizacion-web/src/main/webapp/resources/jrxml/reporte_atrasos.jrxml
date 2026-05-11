@@ -83,7 +83,7 @@
                   FROM rh.t_dat_empleado e
                   JOIN rh.t_contrataciones c ON e.no_persona = c.no_persona
                  WHERE c.estado = 'V'
-                   AND c.no_cd = $P{NoGestion}
+                   AND ($P{NoGestion} IS NULL OR c.no_cd = $P{NoGestion})
                ) em
           LEFT JOIN inventarios.t_areas ar ON ar.no_cd = em.no_cd
           CROSS JOIN (

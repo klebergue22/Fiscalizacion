@@ -44,6 +44,7 @@ public class ReporteAccionPerControlador extends FacesUtil implements Serializab
     
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
+    private ByteArrayOutputStream excelOutputStream;
     private String number;
     private boolean renderBarra;
     private String uno;
@@ -132,7 +133,9 @@ public class ReporteAccionPerControlador extends FacesUtil implements Serializab
             
             JasperReportUtil jasper = new JasperReportUtil();
             JRExporter exporter = null;
-            outputStream = JasperReportUtil.getOutputStreamFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_ACCIONES_LIBRO);
+            JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_ACCIONES_LIBRO);
+                outputStream = reportOutput.getPdfOutputStream();
+                excelOutputStream = reportOutput.getExcelOutputStream();
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
             conexion.close();
             }
@@ -161,7 +164,9 @@ public class ReporteAccionPerControlador extends FacesUtil implements Serializab
             
             JasperReportUtil jasper = new JasperReportUtil();
             JRExporter exporter = null;
-            outputStream = JasperReportUtil.getOutputStreamFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_ACCIONES_REVERSO);
+            JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_ACCIONES_REVERSO);
+                outputStream = reportOutput.getPdfOutputStream();
+                excelOutputStream = reportOutput.getExcelOutputStream();
             media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
             conexion.close();
             }
@@ -211,6 +216,23 @@ public class ReporteAccionPerControlador extends FacesUtil implements Serializab
             return null;
         }
     }
+    public StreamedContent getArchivoDescargaExcel() {
+        try {
+            if (excelOutputStream == null || excelOutputStream.size() == 0) {
+                return null;
+            }
+
+            return new org.primefaces.model.DefaultStreamedContent(
+                    new java.io.ByteArrayInputStream(excelOutputStream.toByteArray()),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    getNameFilePdf() + ".xlsx");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", e.getMessage()));
+            return null;
+        }
+    }
+
  public StreamedContent getMedia() {
         return media;
     }
