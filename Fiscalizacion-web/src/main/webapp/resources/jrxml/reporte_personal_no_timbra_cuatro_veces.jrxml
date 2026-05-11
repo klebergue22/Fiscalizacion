@@ -159,7 +159,7 @@
 			<staticText><reportElement x="384" y="4" width="60" height="15" uuid="454293b4-5432-46a1-a26a-36763c908b1d"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
 			<staticText><reportElement x="447" y="4" width="70" height="15" uuid="3f61d331-a473-4dcb-a3fd-98a907240ccc"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[HORARIO]]></text></staticText>
 			<staticText><reportElement x="520" y="4" width="45" height="15" uuid="ecdc0790-a93b-444c-b8f0-721be18368f1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[TIMBRES]]></text></staticText>
-			<staticText><reportElement x="568" y="4" width="232" height="15" uuid="0fb4c782-dc15-4dc0-852f-8f46d9027c84"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[OBSERVACION]]></text></staticText>
+			<staticText><reportElement x="568" y="4" width="232" height="15" uuid="0fb4c782-dc15-4dc0-852f-8f46d9027c84"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[PERMISO / TIMBRES]]></text></staticText>
 		</band>
 	</columnHeader>
 	<detail>

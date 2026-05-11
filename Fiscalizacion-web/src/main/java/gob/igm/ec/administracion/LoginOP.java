@@ -51,7 +51,7 @@ public class LoginOP extends FacesUtil {
     }
     
     public String ingresar() {
-        String regla = "faces/inicial.xhtml";
+        String regla = "/inicial.xhtml?faces-redirect=true";
         //String regla="faces/welcomePrimefaces";
         //String regla = "/inicial.xhtml";
         try {
@@ -74,7 +74,7 @@ public class LoginOP extends FacesUtil {
                
             }
         } catch (Exception ex) {
-            regla = "#";
+            regla = null;
             //Logger.getLogger(BodegaOP.class.getName()).log(Level.SEVERE, null, ex);
             FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
             this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
@@ -95,7 +95,7 @@ public class LoginOP extends FacesUtil {
     
    public String cerrarSession1() {
     //public void cerrarSession() {
-         String regla = "faces/index.xhtml";
+         String regla = "/index.xhtml?faces-redirect=true";
         super.getRequest().getSession(true).invalidate();
          this.setRenderMensaje(false);
         return regla;

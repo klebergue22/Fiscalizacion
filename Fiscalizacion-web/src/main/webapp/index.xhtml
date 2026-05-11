@@ -11,6 +11,13 @@
     <!-- Font Awesome -->
     <link href="css/font-awesome_1.css" rel="stylesheet" type="text/css"/>
     <link href="css/compiled.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript">
+        //<![CDATA[
+        if (window.top !== window.self) {
+            window.top.location = window.self.location.href;
+        }
+        //]]>
+    </script>
   
    <style>
         
@@ -99,7 +106,7 @@
                                             <hr class="hr-light"/>
                                         </div>
                                        
-<h:form id="frmLogin">
+<h:form id="frmLogin" target="_top">
                                         <!--Body-->
                                         <div class="md-form">
                                             <i class="fa fa-user prefix white-text"></i>
@@ -180,4 +187,3 @@ setTimeout(function() {
     
 
 </html>
-
