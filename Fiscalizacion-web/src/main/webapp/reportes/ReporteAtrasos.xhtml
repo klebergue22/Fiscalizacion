@@ -68,7 +68,7 @@
                                       requiredMessage="DEBE SELECCIONAR LA GESTION"
                                       filter="true"
                                       filterMatchMode="contains" >
-                        <f:selectItem itemLabel="-- Seleccione la Gestión --" noSelectionOption="true"/>
+                        <f:selectItem itemLabel="TODOS" itemValue="0" />
                         <f:selectItems value="#{reporteAtrasoControlador.listadoGestiones}" var="itemGestion"
                                        itemLabel="#{itemGestion.descrip}"
                                        itemValue="#{itemGestion.noCd}" />                           

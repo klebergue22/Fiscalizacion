@@ -63,6 +63,7 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
 //                System.out.println("GESTION.  >>>>" + tmp.getDescrip());
 //                
 //            }
+        this.setNoGestion(Short.valueOf((short) 0));
         this.setRenderBarra(false);
         this.setUno(JasperReportUtil.PATH_IMAGES);
         this.setPath(JasperReportUtil.PATH_REPORTE_ATRASOS);
