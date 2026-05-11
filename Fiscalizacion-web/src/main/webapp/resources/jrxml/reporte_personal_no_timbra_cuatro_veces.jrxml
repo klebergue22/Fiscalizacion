@@ -13,7 +13,8 @@
        q.dia_semana,
        q.horario_trabajo,
        q.total_timbres,
-       q.detalle_timbres
+       q.detalle_timbres,
+       q.detalle_permisos
   FROM (
         SELECT e.codigo,
                e.no_persona,
@@ -55,7 +56,24 @@
                          r.fecha = cal.fecha
                          OR (t.codigo IS NOT NULL AND t.h_hasta < 12 AND r.fecha = cal.fecha + 1)
                     )
-               ), 'SIN TIMBRE') AS detalle_timbres
+               ), 'SIN TIMBRE') AS detalle_timbres,
+               NVL((
+                 SELECT LISTAGG(
+                          v.descrip ||
+                          CASE
+                            WHEN TRUNC(v.f_inico) = TRUNC(NVL(v.f_finalizacion, v.f_inico)) THEN
+                              ' [' || TO_CHAR(v.f_inico, 'HH24:MI') || ' - ' ||
+                              TO_CHAR(NVL(v.f_finalizacion, v.f_inico), 'HH24:MI') || ']'
+                            ELSE
+                              ' [' || TO_CHAR(v.f_inico, 'DD/MM/YYYY HH24:MI') || ' - ' ||
+                              TO_CHAR(NVL(v.f_finalizacion, v.f_inico), 'DD/MM/YYYY HH24:MI') || ']'
+                          END,
+                          ' | '
+                        ) WITHIN GROUP (ORDER BY v.f_inico)
+                   FROM permisos.v_permisos_empleado v
+                  WHERE v.no_persona = e.no_persona
+                    AND cal.fecha BETWEEN TRUNC(v.f_inico) AND TRUNC(NVL(v.f_finalizacion, v.f_inico))
+               ), '-') AS detalle_permisos
           FROM rh.t_dat_empleado e
           JOIN rh.t_contrataciones c
             ON c.no_persona = e.no_persona
@@ -97,6 +115,7 @@
 	<field name="HORARIO_TRABAJO" class="java.lang.String"/>
 	<field name="TOTAL_TIMBRES" class="java.math.BigDecimal"/>
 	<field name="DETALLE_TIMBRES" class="java.lang.String"/>
+	<field name="DETALLE_PERMISOS" class="java.lang.String"/>
 	<title>
 		<band height="90">
 			<staticText>
@@ -140,7 +159,7 @@
 			<staticText><reportElement x="384" y="4" width="60" height="15" uuid="454293b4-5432-46a1-a26a-36763c908b1d"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[DIA]]></text></staticText>
 			<staticText><reportElement x="447" y="4" width="70" height="15" uuid="3f61d331-a473-4dcb-a3fd-98a907240ccc"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[HORARIO]]></text></staticText>
 			<staticText><reportElement x="520" y="4" width="45" height="15" uuid="ecdc0790-a93b-444c-b8f0-721be18368f1"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><text><![CDATA[TIMBRES]]></text></staticText>
-			<staticText><reportElement x="568" y="4" width="232" height="15" uuid="0fb4c782-dc15-4dc0-852f-8f46d9027c84"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[DETALLE TIMBRES]]></text></staticText>
+			<staticText><reportElement x="568" y="4" width="232" height="15" uuid="0fb4c782-dc15-4dc0-852f-8f46d9027c84"/><textElement><font size="7" isBold="true"/></textElement><text><![CDATA[OBSERVACION]]></text></staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -152,7 +171,7 @@
 			<textField><reportElement x="384" y="2" width="60" height="14" uuid="5a12635d-e8a9-4a40-8110-c6d24c171261"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DIA_SEMANA}]]></textFieldExpression></textField>
 			<textField><reportElement x="447" y="2" width="70" height="14" uuid="e5427abb-e286-46de-8053-fadbd0f852a5"/><textElement textAlignment="Center"><font size="6"/></textElement><textFieldExpression><![CDATA[$F{HORARIO_TRABAJO}]]></textFieldExpression></textField>
 			<textField><reportElement x="520" y="2" width="45" height="14" uuid="f20579dc-7412-49d5-b8e4-1888bdca7c96"/><textElement textAlignment="Center"><font size="7" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{TOTAL_TIMBRES}]]></textFieldExpression></textField>
-			<textField isStretchWithOverflow="true"><reportElement x="568" y="2" width="232" height="24" uuid="3a927bc9-1aa2-463f-9a81-0065da230823"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[$F{DETALLE_TIMBRES}]]></textFieldExpression></textField>
+			<textField isStretchWithOverflow="true"><reportElement x="568" y="2" width="232" height="24" uuid="3a927bc9-1aa2-463f-9a81-0065da230823"/><textElement><font size="6"/></textElement><textFieldExpression><![CDATA[($F{DETALLE_PERMISOS} != null && !$F{DETALLE_PERMISOS}.equals("-") ? "PERMISO: " + $F{DETALLE_PERMISOS} + " / " : "") + "TIMBRES: " + $F{DETALLE_TIMBRES}]]></textFieldExpression></textField>
 		</band>
 	</detail>
 	<pageFooter>

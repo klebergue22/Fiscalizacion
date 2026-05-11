@@ -72,13 +72,22 @@
             <p:growl id="msgs" styleClass="report-growl" style="position: fixed; top: 95px; right: 30px; width: 390px; z-index: 99999;" showSummary="false" showDetail="true" life="6000" />            
             
             <div class="form-group col-md-12">
+                <p:outputLabel value="Todos:" class=" col-lg-1 col-md-1 control-label" />
+                <div class="col-lg-1 col-md-1">
+                    <p:selectBooleanCheckbox value="#{reporteAtrasoControlador.todasGestiones}">
+                        <p:ajax update="idGestion" />
+                    </p:selectBooleanCheckbox>
+                </div>
                 <p:outputLabel value="Gestiones:" class=" col-lg-1 col-md-1 control-label" />
                 <div class="col-lg-3 col-md-3">
                     <p:selectOneMenu  id="idGestion"
                                       value="#{reporteAtrasoControlador.noGestion}"
+                                      required="#{not reporteAtrasoControlador.todasGestiones}"
+                                      requiredMessage="DEBE SELECCIONAR LA GESTION"
+                                      disabled="#{reporteAtrasoControlador.todasGestiones}"
                                       filter="true"
                                       filterMatchMode="contains" >
-                        <f:selectItem itemLabel="TODOS" itemValue=""/>
+                        <f:selectItem itemLabel="-- Seleccione la Gestión --" noSelectionOption="true"/>
                         <f:selectItems value="#{reporteAtrasoControlador.listadoGestiones}" var="itemGestion"
                                        itemLabel="#{itemGestion.descrip}"
                                        itemValue="#{itemGestion.noCd}" />                           

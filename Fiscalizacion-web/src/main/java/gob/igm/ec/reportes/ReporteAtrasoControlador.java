@@ -39,6 +39,7 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
     private Date fechaDesde;
     private Date fechaHasta;
     private Short noGestion;
+    private boolean todasGestiones;
     
     DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
     
@@ -51,6 +52,9 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
     public void init(){
         
         listadoGestiones = servicioListadoGestiones.obtenerTodasGestiones();
+        if (listadoGestiones == null) {
+            listadoGestiones = new java.util.ArrayList<>();
+        }
         Collections.sort(listadoGestiones, new Comparator<VGestionesVigentes>() {
             @Override
             public int compare(VGestionesVigentes gestion1, VGestionesVigentes gestion2) {
@@ -64,6 +68,7 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
 //                System.out.println("GESTION.  >>>>" + tmp.getDescrip());
 //                
 //            }
+        this.setTodasGestiones(false);
         this.setRenderBarra(false);
         this.setUno(JasperReportUtil.PATH_IMAGES);
         this.setPath(JasperReportUtil.PATH_REPORTE_ATRASOS);
@@ -86,11 +91,17 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
                 return;
             }
 
+            if (!todasGestiones && noGestion == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR LA GESTION O MARCAR TODOS"));
+                return;
+            }
+
             Map<String, Object> map = new HashMap<>();
             map.put("pathImagen", JasperReportUtil.PATH_IMAGES);
             map.put("FechaDesde", formatoFecha.format(fechaDesde));
             map.put("FechaHasta", formatoFecha.format(fechaHasta));
-            map.put("NoGestion", noGestion);
+            map.put("NoGestion", todasGestiones ? Short.valueOf((short) 0) : noGestion);
 
             try (Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1", "PERMISOS", "PERMIGM2012")) {
                 JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map, JasperReportUtil.PATH_REPORTE_ATRASOS);
@@ -235,6 +246,14 @@ public class ReporteAtrasoControlador extends FacesUtil implements Serializable 
 
     public void setNoGestion(Short noGestion) {
         this.noGestion = noGestion;
+    }
+
+    public boolean isTodasGestiones() {
+        return todasGestiones;
+    }
+
+    public void setTodasGestiones(boolean todasGestiones) {
+        this.todasGestiones = todasGestiones;
     }
     
     

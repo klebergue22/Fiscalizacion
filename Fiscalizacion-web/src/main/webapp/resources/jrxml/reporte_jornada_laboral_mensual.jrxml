@@ -139,6 +139,13 @@
                )
        ) q
  WHERE q.min_ultimo_timbre_hasta_salida > 0
+   AND NOT (
+       (
+           UPPER(q.detalle_permisos) LIKE '%PERSONAL%'
+           OR UPPER(q.detalle_permisos) LIKE '%ATENCION MEDICA%'
+       )
+       AND q.detalle_permisos LIKE '%- 16:30]%'
+   )
  ORDER BY q.area, q.servidor, q.fecha]]>
 	</queryString>
 	<field name="CODIGO" class="java.lang.String"/>
