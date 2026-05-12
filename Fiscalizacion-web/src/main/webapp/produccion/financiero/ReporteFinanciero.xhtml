@@ -79,6 +79,13 @@
             <p:growl id="msgs" styleClass="report-growl" style="position: fixed; top: 95px; right: 30px; width: 390px; z-index: 99999;" showSummary="false" showDetail="true" life="6000" />
             
             <div class="form-group col-md-12">
+                <p:outputLabel value="Código Timbrado: " class=" col-lg-1 col-md-1 control-label"/>
+                <div class="col-lg-3 col-md-3">
+                    <p:inputNumber id="valorcert" value="#{reporteFinancieroControlador.codigo}" title="codigo" placeholder="Código Timbrado" inputStyle="width:100%" decimalPlaces="0" maxlength="5" />
+                </div>
+            </div>
+
+            <div class="form-group col-md-12">
                 <p:outputLabel value="Fecha Desde: " class=" col-lg-1 col-md-1 control-label"/>      
                 <div class="col-lg-3 col-md-3">
                     <p:calendar id="cldFecha" value="#{reporteFinancieroControlador.fechaDesde}" pattern="#{formato.formatoFecha}" placeholder="dd/mm/yyyy"/>

@@ -57,10 +57,12 @@ private StreamedContent media;
         try {
             this.setRenderBarra(true);
             
-            if (codigo == null) {
+            if (codigo == null || codigo.trim().isEmpty()) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE INGRESAR UN CODIGO DE TIMBRADO"));
             } else if (fechaDesde == null || fechaHasta == null ){
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA DESDE Y FECHA HASTA"));
+            } else if (fechaCorte == null) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA CORTE"));
             } 
             else  {
             Map<String, Object> map = new HashMap<>();
