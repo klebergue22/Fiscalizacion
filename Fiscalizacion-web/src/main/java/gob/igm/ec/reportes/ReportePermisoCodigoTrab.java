@@ -10,6 +10,8 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -54,20 +56,29 @@ public class ReportePermisoCodigoTrab extends FacesUtil implements Serializable 
     
     public void generarReporteCodigoTra() {
         try {
-            this.setRenderBarra(true);     
+            this.setRenderBarra(true);
+            limpiarReporteGenerado();
            
             System.out.println("fecha desde :" + this.fechaDesde);
             System.out.println("fecha hasta :" + this.fechaHasta);
             if (fechaDesde == null || fechaHasta == null ){
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA DESDE Y FECHA HASTA"));
+            } else if (fechaDesde.after(fechaHasta)) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "LA FECHA DESDE NO PUEDE SER MAYOR QUE LA FECHA HASTA"));
             } else  {
             Map<String, Object> map = new HashMap<>();
             
             Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","PERMISOS","PERMIGM2012");
             //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
-            map.put("pathImagen",JasperReportUtil.PATH_IMAGES);            
             String fecha=formatoFecha.format(fechaDesde);
             String fecha2=formatoFecha.format(fechaHasta);
+            if (!existenPermisosCodigo(conexion, fecha, fecha2)) {
+                conexion.close();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "SIN DATOS", "NO EXISTEN PERMISOS CODIGO DE TRABAJO EN EL RANGO INGRESADO"));
+                return;
+            }
+
+            map.put("pathImagen",JasperReportUtil.PATH_IMAGES);
             map.put("FechaDesde",fecha);
             map.put("FechaHasta",fecha2);
             
@@ -81,8 +92,30 @@ public class ReportePermisoCodigoTrab extends FacesUtil implements Serializable 
             }
             
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            limpiarReporteGenerado();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL REPORTE: " + e.getMessage()));
         }
+    }
+
+    private boolean existenPermisosCodigo(Connection conexion, String fechaDesdeReporte, String fechaHastaReporte) throws SQLException {
+        String sql = "SELECT COUNT(1) "
+                + "FROM V_PERMISOS_EMPLEADO "
+                + "WHERE TRUNC(F_INICO) BETWEEN TO_DATE(?, 'DD/MM/YYYY') AND TO_DATE(?, 'DD/MM/YYYY') "
+                + "AND C_CONTRATO = 28";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, fechaDesdeReporte);
+            ps.setString(2, fechaHastaReporte);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    private void limpiarReporteGenerado() {
+        media = null;
+        outputStream = null;
+        excelOutputStream = null;
     }
     
     public String getNameFilePdf() {
