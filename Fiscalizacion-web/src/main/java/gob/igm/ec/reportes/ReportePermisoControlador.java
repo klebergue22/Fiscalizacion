@@ -55,41 +55,57 @@ public class ReportePermisoControlador extends FacesUtil implements Serializable
     public void generateReport() {
         try {
             this.setRenderBarra(true);
-     
-            System.out.println("codigo :" + this.codigo);
+            limpiarReporteGenerado();
+
+            String codigoReporte = normalizarCodigoTimbrado(this.codigo);
+            System.out.println("codigo :" + codigoReporte);
             System.out.println("fecha desde :" + this.fechaDesde);
             System.out.println("fecha hasta :" + this.fechaHasta);
-            if (codigo == null) {
+            if (codigoReporte == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE INGRESAR UN CODIGO DE TIMBRADO"));
             } else if (fechaDesde == null || fechaHasta == null ){
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA DESDE Y FECHA HASTA"));
-            } 
-            else  {
-            Map<String, Object> map = new HashMap<>();
-            
-            Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","PERMISOS","PERMIGM2012");
-            //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
-            map.put("pathImagen",JasperReportUtil.PATH_IMAGES);
-            map.put("pathImagen1",JasperReportUtil.PATH_IMAGES1);
-            map.put("pathImagen2",JasperReportUtil.PATH_IMAGES2);
-            map.put("CODIGO", this.codigo);
-            String fecha=formatoFecha.format(fechaDesde);
-            String fecha2=formatoFecha.format(fechaHasta);
-            map.put("FechaDesde",fecha);
-            map.put("FechaHasta",fecha2);
-            
-            JasperReportUtil jasper = new JasperReportUtil();
-            JRExporter exporter = null;
-            JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_PERMISOS_PERSONAL);
+            } else {
+                Map<String, Object> map = new HashMap<>();
+
+                Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","PERMISOS","PERMIGM2012");
+                //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
+                map.put("pathImagen",JasperReportUtil.PATH_IMAGES);
+                map.put("pathImagen1",JasperReportUtil.PATH_IMAGES1);
+                map.put("pathImagen2",JasperReportUtil.PATH_IMAGES2);
+                map.put("CODIGO", codigoReporte);
+                String fecha=formatoFecha.format(fechaDesde);
+                String fecha2=formatoFecha.format(fechaHasta);
+                map.put("FechaDesde",fecha);
+                map.put("FechaHasta",fecha2);
+
+                JasperReportUtil jasper = new JasperReportUtil();
+                JRExporter exporter = null;
+                JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_PERMISOS_PERSONAL);
                 outputStream = reportOutput.getPdfOutputStream();
                 excelOutputStream = reportOutput.getExcelOutputStream();
-            media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
-            conexion.close();
+                media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
+                conexion.close();
             }
-            
+
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            limpiarReporteGenerado();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL REPORTE: " + e.getMessage()));
         }
+    }
+
+    private String normalizarCodigoTimbrado(String codigoIngresado) {
+        if (codigoIngresado == null) {
+            return null;
+        }
+        String codigoNormalizado = codigoIngresado.replaceAll("\\D", "");
+        return codigoNormalizado.isEmpty() ? null : codigoNormalizado;
+    }
+
+    private void limpiarReporteGenerado() {
+        media = null;
+        outputStream = null;
+        excelOutputStream = null;
     }
     
     public void genera() throws ClassNotFoundException, SQLException, Exception{

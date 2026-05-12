@@ -23,7 +23,7 @@
 	<queryString language="SQL">
 		<![CDATA[SELECT * FROM V_PERMISOS_EMPLEADO
 WHERE TO_NUMBER(CODIGO)=TO_NUMBER($P{CODIGO})
-AND  (TRUNC (F_INICO) BETWEEN $P{FechaDesde} AND $P{FechaHasta})
+AND  (TRUNC (F_INICO) BETWEEN TO_DATE($P{FechaDesde}, 'DD/MM/YYYY') AND TO_DATE($P{FechaHasta}, 'DD/MM/YYYY'))
 ORDER BY DESCRIP,F_INICO]]>
 	</queryString>
 	<field name="CODIGO" class="java.lang.String">
