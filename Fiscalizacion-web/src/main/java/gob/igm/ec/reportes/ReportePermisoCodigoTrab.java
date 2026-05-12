@@ -86,7 +86,7 @@ public class ReportePermisoCodigoTrab extends FacesUtil implements Serializable 
     }
     
     public String getNameFilePdf() {
-        return "reportePermisosCódigo";
+        return "reportePermisosCodigo";
     }
 
     public void downloadFile() {

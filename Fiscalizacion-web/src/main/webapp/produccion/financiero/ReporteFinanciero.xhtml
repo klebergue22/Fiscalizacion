@@ -46,6 +46,9 @@
         try {
             PF('statusDialog').show();
         } catch (e) {}
+        window.setTimeout(function() {
+            finalizarDescargaReporte();
+        }, 10000);
     }
 
     function finalizarDescargaReporte() {
@@ -101,7 +104,7 @@
             <p:progressBar id="progressBarClient" widgetVar="pbClient" style=" font-size: small" labelTemplate="Cargando........Por favor espere"  />
             <p:commandButton value="Descargar Excel"
                              class="btn-xs btn btn-success"
-                             onclick="PrimeFaces.monitorDownload(iniciarDescargaReporte, finalizarDescargaReporte)"
+                             onclick="iniciarDescargaReporte()"
                              ajax="false"
                              rendered="#{reporteFinancieroControlador.media ne null}">
                 <p:fileDownload value="#{reporteFinancieroControlador.archivoDescargaExcel}"/>
