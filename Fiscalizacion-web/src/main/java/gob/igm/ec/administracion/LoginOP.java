@@ -11,24 +11,21 @@ import gob.igm.ec.servicios.TUsuarioFacade;
 import gob.igm.ec.util.DataManagerUsuario;
 import gob.igm.ec.util.EncriptUtil;
 import gob.igm.ec.util.FacesUtil;
-import gob.igm.ec.util.SessionUtils;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
+import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
-@ManagedBean
-@Named(value = "loginOP")
+@ManagedBean(name = "loginOP")
 @ViewScoped
 //@RequestScoped
-public class LoginOP extends FacesUtil {
-    
-    private EncriptUtil encriptUtil;
+public class LoginOP extends FacesUtil implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private transient EncriptUtil encriptUtil;
     private String clave;
     private String aliasBase;
     private String mensaje;
@@ -49,13 +46,20 @@ public class LoginOP extends FacesUtil {
          this.setRenderMensaje(false);
          //usuarioManager = new DataManagerUsuario();
     }
+
+    private EncriptUtil getEncriptUtil() {
+        if (this.encriptUtil == null) {
+            this.encriptUtil = new EncriptUtil();
+        }
+        return this.encriptUtil;
+    }
     
     public String ingresar() {
         String regla = "/inicial.xhtml?faces-redirect=true";
         //String regla="faces/welcomePrimefaces";
         //String regla = "/inicial.xhtml";
         try {
-            String cifrado = this.encriptUtil.getMD5(this.clave);
+            String cifrado = getEncriptUtil().getMD5(this.clave);
             TUsuarios usuario = this.tUsuarioFacade.buscarUsuarioClave(this.aliasBase, cifrado);           
             
             if (usuario != null) {
