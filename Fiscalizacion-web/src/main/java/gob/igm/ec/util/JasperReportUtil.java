@@ -10,10 +10,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -31,12 +31,13 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRXlsAbstractExporterParameter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
-import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.apache.log4j.Logger;
 import org.primefaces.model.StreamedContent;
 
@@ -169,21 +170,33 @@ public class JasperReportUtil {
 
             os.flush();
             os.close();
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                java.util.logging.Logger.getLogger(JasperReportUtil.class.getName()).log(Level.SEVERE, null, ex);
-            }
         } catch (ClassNotFoundException | JRException | IOException ex) {
             localLogger.error(ex);
             throw new RuntimeException("Error generando reporte: " + ex.getMessage(), ex);
+        } finally {
+            cerrarConexion(conn);
         }
 
         return os;
     }
 
     public static ByteArrayOutputStream getExcelOutputStreamFromReport(Connection conn, Map map, String pathJasper) {
-        return getOutputStreamsFromReport(conn, map, pathJasper).getExcelOutputStream();
+        ByteArrayOutputStream excelOs = new ByteArrayOutputStream();
+
+        try {
+            JasperPrint jp = fillReport(conn, map, pathJasper);
+            exportReportToExcelStream(jp, excelOs);
+
+            excelOs.flush();
+            excelOs.close();
+        } catch (ClassNotFoundException | JRException | IOException ex) {
+            localLogger.error(ex);
+            throw new RuntimeException("Error generando reporte Excel: " + ex.getMessage(), ex);
+        } finally {
+            cerrarConexion(conn);
+        }
+
+        return excelOs;
     }
 
     public static ReportOutput getOutputStreamsFromReport(Connection conn, Map map, String pathJasper) {
@@ -199,17 +212,24 @@ public class JasperReportUtil {
             os.close();
             excelOs.flush();
             excelOs.close();
+        } catch (ClassNotFoundException | JRException | IOException ex) {
+            localLogger.error(ex);
+            throw new RuntimeException("Error generando reporte: " + ex.getMessage(), ex);
+        } finally {
+            cerrarConexion(conn);
+        }
+
+        return new ReportOutput(os, excelOs);
+    }
+
+    private static void cerrarConexion(Connection conn) {
+        if (conn != null) {
             try {
                 conn.close();
             } catch (SQLException ex) {
                 java.util.logging.Logger.getLogger(JasperReportUtil.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (ClassNotFoundException | JRException | IOException ex) {
-            localLogger.error(ex);
-            throw new RuntimeException("Error generando reporte: " + ex.getMessage(), ex);
         }
-
-        return new ReportOutput(os, excelOs);
     }
 
     private static JasperPrint fillReport(Connection conn, Map map, String pathJasper) throws ClassNotFoundException, JRException, FileNotFoundException {
@@ -218,9 +238,12 @@ public class JasperReportUtil {
         }
 
         if (pathJasper.replace("\\", "/").replaceAll("/+$", "").toLowerCase().endsWith(".jrxml")) {
-            InputStream inputStream = new FileInputStream(pathJasper);
-            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-            return JasperFillManager.fillReport(jasperReport, map, conn);
+            try (InputStream inputStream = new FileInputStream(pathJasper)) {
+                JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+                return JasperFillManager.fillReport(jasperReport, map, conn);
+            } catch (IOException ex) {
+                throw new JRException(ex);
+            }
         }
 
         return JasperFillManager.fillReport(pathJasper, map, conn);
@@ -228,13 +251,39 @@ public class JasperReportUtil {
 
     private static void exportReportToExcelStream(JasperPrint jp, ByteArrayOutputStream os) throws JRException {
         JRXlsxExporter exporter = new JRXlsxExporter();
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jp);
-        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
-        exporter.setParameter(JRXlsAbstractExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
-        exporter.setParameter(JRXlsAbstractExporterParameter.IS_DETECT_CELL_TYPE, Boolean.TRUE);
-        exporter.setParameter(JRXlsAbstractExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
-        exporter.setParameter(JRXlsAbstractExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+        configurarExportadorXlsx(exporter, jp, os, Boolean.FALSE, null);
         exporter.exportReport();
+    }
+
+    private static void configurarExportadorXlsx(JRXlsxExporter exporter, JasperPrint jp, OutputStream os, Boolean whitePageBackground, Boolean collapseRowSpan) {
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setOnePagePerSheet(Boolean.FALSE);
+        // Se desactiva para evitar que JasperReports intente convertir patrones
+        // de fecha/número a patrones Excel mediante getFormatPatternsMap(),
+        // porque esa propiedad es de tipo Map y falla en GlassFish con:
+        // "Export property type interface java.util.Map not supported".
+        configuration.setDetectCellType(Boolean.FALSE);
+        configuration.setWhitePageBackground(whitePageBackground);
+        configuration.setRemoveEmptySpaceBetweenRows(Boolean.TRUE);
+        if (collapseRowSpan != null) {
+            configuration.setCollapseRowSpan(collapseRowSpan);
+        }
+
+        exporter.setExporterInput(new SimpleExporterInput(jp));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(os));
+        exporter.setConfiguration(configuration);
+    }
+
+    private static void configurarExportadorXls(JRXlsExporter exporter, JasperPrint jp, OutputStream os) {
+        SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
+        configuration.setOnePagePerSheet(Boolean.FALSE);
+        configuration.setDetectCellType(Boolean.FALSE);
+        configuration.setWhitePageBackground(Boolean.FALSE);
+        configuration.setRemoveEmptySpaceBetweenRows(Boolean.TRUE);
+
+        exporter.setExporterInput(new SimpleExporterInput(jp));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(os));
+        exporter.setConfiguration(configuration);
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,26 +318,17 @@ public class JasperReportUtil {
 //httpServletResponse.setContentLength(arrayOutputStream.toByteArray().length);
 
             JRXlsExporter exporterXLS = new JRXlsExporter();
-
-            exporterXLS.setParameter(JRXlsExporterParameter.JASPER_PRINT, jp);
-            exporterXLS.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
-            exporterXLS.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
-            exporterXLS.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, Boolean.TRUE);
-            exporterXLS.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
-            exporterXLS.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+            configurarExportadorXls(exporterXLS, jp, servletOutputStream);
             exporterXLS.exportReport();
 
             FacesContext.getCurrentInstance().responseComplete();
 
             os.flush();
             os.close();
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                java.util.logging.Logger.getLogger(JasperReportUtil.class.getName()).log(Level.SEVERE, null, ex);
-            }
         } catch (ClassNotFoundException | JRException | IOException ex) {
             localLogger.error(ex);
+        } finally {
+            cerrarConexion(conn);
         }
 
         return os;
@@ -342,18 +382,14 @@ public class JasperReportUtil {
                 response.setHeader("Pragma", "no-cache");
                 response.setDateHeader("Expires", 0);
             } else {
-                exporter = new JRXlsxExporter();
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, response.getOutputStream());
-                exporter.setParameter(JRXlsAbstractExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
-                exporter.setParameter(JRXlsAbstractExporterParameter.IS_COLLAPSE_ROW_SPAN, false);
-                exporter.setParameter(
-                        JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.TRUE);
+                JRXlsxExporter xlsxExporter = new JRXlsxExporter();
+                configurarExportadorXlsx(xlsxExporter, jasperPrint, response.getOutputStream(), Boolean.TRUE, Boolean.FALSE);
                 response.setContentType("application/xls");
                 response.setHeader("Content-Disposition", "inline; filename=\"reporte.xls\";");
                 response.setHeader("Cache-Control", "no-cache");
                 response.setHeader("Pragma", "no-cache");
                 response.setDateHeader("Expires", 0);
+                xlsxExporter.exportReport();
 
             }
 

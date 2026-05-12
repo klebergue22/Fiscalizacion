@@ -5,6 +5,7 @@
  */
 package gob.igm.ec.util;
 
+import java.io.Serializable;
 import java.util.ResourceBundle;
 import javax.el.ELContext;
 import javax.faces.application.FacesMessage;
@@ -21,10 +22,12 @@ import java.security.NoSuchAlgorithmException;
  *
  * @author VERA_MAYRA
  */
-public class FacesUtil {
+public class FacesUtil implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** La variable recursoGeneral. */
-    private ResourceBundle recursoGeneral;
+    private transient ResourceBundle recursoGeneral;
     /* Inicializa las variables de clase. */
     /**
      * Inicializa las variables de clase y
@@ -122,6 +125,9 @@ public class FacesUtil {
      * @return El recurso general
      */
     public ResourceBundle getRecursoGeneral() {
+        if (recursoGeneral == null) {
+            recursoGeneral = ResourceBundle.getBundle("gob.igm.ec.recursos.General");
+        }
         return recursoGeneral;
     }
 
