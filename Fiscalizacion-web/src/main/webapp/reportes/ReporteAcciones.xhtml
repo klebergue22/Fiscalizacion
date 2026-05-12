@@ -98,7 +98,7 @@
                                      value="#{reporteAccionPerControlador.idEmpleado}"
                                      completeMethod="#{reporteAccionPerControlador.completarEmpleados}"
                                      var="itemEmp"
-                                     itemLabel="#{itemEmp.nombreC}"
+                                     itemLabel="#{reporteAccionPerControlador.obtenerEtiquetaEmpleado(itemEmp)}"
                                      itemValue="#{itemEmp.noPersona}"
                                      dropdown="true"
                                      forceSelection="true"

@@ -110,6 +110,56 @@ public class ReporteAccionPerControlador extends FacesUtil implements Serializab
 
         return empleadosFiltrados;
     }
+
+    public String obtenerEtiquetaEmpleado(Object empleado) {
+        VDatoEmp empleadoEncontrado = obtenerEmpleado(empleado);
+
+        if (empleadoEncontrado != null) {
+            return empleadoEncontrado.getNombreC();
+        }
+
+        return empleado == null ? "" : String.valueOf(empleado);
+    }
+
+    private VDatoEmp obtenerEmpleado(Object empleado) {
+        if (empleado == null) {
+            return null;
+        }
+
+        if (empleado instanceof VDatoEmp) {
+            return (VDatoEmp) empleado;
+        }
+
+        Integer noPersona = obtenerNoPersona(empleado);
+
+        if (noPersona == null || listaEmpleados == null) {
+            return null;
+        }
+
+        for (VDatoEmp empleadoLista : listaEmpleados) {
+            if (noPersona.equals(empleadoLista.getNoPersona())) {
+                return empleadoLista;
+            }
+        }
+
+        return null;
+    }
+
+    private Integer obtenerNoPersona(Object empleado) {
+        if (empleado instanceof Integer) {
+            return (Integer) empleado;
+        }
+
+        if (empleado instanceof Number) {
+            return ((Number) empleado).intValue();
+        }
+
+        try {
+            return Integer.valueOf(String.valueOf(empleado));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
     
     public void generateReport() {
      
