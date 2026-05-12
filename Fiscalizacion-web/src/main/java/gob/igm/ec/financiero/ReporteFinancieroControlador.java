@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -27,6 +29,7 @@ import org.primefaces.model.StreamedContent;
 @SessionScoped
 @Named
 public class ReporteFinancieroControlador extends FacesUtil implements Serializable {
+    private static final Logger LOGGER = Logger.getLogger(ReporteFinancieroControlador.class.getName());
     
 private StreamedContent media;
     private ByteArrayOutputStream outputStream;
@@ -56,6 +59,9 @@ private StreamedContent media;
     public void generarReporteFinanciero() {
         try {
             this.setRenderBarra(true);
+            this.media = null;
+            this.outputStream = null;
+            this.excelOutputStream = null;
             
             if (codigo == null || codigo.trim().isEmpty()) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE INGRESAR UN CODIGO DE TIMBRADO"));
@@ -89,7 +95,9 @@ private StreamedContent media;
             }
             
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, "Error generando reporte financiero", e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL REPORTE: " + e.getMessage()));
         }
     }
 
