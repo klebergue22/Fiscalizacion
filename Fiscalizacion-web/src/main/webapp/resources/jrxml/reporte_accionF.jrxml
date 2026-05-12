@@ -6,7 +6,7 @@
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="207"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="RHIGM"/>
-	<parameter name="ACCION" class="java.lang.String"/>
+	<parameter name="ACCION" class="java.math.BigDecimal"/>
 	<parameter name="fondo1" class="java.lang.String">
 		<defaultValueExpression><![CDATA["D:/PROYECTO FISC/IMAGENES/accionf.JPEG"]]></defaultValueExpression>
 	</parameter>
@@ -70,20 +70,14 @@
        B.GRADO_ACTUAL,
        B.GRADO_PROPUESTO,
        P.DESCRIP CARGO
-  FROM RH.T_ACCION_PERSONAL2025 B,
-       RH.T_DAT_EMPLEADO    A,
-       RH.T_DAT_EMPLEADO    C,       
-       RH.T_DAT_EMPLEADO    E,
-       RH.T_DAT_EMPLEADO    F,
-       RH.T_CONTRATACIONES X,
-       RH.T_FUNCION         P
- WHERE A.NO_PERSONA(+) = B.NO_PERSONA
-   AND C.NO_PERSONA(+) = B.NO_JEFE_PERSONA
-   AND E.NO_PERSONA(+) = B.NO_DIRECTOR   
-   AND B.NO_JEFE_PERSONA = X.NO_PERSONA
-   AND X.NO_FUNCION = P.NO_FUNCION
-   AND F.NO_PERSONA(+) = B.NO_PERSONA_REEMPLAZA
-   AND B.NO_ACCION = $P{ACCION}]]>
+  FROM RH.T_ACCION_PERSONAL2025 B
+       LEFT JOIN RH.T_DAT_EMPLEADO A ON A.NO_PERSONA = B.NO_PERSONA
+       LEFT JOIN RH.T_DAT_EMPLEADO C ON C.NO_PERSONA = B.NO_JEFE_PERSONA
+       LEFT JOIN RH.T_DAT_EMPLEADO E ON E.NO_PERSONA = B.NO_DIRECTOR
+       LEFT JOIN RH.T_DAT_EMPLEADO F ON F.NO_PERSONA = B.NO_PERSONA_REEMPLAZA
+       LEFT JOIN RH.T_CONTRATACIONES X ON X.NO_PERSONA = B.NO_JEFE_PERSONA AND X.F_SALIDA IS NULL
+       LEFT JOIN RH.T_FUNCION P ON P.NO_FUNCION = X.NO_FUNCION
+ WHERE B.NO_ACCION = $P{ACCION}]]>
 	</queryString>
 	<field name="APELLIDOS" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="APELLIDOS"/>

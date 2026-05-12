@@ -50,39 +50,35 @@ public class LoginOP extends FacesUtil {
          //usuarioManager = new DataManagerUsuario();
     }
     
-    public String ingresar() {
-        String regla = "faces/inicial.xhtml";
-        //String regla="faces/welcomePrimefaces";
-        //String regla = "/inicial.xhtml";
-        try {
-            String cifrado = this.encriptUtil.getMD5(this.clave);
-            TUsuarios usuario = this.tUsuarioFacade.buscarUsuarioClave(this.aliasBase, cifrado);           
-            
-            if (usuario != null) {
-                this.usuarioManager.setUsuario(usuario.getUsuario());
-                super.add("usuarioLogueado", usuario.getUsuario());
-                //usuarioManager.setUsuario(usuario);
-                MenuOP menuOP = super.getBean(MenuOP.NOMBRE_BEAN);
-                menuOP.setUsuario(usuario);
-                
-                //menuOP.setPeriodo(this.calculaPeriodo());
-                //obtenemos el centro de distribución
-                //menuOP.setIdCdResponsable(this.centroServicio.buscaCentroResponsable(usuario.getNoPersona()));
-                menuOP.cargarMenus();
-                this.setMensaje("");
-                this.setRenderMensaje(false);
-               
-            }
-        } catch (Exception ex) {
-            regla = "#";
-            //Logger.getLogger(BodegaOP.class.getName()).log(Level.SEVERE, null, ex);
-            FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_ERROR, ex.getMessage(), null);
-            this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
+public String ingresar() {
+    try {
+        String cifrado = this.encriptUtil.getMD5(this.clave);
+        TUsuarios usuario = this.tUsuarioFacade.buscarUsuarioClave(this.aliasBase, cifrado);
+
+        if (usuario != null) {
+            this.usuarioManager.setUsuario(usuario.getUsuario());
+            super.add("usuarioLogueado", usuario.getUsuario());
+
+            MenuOP menuOP = super.getBean(MenuOP.NOMBRE_BEAN);
+            menuOP.setUsuario(usuario);
+            menuOP.cargarMenus();
+
+            this.setMensaje("");
+            this.setRenderMensaje(false);
+
+            return "/inicial.xhtml?faces-redirect=true";
+        } else {
+            this.setMensaje("Usuario o clave incorrectos");
             this.setRenderMensaje(true);
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, super.getRecursoGeneral().getString("msgErrorLogin"), ""));
+            return null;
         }
-        return regla;
+
+    } catch (Exception ex) {
+        this.setMensaje(super.getRecursoGeneral().getString("msgErrorLogin"));
+        this.setRenderMensaje(true);
+        return null;
     }
+}
     
      /**
      * Cierra la sesión del usuario.
@@ -93,13 +89,11 @@ public class LoginOP extends FacesUtil {
         super.getRequest().getSession(true).invalidate();
     }
     
-   public String cerrarSession1() {
-    //public void cerrarSession() {
-         String regla = "faces/index.xhtml";
-        super.getRequest().getSession(true).invalidate();
-         this.setRenderMensaje(false);
-        return regla;
-    }
+public String cerrarSession1() {
+    super.getRequest().getSession(true).invalidate();
+    this.setRenderMensaje(false);
+    return "/index.xhtml?faces-redirect=true";
+}
     
 
 

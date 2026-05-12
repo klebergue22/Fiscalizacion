@@ -11,6 +11,9 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,23 +61,33 @@ private StreamedContent media;
     public void generarReporteAsistencias() {
         try {
             this.setRenderBarra(true);
+            limpiarReporteGenerado();
+
+            String codigoReporte = normalizarCodigoTimbrado(this.codigo);
             
-            if (codigo == null) {
+            if (codigoReporte == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE INGRESAR UN CODIGO DE TIMBRADO"));
             } else if (fechaDesde == null || fechaHasta == null ){
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA DESDE Y FECHA HASTA"));
-            } 
-            else  {
+            } else if (fechaDesde.after(fechaHasta)) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "LA FECHA DESDE NO PUEDE SER MAYOR QUE LA FECHA HASTA"));
+            } else  {
             Map<String, Object> map = new HashMap<>();
             
             Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","PERMISOS","PERMIGM2012");
             //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
-            map.put("pathImagen",JasperReportUtil.PATH_IMAGES);
-            
-            map.put("CODIGO", this.codigo);
-            //map.put("TipoPermiso", this.idTipoPermiso);
             String fecha=formatoFecha.format(fechaDesde);
             String fecha2=formatoFecha.format(fechaHasta);
+            if (!existeEmpleado(conexion, codigoReporte)) {
+                conexion.close();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "SIN DATOS", "NO EXISTE EMPLEADO CON EL CODIGO INGRESADO"));
+                return;
+            }
+
+            map.put("pathImagen",JasperReportUtil.PATH_IMAGES);
+            
+            map.put("CODIGO", codigoReporte);
+            //map.put("TipoPermiso", this.idTipoPermiso);
             map.put("FechaDesde",fecha);
             map.put("FechaHasta",fecha2);
             
@@ -88,8 +101,34 @@ private StreamedContent media;
             }
             
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            limpiarReporteGenerado();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL REPORTE: " + e.getMessage()));
         }
+    }
+
+    private String normalizarCodigoTimbrado(String codigoIngresado) {
+        if (codigoIngresado == null) {
+            return null;
+        }
+        String codigoNormalizado = codigoIngresado.replaceAll("\\D", "");
+        return codigoNormalizado.isEmpty() ? null : codigoNormalizado;
+    }
+
+    private boolean existeEmpleado(Connection conexion, String codigoReporte) throws SQLException {
+        String sql = "SELECT COUNT(1) FROM T_DAT_EMPLEADO WHERE TO_NUMBER(CODIGO) = TO_NUMBER(?)";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, codigoReporte);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    private void limpiarReporteGenerado() {
+        media = null;
+        outputStream = null;
+        excelOutputStream = null;
     }
 
     

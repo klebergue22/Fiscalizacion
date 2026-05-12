@@ -199,7 +199,7 @@ WHERE TO_NUMBER(CODIGO)=TO_NUMBER($P{CODIGO})]]>
 					<subreportParameterExpression><![CDATA[$P{FechaHasta}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA["/liquidacion_vacacion_R2.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA["liquidacion_vacacion_R2.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</summary>

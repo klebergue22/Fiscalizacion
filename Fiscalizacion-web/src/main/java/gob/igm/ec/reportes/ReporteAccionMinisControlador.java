@@ -14,6 +14,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -69,23 +71,30 @@ public class ReporteAccionMinisControlador extends FacesUtil implements Serializ
      
         try {
             this.setRenderBarra(true);
-            valor1 = Integer.parseInt(codigo);
-            valor2 = Integer.parseInt(hasta);
-            System.out.println("codigo :" + this.codigo);
-            if (codigo == null || hasta == null) {                         
+            limpiarReporteGenerado();
+
+            String accionDesde = normalizarAccion(this.codigo);
+            String accionHasta = normalizarAccion(this.hasta);
+            System.out.println("codigo :" + accionDesde);
+            if (accionDesde == null || accionHasta == null) {                         
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE INGRESAR UNA ACCION DE PERSONAL"));            
-            }else if (valor1 > valor2){
+            }else if (Integer.parseInt(accionDesde) > Integer.parseInt(accionHasta)){
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "ACCION HASTA DEBE SER MAYOR"));
             }else  {
             Map<String, Object> map = new HashMap<>();
             
             Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","RH","oraclerrhh2010");
+            if (!existenAcciones(conexion, accionDesde, accionHasta)) {
+                conexion.close();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "SIN DATOS", "NO EXISTEN ACCIONES EN EL RANGO INGRESADO"));
+                return;
+            }
             
             //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
             map.put("fondo3",JasperReportUtil.PATH_IMAGES3);
             map.put("fondo4",JasperReportUtil.PATH_IMAGES4);
-            map.put("NUM_DESDE", this.codigo);
-            map.put("NUM_HASTA", this.hasta);
+            map.put("NUM_DESDE", accionDesde);
+            map.put("NUM_HASTA", accionHasta);
             
             JasperReportUtil jasper = new JasperReportUtil();
             JRExporter exporter = null;
@@ -97,8 +106,37 @@ public class ReporteAccionMinisControlador extends FacesUtil implements Serializ
             }
             
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            limpiarReporteGenerado();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL REPORTE: " + e.getMessage()));
         }
+    }
+
+    private String normalizarAccion(String accion) {
+        if (accion == null) {
+            return null;
+        }
+        String accionNormalizada = accion.replaceAll("\\D", "");
+        return accionNormalizada.isEmpty() ? null : accionNormalizada;
+    }
+
+    private boolean existenAcciones(Connection conexion, String accionDesde, String accionHasta) throws SQLException {
+        String sql = "SELECT COUNT(1) "
+                + "FROM RH.T_ACCION_PERSONAL2025 "
+                + "WHERE NO_ACCION BETWEEN TO_NUMBER(?) AND TO_NUMBER(?)";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, accionDesde);
+            ps.setString(2, accionHasta);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    private void limpiarReporteGenerado() {
+        media = null;
+        outputStream = null;
+        excelOutputStream = null;
     }
         
     public String getNameFilePdf() {

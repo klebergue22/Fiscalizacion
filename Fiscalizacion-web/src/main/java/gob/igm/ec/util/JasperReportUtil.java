@@ -99,7 +99,7 @@ public class JasperReportUtil {
         PATH_REPORTE_ACCIONES = PATH + "//reporte_acciones_2.jasper/";
         PATH_REPORTE_ACCIONES_LIBRO = PATH + "//AccionPersonal_V2.jasper/";
         PATH_REPORTE_ACCIONES_REVERSO = PATH + "//reporte_acciones_reverso.jasper/";
-        PATH_REPORTE_TIPO_PERMISO = PATH + "//reporte_tipo_permiso.jasper/";
+        PATH_REPORTE_TIPO_PERMISO = PATH + "//reporte_tipo_permiso.jrxml";
         PATH_REPORTE_ATRASOS = PATH + "//reporte_atrasos.jrxml";
         PATH_REPORTE_INVENTARIO_GRUPOS = PATH + "//CONSUMOXGRUPO.jasper/";
         PATH_REPORTE_ASISTENCIAS = PATH + "//liquidacion_asistencia.jasper/";
