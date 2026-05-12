@@ -95,7 +95,7 @@ public class JasperReportUtil {
         
         PATH_REPORTE_PRODUCCION_DOCUMENTOS_D=PATH+"//reporte_personal_2.jasper/";
         PATH_REPORTE_TIMBRADOS = PATH+"//reporte_timbrados.jasper/";
-        PATH_REPORTE_PERMISOS_PERSONAL = PATH + "//reporte_permisos_2.jasper/";
+        PATH_REPORTE_PERMISOS_PERSONAL = PATH + "//reporte_permisos_2.jrxml";
         PATH_REPORTE_ACCIONES = PATH + "//reporte_acciones_2.jasper/";
         PATH_REPORTE_ACCIONES_LIBRO = PATH + "//AccionPersonal_V2.jasper/";
         PATH_REPORTE_ACCIONES_REVERSO = PATH + "//reporte_acciones_reverso.jasper/";
@@ -103,7 +103,7 @@ public class JasperReportUtil {
         PATH_REPORTE_ATRASOS = PATH + "//reporte_atrasos.jrxml";
         PATH_REPORTE_INVENTARIO_GRUPOS = PATH + "//CONSUMOXGRUPO.jasper/";
         PATH_REPORTE_ASISTENCIAS = PATH + "//liquidacion_asistencia.jasper/";
-        PATH_REPORTE_PERMISOS_IGM = PATH + "//reporte_permisos_personal.jasper/";
+        PATH_REPORTE_PERMISOS_IGM = PATH + "//reporte_permisos_personal.jrxml";
         PATH_REPORTE_TIMBRADOS_IGM = PATH + "//reporte_timbrados_personal.jasper/";
         PATH_REPORTE_PERMISOS_CODIGO = PATH + "//reporte_permisos_codigo.jasper/";
         PATH_REPORTE_NO_TIMBRADOS = PATH + "//reporte_no_timbrados.jasper/";
