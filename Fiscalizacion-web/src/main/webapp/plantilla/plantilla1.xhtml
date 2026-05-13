@@ -401,7 +401,8 @@
                                                 var cargaReporteActual = null;
 
                                                 function esReporte(forma) {
-                                                    return (forma || '').toLowerCase().indexOf('reportes/') >= 0;
+                                                    var ruta = (forma || '').toLowerCase();
+                                                    return ruta.indexOf('reportes/') >= 0 || ruta.indexOf('reportefinanciero.xhtml') >= 0;
                                                 }
 
                                                 function limpiarReporteActual() {
