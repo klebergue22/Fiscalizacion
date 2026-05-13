@@ -96,6 +96,12 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Groovy compiler for JasperReports expression compilation -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.4.21</version>
+        </dependency>
         
         <dependency>
             <groupId>org.primefaces</groupId>

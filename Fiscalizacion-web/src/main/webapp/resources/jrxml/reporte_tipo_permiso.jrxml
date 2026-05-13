@@ -235,7 +235,7 @@ ORDER BY DESCRIP,F_INICO]]>
 				</textElement>
 				<text><![CDATA[Fecha Reporte:]]></text>
 			</staticText>
-			<textField textAdjust="StretchHeight" evaluationTime="Report" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<textField evaluationTime="Report" pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement key="textField" x="497" y="70" width="70" height="20" uuid="bca10d6c-17c7-4dd8-8dd5-893200258514"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -415,7 +415,7 @@ ORDER BY DESCRIP,F_INICO]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{MINU}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight">
+				<textField>
 				<reportElement x="320" y="1" width="236" height="14" uuid="ec54b6dc-0aa0-473c-8640-759b3c6333c9">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5cea13fe-5162-47fb-8161-063511719b94"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

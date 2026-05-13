@@ -8,10 +8,11 @@ import gob.igm.rh.modelo.VDatoEmp;
 import gob.igm.rh.servicio.DatosEmpleadoServicio;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import javax.inject.Named;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,21 +27,19 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.jasperreports.engine.JRExporter;
 import org.primefaces.model.StreamedContent;
 
 /**
  *
  * @author Alexander Jimenez
  */
-//@Named(value = "ReportePermisoControlador")
 @ManagedBean
 @SessionScoped
 @Named
-//@ViewScoped
 public class ReportePermisoPersonal extends FacesUtil implements Serializable {
-    
+
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
     private ByteArrayOutputStream excelOutputStream;
@@ -56,83 +55,113 @@ public class ReportePermisoPersonal extends FacesUtil implements Serializable {
     private String codigoTimbre;
     DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
     DateFormat formatoComparacion = new SimpleDateFormat("dd/MM/yyyy");
-    private Date date1; 
-    
+    private Date date1;
+
     private List<VDatoEmp> listaEmpleado;
 
     @ManagedProperty("#{dataManagerUsuario}")
     private DataManagerUsuario usuarioManager;
-    
+
     @EJB
-    private DatosEmpleadoServicio datosEmpleadoEJB;    
-    
-    public ReportePermisoPersonal(){
-        //usuarioManager = new DataManagerUsuario();
-    
+    private DatosEmpleadoServicio datosEmpleadoEJB;
+
+    public ReportePermisoPersonal() {
     }
-    
-@PostConstruct
-    public void init(){
-       System.out.println("CODIGO DE LA PERSONA >>>>" + usuarioManager.getUsuario());
-       //codigo = usuario.
-       codigo = usuarioManager.getUsuario();
-       listaEmpleado = datosEmpleadoEJB.obtenerCodigoTimbrado(codigo);
-        
-         for (VDatoEmp tmp : listaEmpleado) {
-                System.out.println("CODIGO TIMBRE >>>>" + tmp.getCodigo());
-                codigoTimbre = tmp.getCodigo();
-                System.out.println("NOMBRE  >>>>" + tmp.getNombreC());
-                System.out.println("CEDULA  >>>>" + tmp.getNoCedula());
-            }
-        
+
+    @PostConstruct
+    public void init() {
+        System.out.println("CODIGO DE LA PERSONA >>>>" + usuarioManager.getUsuario());
+        codigo = usuarioManager.getUsuario();
+        listaEmpleado = datosEmpleadoEJB.obtenerCodigoTimbrado(codigo);
+
+        for (VDatoEmp tmp : listaEmpleado) {
+            System.out.println("CODIGO TIMBRE >>>>" + tmp.getCodigo());
+            codigoTimbre = tmp.getCodigo();
+            System.out.println("NOMBRE  >>>>" + tmp.getNombreC());
+            System.out.println("CEDULA  >>>>" + tmp.getNoCedula());
+        }
+
         this.setRenderBarra(false);
         this.setUno(JasperReportUtil.PATH_IMAGES);
-       // this.setPath(JasperReportUtil.PATH_REPORTE_ACCIONES);
- 
     }
-    
+
     public void generateReport() {
         try {
             this.setRenderBarra(true);
+            limpiarReporteGenerado();
             date1 = formatoComparacion.parse("01/01/2023");
-//            System.out.println("codigo :" + this.codigo);
-//            System.out.println("fecha desde :" + this.fechaDesde);
-//            System.out.println("fecha hasta :" + this.fechaHasta);
-            if (codigoTimbre == null) {
+
+            String codigoReporte = normalizarCodigoTimbrado(this.codigoTimbre);
+            if (codigoReporte == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE INGRESAR UN CODIGO DE TIMBRADO"));
-            } else if (fechaDesde == null || fechaHasta == null ){
+            } else if (fechaDesde == null || fechaHasta == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "DEBE SELECCIONAR FECHA DESDE Y FECHA HASTA"));
-            } else if (fechaDesde.before(date1) || fechaHasta.before(date1) ){
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "FECHAS DEBEN ESTAR EN AÑO 2023"));
-            } 
-            else  {
-            Map<String, Object> map = new HashMap<>();
-            
-            Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1","PERMISOS","PERMIGM2012");
-            //Connection  conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.35.88:1521:GEO","PERMISOS","PERMIGM2012");
-            map.put("pathImagen",JasperReportUtil.PATH_IMAGES);
-            map.put("pathImagen1",JasperReportUtil.PATH_IMAGES1);
-            map.put("pathImagen2",JasperReportUtil.PATH_IMAGES2);
-            map.put("CODIGO", this.codigoTimbre);
-            String fecha=formatoFecha.format(fechaDesde);
-            String fecha2=formatoFecha.format(fechaHasta);
-            map.put("FechaDesde",fecha);
-            map.put("FechaHasta",fecha2);
-            
-            JasperReportUtil jasper = new JasperReportUtil();
-            JRExporter exporter = null;
-            JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map,JasperReportUtil.PATH_REPORTE_PERMISOS_IGM);
+            } else if (fechaDesde.after(fechaHasta)) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "LA FECHA DESDE NO PUEDE SER MAYOR QUE LA FECHA HASTA"));
+            } else if (fechaDesde.before(date1) || fechaHasta.before(date1)) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "FECHAS DEBEN ESTAR EN ANIO 2023"));
+            } else {
+                Map<String, Object> map = new HashMap<>();
+
+                Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1", "PERMISOS", "PERMIGM2012");
+                String fecha = formatoFecha.format(fechaDesde);
+                String fecha2 = formatoFecha.format(fechaHasta);
+                if (!existenPermisos(conexion, codigoReporte, fecha, fecha2)) {
+                    conexion.close();
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "SIN DATOS", "NO EXISTEN PERMISOS DE PERSONAL PARA EL RANGO INGRESADO"));
+                    return;
+                }
+
+                map.put("pathImagen", JasperReportUtil.PATH_IMAGES);
+                map.put("pathImagen1", JasperReportUtil.PATH_IMAGES1);
+                map.put("pathImagen2", JasperReportUtil.PATH_IMAGES2);
+                map.put("CODIGO", codigoReporte);
+                map.put("FechaDesde", fecha);
+                map.put("FechaHasta", fecha2);
+
+                JasperReportUtil.ReportOutput reportOutput = JasperReportUtil.getOutputStreamsFromReport(conexion, map, JasperReportUtil.PATH_REPORTE_PERMISOS_IGM);
                 outputStream = reportOutput.getPdfOutputStream();
                 excelOutputStream = reportOutput.getExcelOutputStream();
-            media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
-            conexion.close();
+                media = JasperReportUtil.getStreamContentFromOutputStream(outputStream, "application/pdf", getNameFilePdf());
+                conexion.close();
             }
-            
+
         } catch (Exception e) {
-            //log.error(e.getMessage(), e);
+            limpiarReporteGenerado();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR", "NO SE PUDO GENERAR EL REPORTE: " + e.getMessage()));
         }
-    }   
-    
+    }
+
+    private String normalizarCodigoTimbrado(String codigoIngresado) {
+        if (codigoIngresado == null) {
+            return null;
+        }
+        String codigoNormalizado = codigoIngresado.replaceAll("\\D", "");
+        return codigoNormalizado.isEmpty() ? null : codigoNormalizado;
+    }
+
+    private boolean existenPermisos(Connection conexion, String codigoReporte, String fechaDesdeReporte, String fechaHastaReporte) throws SQLException {
+        String sql = "SELECT COUNT(1) "
+                + "FROM V_PERMISOS_EMPLEADO "
+                + "WHERE TO_NUMBER(CODIGO) = TO_NUMBER(?) "
+                + "AND TRUNC(F_INICO) BETWEEN TO_DATE(?, 'DD/MM/YYYY') AND TO_DATE(?, 'DD/MM/YYYY')";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, codigoReporte);
+            ps.setString(2, fechaDesdeReporte);
+            ps.setString(3, fechaHastaReporte);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    private void limpiarReporteGenerado() {
+        media = null;
+        outputStream = null;
+        excelOutputStream = null;
+    }
+
     public String getNameFilePdf() {
         return "ReportePermisoPersonal";
     }
@@ -140,22 +169,21 @@ public class ReportePermisoPersonal extends FacesUtil implements Serializable {
     public void downloadFile() {
         try {
             FacesContext facesContext = FacesContext.getCurrentInstance();
-            
+
             HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
             response.reset();
             response.setContentType("application/pdf");
             response.setHeader("Content-disposition", "attachment; filename=" + getNameFilePdf());
-            
+
             OutputStream output = response.getOutputStream();
             output.write(outputStream.toByteArray());
             output.close();
-            
+
             facesContext.responseComplete();
         } catch (Exception e) {
             //log.error(e.getMessage(), e);
         }
     }
-    
 
     public StreamedContent getArchivoDescarga() {
         try {
@@ -173,6 +201,7 @@ public class ReportePermisoPersonal extends FacesUtil implements Serializable {
             return null;
         }
     }
+
     public StreamedContent getArchivoDescargaExcel() {
         try {
             if (excelOutputStream == null || excelOutputStream.size() == 0) {
@@ -190,14 +219,14 @@ public class ReportePermisoPersonal extends FacesUtil implements Serializable {
         }
     }
 
- public StreamedContent getMedia() {
+    public StreamedContent getMedia() {
         return media;
     }
 
     public void setMedia(StreamedContent media) {
         this.media = media;
     }
- 
+
     public String getNumber() {
         return number;
     }
@@ -206,44 +235,26 @@ public class ReportePermisoPersonal extends FacesUtil implements Serializable {
         this.number = number;
     }
 
-    /**
-     * @return the renderBarra
-     */
     public boolean isRenderBarra() {
         return renderBarra;
     }
 
-    /**
-     * @param renderBarra the renderBarra to set
-     */
     public void setRenderBarra(boolean renderBarra) {
         this.renderBarra = renderBarra;
     }
 
-    /**
-     * @return the uno
-     */
     public String getUno() {
         return uno;
     }
 
-    /**
-     * @param uno the uno to set
-     */
     public void setUno(String uno) {
         this.uno = uno;
     }
 
-    /**
-     * @return the path
-     */
     public String getPath() {
         return path;
     }
 
-    /**
-     * @param path the path to set
-     */
     public void setPath(String path) {
         this.path = path;
     }
@@ -279,7 +290,4 @@ public class ReportePermisoPersonal extends FacesUtil implements Serializable {
     public void setUsuarioManager(DataManagerUsuario usuarioManager) {
         this.usuarioManager = usuarioManager;
     }
-    
-    
-    
 }

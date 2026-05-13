@@ -93,33 +93,33 @@ public class JasperReportUtil {
         //TIPO_EXCEL = "application/xls";
         PATH = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/jrxml/");
         
-        PATH_REPORTE_PRODUCCION_DOCUMENTOS_D=PATH+"//reporte_personal_2.jasper/";
-        PATH_REPORTE_TIMBRADOS = PATH+"//reporte_timbrados.jasper/";
-        PATH_REPORTE_PERMISOS_PERSONAL = PATH + "//reporte_permisos_2.jrxml";
-        PATH_REPORTE_ACCIONES = PATH + "//reporte_acciones_2.jasper/";
-        PATH_REPORTE_ACCIONES_LIBRO = PATH + "//AccionPersonal_V2.jasper/";
-        PATH_REPORTE_ACCIONES_REVERSO = PATH + "//reporte_acciones_reverso.jasper/";
-        PATH_REPORTE_TIPO_PERMISO = PATH + "//reporte_tipo_permiso.jrxml";
-        PATH_REPORTE_ATRASOS = PATH + "//reporte_atrasos.jrxml";
-        PATH_REPORTE_INVENTARIO_GRUPOS = PATH + "//CONSUMOXGRUPO.jasper/";
-        PATH_REPORTE_ASISTENCIAS = PATH + "//liquidacion_asistencia.jasper/";
-        PATH_REPORTE_PERMISOS_IGM = PATH + "//reporte_permisos_personal.jrxml";
-        PATH_REPORTE_TIMBRADOS_IGM = PATH + "//reporte_timbrados_personal.jasper/";
-        PATH_REPORTE_PERMISOS_CODIGO = PATH + "//reporte_permisos_codigo.jasper/";
-        PATH_REPORTE_NO_TIMBRADOS = PATH + "//reporte_no_timbrados.jasper/";
-        PATH_REPORTE_NO_TIMBRADOS_LOSEP = PATH + "//reporte_no_timbrados_losep.jasper/";
-        PATH_REPORTE_OCHO_HORAS_SEMANAL = PATH + "//reporte_ocho_horas_semanal.jrxml";
-        PATH_REPORTE_ALMUERZO_SIN_TIMBRAR_SEMANAL = PATH + "//reporte_almuerzo_sin_timbrar_semanal.jrxml";
-        PATH_REPORTE_JORNADA_LABORAL_MENSUAL = PATH + "//reporte_jornada_laboral_mensual.jrxml";
-        PATH_REPORTE_PERSONAL_NO_TIMBRA_CUATRO_VECES = PATH + "//reporte_personal_no_timbra_cuatro_veces.jrxml";
-        PATH_REPORTE_SALIDA_ANTES_JORNADA_SEMANAL = PATH + "//reporte_salida_antes_jornada_semanal.jrxml";
-        PATH_REPORTE_ACCIONES_MINISTERIO = PATH + "//AccionPersonal_V4.jasper/";
+        PATH_REPORTE_PRODUCCION_DOCUMENTOS_D=PATH+"/reporte_personal_2.jasper";
+        PATH_REPORTE_TIMBRADOS = PATH+"/reporte_timbrados.jasper";
+        PATH_REPORTE_PERMISOS_PERSONAL = PATH + "/reporte_permisos_2.jrxml";
+        PATH_REPORTE_ACCIONES = PATH + "/reporte_acciones_2.jasper";
+        PATH_REPORTE_ACCIONES_LIBRO = PATH + "/AccionPersonal_V2.jasper";
+        PATH_REPORTE_ACCIONES_REVERSO = PATH + "/reporte_acciones_reverso.jasper";
+        PATH_REPORTE_TIPO_PERMISO = PATH + "/reporte_tipo_permiso.jrxml";
+        PATH_REPORTE_ATRASOS = PATH + "/reporte_atrasos.jrxml";
+        PATH_REPORTE_INVENTARIO_GRUPOS = PATH + "/CONSUMOXGRUPO.jasper";
+        PATH_REPORTE_ASISTENCIAS = PATH + "/liquidacion_asistencia.jasper";
+        PATH_REPORTE_PERMISOS_IGM = PATH + "/reporte_permisos_personal.jrxml";
+        PATH_REPORTE_TIMBRADOS_IGM = PATH + "/reporte_timbrados_personal.jasper";
+        PATH_REPORTE_PERMISOS_CODIGO = PATH + "/reporte_permisos_codigo.jasper";
+        PATH_REPORTE_NO_TIMBRADOS = PATH + "/reporte_no_timbrados.jasper";
+        PATH_REPORTE_NO_TIMBRADOS_LOSEP = PATH + "/reporte_no_timbrados_losep.jasper";
+        PATH_REPORTE_OCHO_HORAS_SEMANAL = PATH + "/reporte_ocho_horas_semanal.jrxml";
+        PATH_REPORTE_ALMUERZO_SIN_TIMBRAR_SEMANAL = PATH + "/reporte_almuerzo_sin_timbrar_semanal.jrxml";
+        PATH_REPORTE_JORNADA_LABORAL_MENSUAL = PATH + "/reporte_jornada_laboral_mensual.jrxml";
+        PATH_REPORTE_PERSONAL_NO_TIMBRA_CUATRO_VECES = PATH + "/reporte_personal_no_timbra_cuatro_veces.jrxml";
+        PATH_REPORTE_SALIDA_ANTES_JORNADA_SEMANAL = PATH + "/reporte_salida_antes_jornada_semanal.jrxml";
+        PATH_REPORTE_ACCIONES_MINISTERIO = PATH + "/AccionPersonal_V4.jasper";
         
-        PATH_IMAGES = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/LOGO1.png/";
-        PATH_IMAGES1 = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/accion2JPG.jpg/";
-        PATH_IMAGES2 = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/accionreverso2.jpg/";
-        PATH_IMAGES3 = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/accionf.jpeg/";
-        PATH_IMAGES4 = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/accionr.jpeg/";
+        PATH_IMAGES = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/LOGO1.png";
+        PATH_IMAGES1 = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/accion2JPG.jpg";
+        PATH_IMAGES2 = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/accionreverso2.jpg";
+        PATH_IMAGES3 = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/accionf.jpeg";
+        PATH_IMAGES4 = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/images/")+"/accionr.jpeg";
         TIPO_PDF = "application/pdf";
         TIPO_EXCEL = "application/xls";
         TIPO_HTML="application/html";
@@ -237,12 +237,24 @@ public class JasperReportUtil {
             throw new ClassNotFoundException("Archivo de reporte no definido");
         }
 
+        // If it's a JRXML file, look for the precompiled JASPER version first
         if (pathJasper.replace("\\", "/").replaceAll("/+$", "").toLowerCase().endsWith(".jrxml")) {
+            String jasperPath = pathJasper.replaceAll("(?i)\\.jrxml$", ".jasper");
+            
+            // Try to use precompiled JASPER file
+            if (new java.io.File(jasperPath).exists()) {
+                localLogger.info("Usando reporte precompilado: " + jasperPath);
+                return JasperFillManager.fillReport(jasperPath, map, conn);
+            }
+            
+            // If precompiled version doesn't exist, compile from JRXML
+            localLogger.warn("Reporte precompilado no encontrado, compilando desde JRXML: " + pathJasper);
             try (InputStream inputStream = new FileInputStream(pathJasper)) {
                 JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
                 return JasperFillManager.fillReport(jasperReport, map, conn);
-            } catch (IOException ex) {
-                throw new JRException(ex);
+            } catch (IOException | JRException ex) {
+                localLogger.error("Error compilando reporte: " + ex.getMessage(), ex);
+                throw new JRException("No se pudo compilar el reporte " + pathJasper + ": " + ex.getMessage(), ex);
             }
         }
 

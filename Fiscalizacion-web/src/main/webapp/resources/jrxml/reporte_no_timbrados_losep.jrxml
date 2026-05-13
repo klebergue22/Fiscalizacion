@@ -87,7 +87,7 @@ order by E.NOMBRE_C]]>
 				</textElement>
 				<text><![CDATA[Fecha Reporte:]]></text>
 			</staticText>
-			<textField textAdjust="StretchHeight" evaluationTime="Report" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<textField evaluationTime="Report" pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement key="textField" x="497" y="57" width="70" height="20" uuid="bca10d6c-17c7-4dd8-8dd5-893200258514"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
