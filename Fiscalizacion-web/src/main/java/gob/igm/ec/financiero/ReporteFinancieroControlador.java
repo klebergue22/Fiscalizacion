@@ -34,6 +34,9 @@ public class ReporteFinancieroControlador extends FacesUtil implements Serializa
 
     private static final Logger LOGGER = Logger.getLogger(ReporteFinancieroControlador.class.getName());
     private static final long serialVersionUID = 1L;
+    private static final String DB_URL = "jdbc:oracle:thin:@192.168.1.80:1521:IGM1";
+    private static final String DB_USER = "PERMISOS";
+    private static final String DB_PASSWORD = "PERMIGM2012";
 
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
@@ -74,7 +77,7 @@ public class ReporteFinancieroControlador extends FacesUtil implements Serializa
             } else {
                 Map<String, Object> map = new HashMap<>();
 
-                try (Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.80:1521:IGM1", "FINANCIERO", "oraclefin2010")) {
+                try (Connection conexion = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
                     if (!existeEmpleado(conexion, codigoReporte)) {
                         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "SIN DATOS", "NO EXISTE EMPLEADO CON EL CODIGO INGRESADO"));
                         return;
