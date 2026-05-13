@@ -8,7 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,6 +23,9 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import javax.servlet.http.HttpServletResponse;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -34,9 +36,7 @@ public class ReporteFinancieroControlador extends FacesUtil implements Serializa
 
     private static final Logger LOGGER = Logger.getLogger(ReporteFinancieroControlador.class.getName());
     private static final long serialVersionUID = 1L;
-    private static final String DB_URL = "jdbc:oracle:thin:@192.168.1.80:1521:IGM1";
-    private static final String DB_USER = "PERMISOS";
-    private static final String DB_PASSWORD = "PERMIGM2012";
+    private static final String[] RH_DATA_SOURCES = {"jdbc/_RH", "java:comp/env/jdbc/_RH"};
 
     private StreamedContent media;
     private ByteArrayOutputStream outputStream;
@@ -77,7 +77,7 @@ public class ReporteFinancieroControlador extends FacesUtil implements Serializa
             } else {
                 Map<String, Object> map = new HashMap<>();
 
-                try (Connection conexion = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+                try (Connection conexion = obtenerConexionReporte()) {
                     if (!existeEmpleado(conexion, codigoReporte)) {
                         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "SIN DATOS", "NO EXISTE EMPLEADO CON EL CODIGO INGRESADO"));
                         return;
@@ -111,8 +111,24 @@ public class ReporteFinancieroControlador extends FacesUtil implements Serializa
         return codigoNormalizado.isEmpty() ? null : codigoNormalizado;
     }
 
+    private Connection obtenerConexionReporte() throws SQLException, NamingException {
+        InitialContext context = new InitialContext();
+        NamingException ultimoError = null;
+
+        for (String dataSourceName : RH_DATA_SOURCES) {
+            try {
+                DataSource dataSource = (DataSource) context.lookup(dataSourceName);
+                return dataSource.getConnection();
+            } catch (NamingException e) {
+                ultimoError = e;
+            }
+        }
+
+        throw ultimoError;
+    }
+
     private boolean existeEmpleado(Connection conexion, String codigoReporte) throws SQLException {
-        String sql = "SELECT COUNT(1) FROM T_DAT_EMPLEADO WHERE TO_NUMBER(CODIGO) = TO_NUMBER(?)";
+        String sql = "SELECT COUNT(1) FROM RH.T_DAT_EMPLEADO WHERE TO_NUMBER(CODIGO) = TO_NUMBER(?)";
 
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, codigoReporte);
